@@ -16,4 +16,5 @@ jobs:
         uses: ./.github/actions/setup
 
       - run: yarn lint
+      - run: yarn build
       - run: yarn test
