@@ -1,4 +1,4 @@
-import chunk from "lodash-es/chunk";
+import chunk from "lodash/chunk";
 
 const geohashLetters = "0123456789bcdefghjkmnpqrstuvwxyz";
 

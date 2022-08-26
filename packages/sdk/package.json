@@ -12,9 +12,9 @@
   "main": "dist/gsr.js",
   "types": "dist/gsr.d.ts",
   "dependencies": {
-    "@types/lodash-es": "^4.17.6",
+    "@types/lodash": "^4.14.184",
     "@types/ngeohash": "^0.6.4",
-    "lodash-es": "^4.17.21",
+    "lodash": "^4.17.21",
     "ngeohash": "^0.6.3"
   },
   "devDependencies": {
