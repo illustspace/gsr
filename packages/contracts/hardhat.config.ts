@@ -21,9 +21,9 @@ const reportGas = process.env.REPORT_GAS === "true";
 const testPrivateKey =
   "04902883ed8f339672b55a151e3cf9c3277aaa30304604ed6851aa3d3807c555";
 
-const alchemyApiKey = process.env.ALCHEMY_API_KEY;
-const etherscanApiKey = process.env.ETHERSCAN_API_KEY;
-const polyscanApiKey = process.env.POLYSCAN_API_KEY;
+const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
+const etherscanApiKey = process.env.ETHERSCAN_API_KEY as string;
+const polyscanApiKey = process.env.POLYSCAN_API_KEY as string;
 
 const config: HardhatUserConfig = {
   solidity: {

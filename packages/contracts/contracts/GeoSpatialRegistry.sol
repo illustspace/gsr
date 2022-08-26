@@ -232,10 +232,17 @@ contract GeoSpatialRegistry is
     /** Get the current location of an asset. */
     /// @param assetId the external asset id of the piece to get the location of the piece
     /// @param publisher the address of the publisher of the piece
+    /// @return geohash - the location of the placement
+    /// @return bitPrecision - the precision of the geohash
+    /// @return startTime - the time this placement has been active since.
     function placeOf(bytes32 assetId, address publisher)
         external
         view
-        returns (uint64 geohash, uint8 bitPrecision)
+        returns (
+            uint64 geohash,
+            uint8 bitPrecision,
+            uint256 startTime
+        )
     {
         Placement storage placement = _findValidPlacement(
             assetId,
@@ -243,7 +250,13 @@ contract GeoSpatialRegistry is
             true
         );
 
-        return (placement.geohash.geohash, placement.geohash.bitPrecision);
+        return (
+            // return the geohash
+            placement.geohash.geohash,
+            placement.geohash.bitPrecision,
+            // return either the placedAt or the startTime, whichever is later.
+            _max(placement.timeRange.start, placement.placedAt)
+        );
     }
 
     /** Get the Scene URI metadata of a published asset. */
@@ -426,5 +439,10 @@ contract GeoSpatialRegistry is
             geohash.bitPrecision % 5 == 0,
             "GSR: Precision not multiple of 5"
         );
+    }
+
+    /** Return the highest of two integers. */
+    function _max(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a > b ? a : b;
     }
 }

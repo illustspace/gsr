@@ -9,6 +9,10 @@ import {
   getEncodedAssetType,
 } from "./known-asset-types";
 
+/**
+ * ABIs for decoding the collection/item IDs for a given asset type.
+ * Indexed by plain assetType
+ */
 const assetTypeAbis: Record<
   AssetType,
   {
@@ -26,6 +30,7 @@ const assetTypeAbis: Record<
   },
 };
 
+/** Decoded AssetId for an EVM ERC 721 1:1 NFT */
 export interface Erc721AssetId {
   assetType: "ERC721";
   chainId: BigNumberish;
@@ -33,6 +38,7 @@ export interface Erc721AssetId {
   tokenId: BigNumberish;
 }
 
+/** Decoded AssetId for an EVM ERC 1155 NFT */
 export interface Erc1155AssetId {
   assetType: "ERC1155";
   chainId: BigNumberish;
@@ -40,14 +46,20 @@ export interface Erc1155AssetId {
   tokenId: BigNumberish;
 }
 
+/** All known decoded asset ID types */
 export type DecodedAssetId = Erc721AssetId | Erc1155AssetId;
 
+/**
+ * An encoded version of an AssetId, with the assetType, collectionId, and itemId
+ * abiEncoded to be sent to the blockchain.
+ */
 export interface EncodedAssetId {
   assetType: string;
   collectionId: string;
   itemId: string;
 }
 
+/** Decode an EncodedAssetId based on its AssetType into a DecodedAssetId. */
 export function decodeAssetId({
   assetType: encodedAssetType,
   collectionId,
@@ -84,17 +96,19 @@ export function decodeAssetId({
   throw new Error(`Unhandled asset type: ${assetType}`);
 }
 
+/** Encode an AssetId for the blockchain. */
 export function encodeAssetId(assetId: DecodedAssetId): EncodedAssetId {
   const { assetType } = assetId;
   // Get the ABIs
   const abis = assetTypeAbis[assetType];
 
-  if (!abis) {
+  const encodedAssetType = getEncodedAssetType(assetType);
+
+  if (!(abis && encodedAssetType)) {
     throw new Error(`Unknown asset type: ${assetType}`);
   }
 
   // Encode the collectionId and itemId
-  const encodedAssetType = getEncodedAssetType(assetType);
 
   if (assetType === "ERC721" || assetType === "ERC1155") {
     const encodedCollectionId = defaultAbiCoder.encode(abis.collectionId, [
@@ -115,11 +129,13 @@ export function encodeAssetId(assetId: DecodedAssetId): EncodedAssetId {
   throw new Error(`Unhandled asset type: ${assetType}`);
 }
 
+/** Hash a decoded AssetId to a simple AssetId used for GSR queries. */
 export function hashAssetId(assetId: DecodedAssetId): string {
   const encodedAssetId = encodeAssetId(assetId);
   return hashEncodedAssetId(encodedAssetId);
 }
 
+/** Hash an EncodedAssetId to a simple AssetId used for GSR queries. */
 export function hashEncodedAssetId({
   assetType,
   collectionId,

@@ -9,6 +9,11 @@ import Erc1155Abi from "~/abis/Erc1155.json";
 
 import { DecodedAssetId } from "./full-asset-id";
 
+/**
+ * Verify that an AssetId describes an asset owned by the given user.
+ * The AssetId determines which * external source of truth should be
+ * queried for ownership data.
+ */
 export async function verifyAssetOwnership(
   // TODO: set provider based on chainId
   provider: BaseProvider,

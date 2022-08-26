@@ -2,9 +2,13 @@
 
 ## Docs
 
-See the [docs](./docs) for a full description of the smart contract flows and access control.
+See the [docs](./docs/README.md) for a full description of the smart contract flows and access control.
 
 ## Development
+
+Contracts are stored in `/contracts`.
+
+There are also sample contracts only used in tests stored in `contracts/test`.
 
 ### Test
 
@@ -27,21 +31,15 @@ yarn test:gas
 You will have to do this at least once to build the typechain types needed for testing. After that they will be updated automatically when running tests.
 
 ```bash
-yarn contracts
+yarn build
 ```
 
 ### Live testing
 
-Start the local eth network
+This will start the local eth network, and deploy the GSR to it.
 
 ```bash
 yarn blockchain
-```
-
-Deploy the contract locally
-
-```bash
-yarn deploy:localhost
 ```
 
 ## Verify Contracts
@@ -49,5 +47,5 @@ yarn deploy:localhost
 To verify a contract on etherscan/polygon scan, make sure the associated API key is in the .env file, then run `hardhat verify` on the contract, passing in the address and arguments used when deploying:
 
 ```bash
-yarn hardhat verify --network polygonMumbai "0xceb8bf3f5faef6c50514ff4194c4a338200489df" "IllustAirdropsV2" "https://api.staging.illust.space/metadata/{id}"
+yarn hardhat verify --network polygonMumbai "0xceb8bf3f5faef6c50514ff4194c4a338200489df" "GeoSpatialRegistry"
 ```

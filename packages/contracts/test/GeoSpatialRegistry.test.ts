@@ -5,7 +5,6 @@ import { ethers, getChainId } from "hardhat";
 import { expect } from "chai";
 import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber } from "@ethersproject/bignumber";
-import { chunk } from "lodash";
 import { encode_int } from "ngeohash";
 import { keccak256 } from "ethers/lib/utils";
 
@@ -20,37 +19,9 @@ import {
   GeoSpatialRegistry__factory,
   GsrPlacementEvent,
 } from "@gsr/sdk";
+import { Provider } from "@ethersproject/providers";
 
 const tokenId = BigNumber.from(1);
-
-const geohashLetters = "0123456789bcdefghjkmnpqrstuvwxyz";
-
-const geohashToBits = (geohash: string): number => {
-  return geohash
-    .split("")
-    .map((char) => geohashLetters.indexOf(char))
-    .reduce((acc, value, index, array) => {
-      const place = array.length - 1 - index;
-      return acc + value * 2 ** (place * 5);
-    }, 0);
-};
-
-const bitsToGeohash = (bits: number, precision: number): string => {
-  const bitNumbers = bits
-    .toString(2)
-    .padStart(precision * 5, "0")
-    .split("")
-    .map(Number);
-  const letters = chunk(bitNumbers, 5).map((values) => {
-    const index = values.reduce((acc, value, i, array) => {
-      const place = array.length - 1 - i;
-      return acc + value * 2 ** place;
-    }, 0);
-    return geohashLetters[index];
-  });
-
-  return letters.join("");
-};
 
 const venice = { latitude: 33.98767333380228, longitude: -118.47232098946658 };
 
@@ -79,16 +50,6 @@ const emptyBytes32 =
   "0x0000000000000000000000000000000000000000000000000000000000000000";
 
 const sceneUri = "http://example.com/scene1";
-
-describe("geohash", () => {
-  it("goes to bits", () => {
-    expect(geohashToBits("dc0de")).to.eq(0b01100_01011_00000_01100_01101);
-  });
-
-  it("goes from bits", () => {
-    expect(bitsToGeohash(0b01100_01011_00000_01100_01101, 5)).to.eq("dc0de");
-  });
-});
 
 describe("GeoSpatialRegistry", () => {
   let tokenContract: Contract;
@@ -122,7 +83,7 @@ describe("GeoSpatialRegistry", () => {
     // Get a typed GSR contract
     gsr = GeoSpatialRegistry__factory.connect(
       deployedContract.address,
-      admin.provider
+      admin.provider as Provider
     );
 
     tokenContract = await testTokenFactory.deploy();
@@ -350,9 +311,11 @@ describe("GeoSpatialRegistry", () => {
       it("can set a start date", async () => {
         let nextTimestamp = await setNextBlockTimestamp();
 
+        const start = nextTimestamp + 10;
+
         // Place with a future timestamp
         await gsr.connect(nftOwner).place(encodedAssetId, geohash, {
-          start: nextTimestamp + 10,
+          start,
           end: 0,
         });
 
@@ -367,9 +330,10 @@ describe("GeoSpatialRegistry", () => {
         await ethers.provider.send("evm_mine", []);
 
         // Asset is now active
-        expect((await gsr.placeOf(assetId, nftOwner.address)).geohash).to.eq(
-          location
-        );
+        const placeOf = await gsr.placeOf(assetId, nftOwner.address);
+        expect(placeOf.geohash).to.eq(location);
+        // placeOf should return the start time, which is later than the placedAt time
+        expect(placeOf.startTime).to.eq(start);
       });
 
       it("can set an end date", async () => {
