@@ -34,6 +34,8 @@ You will have to do this at least once to build the typechain types needed for t
 yarn build
 ```
 
+This will compile the smart contracts, and also generate TypeChain ethers.js classes, which are placed in the `@gsr/sdk` library for general use.
+
 ### Live testing
 
 This will start the local eth network, and deploy the GSR to it.

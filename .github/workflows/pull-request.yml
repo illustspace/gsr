@@ -12,6 +12,6 @@ jobs:
       - name: Setup Deps
         uses: ./.github/actions/setup
 
-      - run: yarn lint
       - run: yarn build
+      - run: yarn lint
       - run: yarn test

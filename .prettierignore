@@ -15,5 +15,5 @@ packages/contracts/artifacts
 packages/contracts/bin
 packages/contracts/cache
 packages/contracts/contracts/openzepplin
-packages/sdk/typechain
+packages/sdk/src/typechain
 packages/sdk/dist
