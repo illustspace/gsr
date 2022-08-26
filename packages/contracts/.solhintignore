@@ -1,0 +1,4 @@
+node_modules
+contracts/openzepplin
+contracts/meta-transactions
+contracts/ERC721WithEIP2981

@@ -1,0 +1,19 @@
+name: Deploy to prod from main
+"on":
+  push:
+    branches:
+      - main
+
+jobs:
+  set-up-repo:
+    runs-on: ubuntu-20.04
+    steps:
+      - name: "Check out code"
+        if: ${{ !env.ACT }}
+        uses: actions/checkout@v2
+
+      - name: Setup Deps
+        uses: ./.github/actions/setup
+
+      - run: yarn lint
+      - run: yarn test

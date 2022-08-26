@@ -1,0 +1,24 @@
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-node@v2
+      with:
+        node-version: "14"
+
+    - name: Yarn2 Cache and node_modules
+      uses: actions/cache@v2
+      if: ${{ !env.ACT }}
+      with:
+        path: |
+          ./.yarn/cache
+          ./.yarn/unplugged
+          node_modules
+          */*/node_modules
+        key: ${{ runner.os }}-node-14-yarn3-${{ hashFiles('yarn.lock') }}
+        restore-keys: ${{ runner.os }}-node-14-yarn3-
+
+    - run: yarn install --immutable
+      shell: bash
+
+    - run: yarn wss contracts
+      shell: bash

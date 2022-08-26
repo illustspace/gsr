@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Bash sets the BASH environment variable, so if it is not set, then we
+# are running in a different shell, so manually run ourselves in BASH.
+if [ -z "${BASH:-}" ]; then
+  exec bash "$0" "$@"
+fi
+
+source "$(dirname "$0")/_/husky.sh"
+
+set -euo pipefail
+
+echo "running prettier post-rebase" && yarn format:prettier --loglevel warn

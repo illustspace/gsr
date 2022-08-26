@@ -1,0 +1,18 @@
+# Coverage directory used by tools like istanbul
+coverage
+
+# Dependency directories
+node_modules/
+
+public
+build
+cache
+
+.yarn
+
+packages/contracts/abi
+packages/contracts/artifacts
+packages/contracts/bin
+packages/contracts/cache
+packages/contracts/contracts/openzepplin
+packages/sdk/typechain
