@@ -436,7 +436,7 @@ describe("GeoSpatialRegistry", () => {
 
     describe("place", () => {
       it("allows the owner to remove a placement", async () => {
-        await gsr.connect(nftOwner).remove(encodedAssetId);
+        await gsr.connect(nftOwner).removePlacement(encodedAssetId);
 
         await expect(gsr.placeOf(assetId, nftOwner.address)).to.be.revertedWith(
           ""

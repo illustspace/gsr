@@ -18,11 +18,11 @@
     "format:eslint": "eslint --fix './**/*.ts'",
     "format:solhint": "solhint --fix 'contracts/**/*.sol'",
     "format:tsc": "tsc --noEmit",
-    "blockchain": "ENVIRONMENT=development hardhat node",
+    "blockchain": "hardhat node",
     "faucet": "hardhat faucet --network localhost",
-    "test": "ENVIRONMENT=test hardhat test",
-    "test:coverage": "ENVIRONMENT=test hardhat coverage",
-    "test:gas": "REPORT_GAS=true ENVIRONMENT=test hardhat test",
+    "test": "hardhat test",
+    "test:coverage": "hardhat coverage",
+    "test:gas": "REPORT_GAS=true hardhat test",
     "prepare": "husky install"
   },
   "devDependencies": {

@@ -9,10 +9,10 @@
     "packages/*"
   ],
   "scripts": {
-    "ws": "yarn workspace",
+    "ws": "./bin/ws.sh",
     "wss": "yarn workspaces foreach -vpi --exclude gsr-contracts run",
     "start": "yarn wss start",
-    "build": "yarn ws @gsr/contracts build && yarn ws @gsr/sdk build",
+    "build": "yarn ws contracts build && yarn ws sdk build",
     "test": "yarn wss test",
     "lint": "npm-run-all -p 'lint:*'",
     "lint:prettier": "prettier --check './**/*.{ts,tsx,js,sol,html,css,md,json,yml}'",

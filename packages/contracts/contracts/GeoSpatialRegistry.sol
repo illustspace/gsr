@@ -7,7 +7,6 @@ pragma abicoder v2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 // import "hardhat/console.sol";
 
@@ -16,7 +15,6 @@ import "./meta-transactions/NativeMetaTransaction.sol";
 
 contract GeoSpatialRegistry is
     Ownable,
-    AccessControl,
     Pausable,
     NativeMetaTransaction,
     ContextMixin
@@ -103,8 +101,6 @@ contract GeoSpatialRegistry is
     /// @param initialName the name of the contract
     constructor(string memory initialName) {
         name = initialName;
-
-        _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
     }
 
     /** Place a piece according to a publisher. */
@@ -198,7 +194,7 @@ contract GeoSpatialRegistry is
     }
 
     /** Remove an asset from the GSR */
-    function remove(EncodedAssetId calldata encodedAssetId)
+    function removePlacement(EncodedAssetId calldata encodedAssetId)
         external
         whenNotPaused
     {
