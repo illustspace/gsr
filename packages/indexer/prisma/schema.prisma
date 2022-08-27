@@ -1,0 +1,34 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Placement {
+  id            Int     @id @default(autoincrement())
+  assetId       String  @db.VarChar(255)
+  parentAssetId String? @db.VarChar(255)
+
+  decodedAssetId Json
+
+  publisher String  @db.VarChar(255)
+  published Boolean
+
+  // base32 encoded geohash
+  geohash String @db.VarChar(255)
+
+  sceneUri String?
+  placedAt DateTime
+
+  // timeRange
+  timeRangeStart DateTime
+  timeRangeEnd   DateTime
+
+  blockNumber Int
+}

@@ -60,6 +60,7 @@ module.exports = {
           "**/*.stories.{ts,tsx}",
           "**/migrate-db/**/*.{ts,tsx}",
           "**/setupTests.ts",
+          "**/rollup.config.js",
         ],
       },
     ],
@@ -98,5 +99,6 @@ module.exports = {
     "no-undef": "off",
     "no-redeclare": "off",
     "no-shadow": "off",
+    "no-dupe-class-members": "off",
   },
 };
