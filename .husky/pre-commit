@@ -20,7 +20,7 @@ for package in contracts sdk; do
   # Check if the package has any staged changes.
   if ! git diff --exit-code --staged packages/$package 1> /dev/null; then
     # Run tsc for that package in a thread.
-    echo "type checking $package" && yarn workspace $package lint:tsc &
+    echo "type checking $package" && yarn ws $package lint:tsc &
     # Use remember the pid to wait for it to finish.
     pids+=($!)
   fi

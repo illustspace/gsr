@@ -36,4 +36,3 @@ module.exports = async function () {
 };
 
 module.exports.tags = ["testToken"];
-
