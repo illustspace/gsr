@@ -7,6 +7,7 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { encode_int } from "ngeohash";
 import { keccak256 } from "ethers/lib/utils";
+import { Provider } from "@ethersproject/providers";
 
 import {
   AssetId,
@@ -14,8 +15,8 @@ import {
   GeoSpatialRegistry__factory,
   GsrPlacementEvent,
   assetTypes,
+  placementEvent,
 } from "@gsr/sdk";
-import { Provider } from "@ethersproject/providers";
 
 const tokenId = BigNumber.from(1);
 
@@ -96,7 +97,7 @@ describe("GeoSpatialRegistry", () => {
       assetType: "ERC721",
       chainId,
       contractAddress: tokenContract.address,
-      tokenId,
+      tokenId: tokenId.toString(),
     };
 
     encodedAssetId = verifier.encodeAssetId(fullAssetId);
@@ -199,14 +200,12 @@ describe("GeoSpatialRegistry", () => {
             return gsr.interface.parseLog(log);
           });
           const event = logs[0] as any as GsrPlacementEvent;
-          const gsrPlacement = event.args;
+          const placement = placementEvent.decodeGsrPlacementEvent(
+            event,
+            verifier
+          );
 
-          expect(
-            await verifier.verifyAssetOwnership(
-              gsrPlacement.fullAssetId,
-              gsrPlacement.publisher
-            )
-          ).to.eq(false);
+          expect(await verifier.verifyAssetOwnership(placement)).to.eq(false);
         });
       });
     });
@@ -232,14 +231,12 @@ describe("GeoSpatialRegistry", () => {
             return gsr.interface.parseLog(log);
           });
           const event = logs[0] as any as GsrPlacementEvent;
-          const gsrPlacement = event.args;
+          const placement = placementEvent.decodeGsrPlacementEvent(
+            event,
+            verifier
+          );
 
-          expect(
-            await verifier.verifyAssetOwnership(
-              gsrPlacement.fullAssetId,
-              gsrPlacement.publisher
-            )
-          ).to.eq(true);
+          expect(await verifier.verifyAssetOwnership(placement)).to.eq(true);
         });
       });
 
@@ -260,14 +257,12 @@ describe("GeoSpatialRegistry", () => {
             return gsr.interface.parseLog(log);
           });
           const event = logs[0] as any as GsrPlacementEvent;
-          const gsrPlacement = event.args;
+          const placement = placementEvent.decodeGsrPlacementEvent(
+            event,
+            verifier
+          );
 
-          expect(
-            await verifier.verifyAssetOwnership(
-              gsrPlacement.fullAssetId,
-              gsrPlacement.publisher
-            )
-          ).to.eq(false);
+          expect(await verifier.verifyAssetOwnership(placement)).to.eq(false);
         });
       });
     });
@@ -614,7 +609,7 @@ describe("GeoSpatialRegistry", () => {
           assetType: "ERC721",
           chainId,
           contractAddress: tokenContract.address,
-          tokenId: secondaryTokenId,
+          tokenId: secondaryTokenId.toString(),
         };
 
         encodedSecondaryAssetId = verifier.encodeAssetId(

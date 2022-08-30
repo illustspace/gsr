@@ -1,17 +1,22 @@
-import { BigNumberish } from "@ethersproject/bignumber";
-import { defaultAbiCoder, Result } from "@ethersproject/abi";
+import { keccak256 } from "@ethersproject/keccak256";
+import { toUtf8Bytes, toUtf8String } from "@ethersproject/strings";
+import { defaultAbiCoder } from "@ethersproject/abi";
 
 import { ProviderKeys } from "~/provider";
 
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
+import { EncodedAssetId } from "./AssetTypeVerifierMethods";
+import { GsrPlacement } from "~/placement-event";
 
 /** Decoded AssetId for an EVM ERC 1155 1:1 NFT */
-export interface Fa2AssetId {
+export type Fa2AssetId = {
   assetType: "FA2";
   chainId: number;
   contractAddress: string;
-  tokenId: BigNumberish;
-}
+  tokenId: string;
+};
+
+const tezosService = keccak256(toUtf8Bytes("TEZOS"));
 
 export class Fa2Verifier extends BaseAssetTypeVerifier {
   single = false;
@@ -21,44 +26,40 @@ export class Fa2Verifier extends BaseAssetTypeVerifier {
     super();
   }
 
-  abis = {
-    collectionId: ["uint256", "address"],
-    itemId: ["uint256"],
-  };
-
-  fullyDecodeAssetId(collectionId: Result, itemId: Result): Fa2AssetId {
-    const [chainId, contractAddress] = collectionId;
-    const [assetTokenId] = itemId;
-
+  decodeAssetId(_assetId: EncodedAssetId): Fa2AssetId {
     return {
       assetType: this.assetType,
-      chainId: chainId.toNumber(),
-      contractAddress,
-      tokenId: assetTokenId,
+      chainId: 1,
+      contractAddress: "TODO",
+      tokenId: "TODO",
     };
   }
 
-  encodeAssetId(assetId: Fa2AssetId) {
-    const encodedCollectionId = defaultAbiCoder.encode(this.abis.collectionId, [
-      assetId.chainId,
-      assetId.contractAddress,
-    ]);
-    const encodedItemId = defaultAbiCoder.encode(this.abis.itemId, [
-      assetId.tokenId,
-    ]);
-
+  encodeAssetId(_assetId: Fa2AssetId) {
     return {
       assetType: this.encodedAssetType,
-      collectionId: encodedCollectionId,
-      itemId: encodedItemId,
+      collectionId: "TODO",
+      itemId: "TODO",
     };
   }
 
-  async verifyDecodedAssetOwnership(
-    _assetId: Fa2AssetId,
-    _publisherAddress: string
-  ): Promise<boolean> {
-    // TODO
-    throw new Error("no implemented");
+  async verifyAssetOwnership(placement: GsrPlacement): Promise<boolean> {
+    if (!placement.linkedAccount) return false;
+
+    const [linkedService, linkedAccount] = defaultAbiCoder.decode(
+      ["bytes32", "bytes"],
+      placement.linkedAccount
+    );
+
+    if (linkedService !== tezosService) return false;
+
+    const tezosAddress = toUtf8String(linkedAccount);
+    // eslint-disable-next-line no-console
+    console.log(tezosAddress);
+
+    // TODO: get the proof from the ALR and verify the signature against the tezosAddress
+
+    // TODO: verify the actual ownership of the asset on Tezos
+    throw new Error("not implemented");
   }
 }

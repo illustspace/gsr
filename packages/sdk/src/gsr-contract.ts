@@ -63,10 +63,7 @@ export class GsrContract {
   }
 
   verifyPlacement(placement: GsrPlacement): Promise<boolean> {
-    return this.verifier.verifyAssetOwnership(
-      placement.decodedAssetId,
-      placement.publisher
-    );
+    return this.verifier.verifyAssetOwnership(placement);
   }
 
   async placeOf(

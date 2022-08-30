@@ -1,7 +1,6 @@
-import { PrismaClient } from "@prisma/client";
 import { GsrContract } from "@gsr/sdk";
 
-const prisma = new PrismaClient();
+import { prisma } from "./prisma";
 
 const gsr = new GsrContract({});
 
@@ -12,4 +11,6 @@ gsr.watchEvents(async (placement) => {
 
   // prisma
   prisma.placement.create({ data: placement });
+
+  // TODO: Call webhooks
 });

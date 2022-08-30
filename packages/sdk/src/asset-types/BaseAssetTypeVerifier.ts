@@ -1,60 +1,34 @@
-import { defaultAbiCoder, Result } from "@ethersproject/abi";
+import { defaultAbiCoder } from "@ethersproject/abi";
 import { keccak256 } from "@ethersproject/keccak256";
 import { toUtf8Bytes } from "@ethersproject/strings";
-import { DecodedAssetId } from "./AssetTypeVerifier";
+import { GsrPlacement } from "~/placement-event";
+import type { DecodedAssetId } from "./AssetTypeVerifier";
 import {
   AssetTypeVerifierMethods,
-  AnyDecodedAssetId,
   EncodedAssetId,
 } from "./AssetTypeVerifierMethods";
 
 /**
- * An encoded version of an AssetId, with the assetType, collectionId, and itemId
- * abiEncoded to be sent to the blockchain.
+ * Base class for asset type verifiers. Implement this to add a new asset type.
  */
-export interface PartiallyDecodedAssetId {
-  assetType: string;
-  collectionId: Result;
-  itemId: Result;
-}
-
 export abstract class BaseAssetTypeVerifier extends AssetTypeVerifierMethods {
   abstract assetType: string;
   private cachedEncodedAssetType?: string;
   abstract single: boolean;
-
-  abstract abis: {
-    collectionId: string[];
-    itemId: string[];
-  };
 
   get encodedAssetType(): string {
     this.cachedEncodedAssetType ||= keccak256(toUtf8Bytes(this.assetType));
     return this.cachedEncodedAssetType;
   }
 
-  decodeAssetId(assetId: EncodedAssetId): AnyDecodedAssetId {
-    const decodedCollectionId = defaultAbiCoder.decode(
-      this.abis.collectionId,
-      assetId.collectionId
-    );
-    const decodedItemId = defaultAbiCoder.decode(
-      this.abis.itemId,
-      assetId.itemId
-    );
+  abstract decodeAssetId(assetId: EncodedAssetId): DecodedAssetId;
 
-    return this.fullyDecodeAssetId(decodedCollectionId, decodedItemId);
-  }
+  abstract encodeAssetId(assetId: DecodedAssetId): EncodedAssetId;
 
-  protected abstract fullyDecodeAssetId(
-    collectionId: Result,
-    itemId: Result
-  ): AnyDecodedAssetId;
-
-  abstract encodeAssetId(assetId: AnyDecodedAssetId): EncodedAssetId;
+  abstract verifyAssetOwnership(placement: GsrPlacement): Promise<boolean>;
 
   /** Hash a decoded AssetId to a simple AssetId used for GSR queries. */
-  hashAssetId(assetId: AnyDecodedAssetId): string {
+  hashAssetId(assetId: DecodedAssetId): string {
     const encodedAssetId = this.encodeAssetId(assetId);
     return this.hashEncodedAssetId(encodedAssetId);
   }
@@ -72,16 +46,4 @@ export abstract class BaseAssetTypeVerifier extends AssetTypeVerifierMethods {
       )
     );
   }
-
-  verifyAssetOwnership(
-    decodedAssetId: DecodedAssetId,
-    publisherAddress: string
-  ): Promise<boolean> {
-    return this.verifyDecodedAssetOwnership(decodedAssetId, publisherAddress);
-  }
-
-  protected abstract verifyDecodedAssetOwnership(
-    assetId: AnyDecodedAssetId,
-    publisherAddress: string
-  ): Promise<boolean>;
 }

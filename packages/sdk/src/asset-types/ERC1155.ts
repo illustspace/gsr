@@ -1,11 +1,12 @@
 import { Contract } from "@ethersproject/contracts";
 import { Provider } from "@ethersproject/providers";
-import { BigNumberish } from "@ethersproject/bignumber";
-import { defaultAbiCoder, Result } from "@ethersproject/abi";
+import { defaultAbiCoder } from "@ethersproject/abi";
 
 import { getChainProvider, ProviderKeys } from "~/provider";
 
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
+import { EncodedAssetId } from "./AssetTypeVerifierMethods";
+import { GsrPlacement } from "~/placement-event";
 
 const ERC_1155_ABI = [
   {
@@ -35,12 +36,18 @@ const ERC_1155_ABI = [
 ];
 
 /** Decoded AssetId for an EVM ERC 1155 1:1 NFT */
-export interface Erc1155AssetId {
+export type Erc1155AssetId = {
   assetType: "ERC1155";
   chainId: number;
   contractAddress: string;
-  tokenId: BigNumberish;
-}
+  tokenId: string;
+  itemNumber: string;
+};
+
+const assetTypeAbis = {
+  collectionId: ["uint256", "address"],
+  itemId: ["uint256", "uint256"],
+};
 
 export class Erc1155Verifier extends BaseAssetTypeVerifier {
   single = false;
@@ -55,30 +62,34 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
     super();
   }
 
-  abis = {
-    collectionId: ["uint256", "address"],
-    itemId: ["uint256"],
-  };
+  decodeAssetId(assetId: EncodedAssetId): Erc1155AssetId {
+    const [chainId, contractAddress] = defaultAbiCoder.decode(
+      assetTypeAbis.collectionId,
+      assetId.collectionId
+    );
 
-  fullyDecodeAssetId(collectionId: Result, itemId: Result): Erc1155AssetId {
-    const [chainId, contractAddress] = collectionId;
-    const [assetTokenId] = itemId;
+    const [tokenId, itemNumber] = defaultAbiCoder.decode(
+      assetTypeAbis.itemId,
+      assetId.collectionId
+    );
 
     return {
       assetType: this.assetType,
       chainId: chainId.toNumber(),
       contractAddress,
-      tokenId: assetTokenId,
+      tokenId,
+      itemNumber,
     };
   }
 
   encodeAssetId(assetId: Erc1155AssetId) {
-    const encodedCollectionId = defaultAbiCoder.encode(this.abis.collectionId, [
-      assetId.chainId,
-      assetId.contractAddress,
-    ]);
-    const encodedItemId = defaultAbiCoder.encode(this.abis.itemId, [
+    const encodedCollectionId = defaultAbiCoder.encode(
+      assetTypeAbis.collectionId,
+      [assetId.chainId, assetId.contractAddress]
+    );
+    const encodedItemId = defaultAbiCoder.encode(assetTypeAbis.itemId, [
       assetId.tokenId,
+      assetId.itemNumber,
     ]);
 
     return {
@@ -88,28 +99,28 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
     };
   }
 
-  async verifyDecodedAssetOwnership(
-    assetId: Erc1155AssetId,
-    publisherAddress: string
-  ): Promise<boolean> {
+  async verifyAssetOwnership({
+    decodedAssetId,
+    publisher,
+  }: GsrPlacement): Promise<boolean> {
     const provider =
-      this.customProviders[assetId.chainId] ||
-      getChainProvider(assetId.chainId, this.providerKeys);
+      this.customProviders[decodedAssetId.chainId] ||
+      getChainProvider(decodedAssetId.chainId, this.providerKeys);
 
     const contract = new Contract(
-      assetId.contractAddress,
+      decodedAssetId.contractAddress,
       ERC_1155_ABI,
       provider
     );
 
     // Get the owner, returning '' if the asset does not exist.
     const owner = await contract
-      .ownerOf(assetId.tokenId)
+      .ownerOf(decodedAssetId.tokenId)
       .catch((error: any) => {
         console.error(error);
         return "";
       });
 
-    return publisherAddress.toLowerCase() === owner.toLowerCase();
+    return publisher.toLowerCase() === owner.toLowerCase();
   }
 }

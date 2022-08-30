@@ -2,16 +2,18 @@ import { ProviderKeys } from "~/provider";
 
 import { Erc721AssetId, Erc721Verifier } from "./ERC721";
 import { Erc1155AssetId, Erc1155Verifier } from "./ERC1155";
+import { Fa2Verifier, Fa2AssetId } from "./FA2";
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import {
   AssetTypeVerifierMethods,
   EncodedAssetId,
 } from "./AssetTypeVerifierMethods";
+import { GsrPlacement } from "~/placement-event";
 
 /** Add Verifiers here to make them available for use */
-const verifierClasses = [Erc721Verifier, Erc1155Verifier];
+const verifierClasses = [Erc721Verifier, Erc1155Verifier, Fa2Verifier];
 
-export type DecodedAssetId = Erc721AssetId | Erc1155AssetId;
+export type DecodedAssetId = Erc721AssetId | Erc1155AssetId | Fa2AssetId;
 export type DecodedAssetType = DecodedAssetId["assetType"];
 
 /**
@@ -55,12 +57,9 @@ export class AssetTypeVerifier extends AssetTypeVerifierMethods {
     return verifier.hashEncodedAssetId(encodedAssetId);
   }
 
-  verifyAssetOwnership(
-    decodedAssetId: DecodedAssetId,
-    publisherAddress: string
-  ): Promise<boolean> {
-    const verifier = this.getVerifier(decodedAssetId.assetType);
-    return verifier.verifyAssetOwnership(decodedAssetId, publisherAddress);
+  verifyAssetOwnership(placement: GsrPlacement): Promise<boolean> {
+    const verifier = this.getVerifier(placement.decodedAssetId.assetType);
+    return verifier.verifyAssetOwnership(placement);
   }
 
   private getVerifier(

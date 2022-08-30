@@ -6,6 +6,7 @@ export * as assetTypes from "./asset-types";
 export * from "./gsr-contract";
 export * from "./typechain/GeoSpatialRegistry";
 export * from "./typechain/factories/GeoSpatialRegistry__factory";
+export * as placementEvent from "./placement-event";
 
 export type {
   DecodedAssetId as AssetId,

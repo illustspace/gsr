@@ -1,4 +1,5 @@
-import { DecodedAssetId } from "./AssetTypeVerifier";
+import { GsrPlacement } from "~/placement-event";
+import type { DecodedAssetId } from "./AssetTypeVerifier";
 
 /**
  * An encoded version of an AssetId, with the assetType, collectionId, and itemId
@@ -10,17 +11,13 @@ export interface EncodedAssetId {
   itemId: string;
 }
 
-export interface AnyDecodedAssetId {
-  assetType: string;
-}
-
 export abstract class AssetTypeVerifierMethods {
-  abstract decodeAssetId(assetId: EncodedAssetId): AnyDecodedAssetId;
+  abstract decodeAssetId(assetId: EncodedAssetId): DecodedAssetId;
 
-  abstract encodeAssetId(assetId: AnyDecodedAssetId): EncodedAssetId;
+  abstract encodeAssetId(assetId: DecodedAssetId): EncodedAssetId;
 
   /** Hash a decoded AssetId to a simple AssetId used for GSR queries. */
-  abstract hashAssetId(assetId: AnyDecodedAssetId): string;
+  abstract hashAssetId(assetId: DecodedAssetId): string;
 
   /** Hash an EncodedAssetId to a simple AssetId used for GSR queries. */
   abstract hashEncodedAssetId({
@@ -29,8 +26,5 @@ export abstract class AssetTypeVerifierMethods {
     itemId,
   }: EncodedAssetId): string;
 
-  abstract verifyAssetOwnership(
-    decodedAssetId: DecodedAssetId,
-    publisherAddress: string
-  ): Promise<boolean>;
+  abstract verifyAssetOwnership(placement: GsrPlacement): Promise<boolean>;
 }

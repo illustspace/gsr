@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "include": ["./src"],
+  "compilerOptions": {
+    "types": ["node", "jest"],
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "target": "es2018",
+    "declaration": true,
+    "outDir": "dist",
+    "baseUrl": "src",
+    "paths": {
+      "~/*": ["./*"]
+    }
+  }
+}

@@ -7,7 +7,6 @@ pragma abicoder v2;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/security/Pausable.sol";
-import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 // import "hardhat/console.sol";
 
 import "./meta-transactions/ContentMixin.sol";
@@ -78,6 +77,8 @@ contract GeoSpatialRegistry is
 
     /** Record the current location of an NFT. */
     struct Placement {
+        /// @dev an account on another service that the publisher also controls, which owns the asset.
+        bytes linkedPublisher;
         /// @dev True if this publisher has published a placement for this piece
         bool published;
         /// @dev Geohash of the placement location
@@ -88,6 +89,7 @@ contract GeoSpatialRegistry is
         string sceneUri;
         /// @dev When the asset was placed
         uint256 placedAt;
+        /// @dev When the asset is valid
         TimeRange timeRange;
     }
 

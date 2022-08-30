@@ -1,10 +1,24 @@
 import express from "express";
+import "./indexer";
+
+import { prisma } from "./prisma";
 
 const app = express();
 const port = 3000;
 
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+app.get("/", async (req, res) => {
+  const placement = await prisma.placement.findFirst({
+    where: req.body,
+    orderBy: {
+      placedAt: "desc",
+    },
+  });
+
+  if (placement) {
+    res.status(200).send(placement);
+  } else {
+    res.status(404).send(placement);
+  }
 });
 
 app.listen(port, () => {

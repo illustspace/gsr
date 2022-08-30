@@ -1,4 +1,5 @@
-import { AssetTypeVerifier, DecodedAssetId } from "./asset-types";
+import { DecodedAssetId } from "./asset-types";
+import { AssetTypeVerifierMethods } from "./asset-types/AssetTypeVerifierMethods";
 import { bitsToGeohash } from "./geohash";
 import { GsrPlacementEvent } from "./typechain/GeoSpatialRegistry";
 
@@ -14,11 +15,13 @@ export interface GsrPlacement {
   timeRangeStart: Date;
   timeRangeEnd: Date;
   blockNumber: number;
+  // TODO: add this to the GSR
+  linkedAccount?: string;
 }
 
 export function decodeGsrPlacementEvent(
   event: GsrPlacementEvent,
-  verifier: AssetTypeVerifier
+  verifier: AssetTypeVerifierMethods
 ): GsrPlacement {
   return {
     assetId: event.args.assetId,
