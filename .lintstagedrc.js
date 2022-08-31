@@ -3,6 +3,6 @@ module.exports = {
   "*.{js,html,css,md,json,yml}": "yarn prettier --write",
   "*.sol": [
     "prettier --write",
-    "yarn workspace contracts solhint --ignore-path .solhintignore --fix",
+    "yarn ws contracts solhint --ignore-path .solhintignore --fix",
   ],
 };

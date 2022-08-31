@@ -101,6 +101,7 @@ contract GeoSpatialRegistry is
     /// @param initialName the name of the contract
     constructor(string memory initialName) {
         name = initialName;
+        _initializeEIP712(initialName);
     }
 
     /** Place a piece according to a publisher. */

@@ -20,6 +20,7 @@ import {
   GsrPlacementEvent,
 } from "@gsr/sdk";
 import { Provider } from "@ethersproject/providers";
+import { getTransactionData } from "./helpers/metaTransactions";
 
 const tokenId = BigNumber.from(1);
 
@@ -662,6 +663,32 @@ describe("GeoSpatialRegistry", () => {
           }
         );
       });
+    });
+  });
+
+  describe("metaTransactions", () => {
+    it("accepts metaTransactions", async () => {
+      // user1.address creates a gasless transaction to send to user2
+      const { r, s, v, functionSignature } = await getTransactionData(
+        gsr,
+        nftOwner,
+        "place",
+        [
+          encodedAssetId,
+          { geohash: location, bitPrecision: locationBitPrecision },
+          timeRange,
+        ]
+      );
+
+      // a different user relays the metaTransaction
+      await gsr
+        .connect(user)
+        .executeMetaTransaction(nftOwner.address, functionSignature, r, s, v);
+
+      // the placement is indexed under the signing user's address
+      const placement = await gsr.placeOf(assetId, nftOwner.address);
+
+      expect(placement.geohash).to.eq(location);
     });
   });
 
