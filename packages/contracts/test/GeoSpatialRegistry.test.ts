@@ -692,6 +692,18 @@ describe("GeoSpatialRegistry", () => {
     });
   });
 
+  describe("ownable", () => {
+    it("is owned by the deployer", async () => {
+      expect(await gsr.owner()).to.eq(admin.address);
+    });
+
+    it("can transfer ownership", async () => {
+      await gsr.connect(admin).transferOwnership(user.address);
+
+      expect(await gsr.owner()).to.eq(user.address);
+    });
+  });
+
   describe("pausing", () => {
     it("cannot place when paused", async () => {
       await gsr.connect(admin).pause();
