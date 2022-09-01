@@ -4,5 +4,5 @@ import { BigNumber } from "@ethersproject/bignumber";
 export interface PlaceOf {
   geohash: BigNumber;
   bitPrecision: number;
-  startTime: BigNumber;
+  startTime: Date;
 }

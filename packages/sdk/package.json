@@ -12,8 +12,10 @@
   "module": "dist/gsr.esm.js",
   "types": "dist/gsr.d.ts",
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "@types/lodash": "^4.14.184",
     "@types/ngeohash": "^0.6.4",
+    "axios": "^0.27.2",
     "lodash": "^4.17.21",
     "ngeohash": "^0.6.3"
   },

@@ -1,17 +1,35 @@
-import { Contract } from "@ethersproject/contracts";
+import { BigNumber } from "@ethersproject/bignumber";
+import { Contract, ContractReceipt } from "@ethersproject/contracts";
 import { Wallet } from "@ethersproject/wallet";
-import { GsrContract } from "@gsr/sdk";
-import EthWallet from "ethereumjs-wallet";
+import { bitsToGeohash, GsrContract, assetTypes } from "@gsr/sdk";
+import { PlaceOf } from "@gsr/sdk/dist/place";
+// import EthWallet from "ethereumjs-wallet";
+import axios from "axios";
+
+import { getDefaultProvider, Provider } from "@ethersproject/providers";
+import { abi as testTokenAbi } from "../../contracts/artifacts/contracts/test/Erc721.sol/TestToken.json";
 
 const chainId = 1337;
 
+const tokenAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
+const testPrivateKey =
+  "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80";
+
 describe("", () => {
-  let owner1: EthWallet;
+  // let owner1: EthWallet;
   let gsr: GsrContract;
   let signer: Wallet;
+  let provider: Provider;
+  let erc721: Contract;
+
+  const getTimestampOfReceipt = async (receipt: ContractReceipt) => {
+    const { blockHash } = receipt;
+    const block = await gsr.gsrProvider.getBlock(blockHash);
+    return block.timestamp;
+  };
 
   beforeAll(() => {
-    owner1 = EthWallet.generate();
+    // owner1 = EthWallet.fromPrivateKey("");
     gsr = new GsrContract(
       {},
       {
@@ -19,33 +37,86 @@ describe("", () => {
       }
     );
 
-    signer = new Wallet(owner1.getPrivateKey());
+    provider = getDefaultProvider("http://127.0.0.1:8545/");
+
+    signer = new Wallet(testPrivateKey, provider);
+
+    erc721 = new Contract(tokenAddress, testTokenAbi, gsr.gsrProvider);
   });
 
-  it("", async () => {
-    const erc721 = new Contract("TODO", [], signer);
+  beforeEach(async () => {
+    await erc721.connect(signer).mint(signer.address, BigNumber.from(1));
+  });
 
-    await erc721.mint(owner1.getAddress(), 1);
+  afterEach(async () => {
+    await erc721.connect(signer).burn(BigNumber.from(1));
+  });
 
-    await gsr.place(
+  it("places and indexes", async () => {
+    const decodedAssetId: assetTypes.DecodedAssetId = {
+      assetType: "ERC721",
+      chainId,
+      contractAddress: erc721.address,
+      tokenId: "1",
+    };
+
+    const timeRangeEnd = Math.floor(new Date().getTime() / 1000) + 10_000;
+
+    const tx = await gsr.place(
       signer,
+      decodedAssetId,
       {
-        assetType: "ERC721",
-        chainId,
-        contractAddress: erc721.address,
-        tokenId: 1,
-      },
-      {
-        geohash: 1,
+        geohash: 0b11111,
         bitPrecision: 5,
       },
       {
         sceneUri: "https://example.com/scene.json",
         timeRange: {
           start: 0,
-          end: new Date().getTime() / 1000 + 10_000,
+          end: timeRangeEnd,
         },
       }
     );
+
+    const receipt = await tx.wait();
+    const timestamp = await getTimestampOfReceipt(receipt);
+
+    const placeOf = await gsr.placeOf(decodedAssetId, signer.address);
+
+    const expectedPlaceOf: PlaceOf = {
+      bitPrecision: 5,
+      geohash: BigNumber.from(0b11111),
+      startTime: new Date(timestamp * 1000),
+    };
+    expect(placeOf).toEqual(expectedPlaceOf);
+
+    await wait(4_000);
+
+    const { data } = await axios.get("http://localhost:3000/placement", {
+      params: decodedAssetId,
+    });
+
+    const expectedResponse = {
+      id: data.id,
+      assetId: new assetTypes.Erc721Verifier({}).hashAssetId(decodedAssetId),
+      blockNumber: receipt.blockNumber,
+      decodedAssetId,
+      geohash: bitsToGeohash(0b11111, 5),
+      placedAt: new Date(timestamp * 1000).toISOString(),
+      placedByOwner: true,
+      published: true,
+      publisher: signer.address,
+      sceneUri: "https://example.com/scene.json",
+      timeRangeEnd: new Date(timeRangeEnd * 1000).toISOString(),
+      timeRangeStart: new Date(0).toISOString(),
+      parentAssetId:
+        "0x0000000000000000000000000000000000000000000000000000000000000000",
+    };
+
+    expect(data).toEqual(expectedResponse);
   });
 });
+
+const wait = (timeout = 1000) => {
+  return new Promise((resolve) => setTimeout(resolve, timeout));
+};

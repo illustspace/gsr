@@ -18,7 +18,7 @@ model Placement {
   decodedAssetId Json
 
   publisher String  @db.VarChar(255)
-  published Boolean
+  published Boolean @default(false)
 
   // base32 encoded geohash
   geohash String @db.VarChar(255)
@@ -30,5 +30,13 @@ model Placement {
   timeRangeStart DateTime
   timeRangeEnd   DateTime
 
-  blockNumber Int
+  blockNumber   Int
+  // If true, validated as placed by owner.
+  placedByOwner Boolean @default(false)
+}
+
+// Holds a single row with service-side state information like the last block processed.
+model ServiceState {
+  id              Int @id
+  lastBlockNumber Int @default(0)
 }

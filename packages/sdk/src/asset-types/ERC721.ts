@@ -70,7 +70,7 @@ export class Erc721Verifier extends BaseAssetTypeVerifier {
       assetType: this.assetType,
       chainId: chainId.toNumber(),
       contractAddress,
-      tokenId,
+      tokenId: tokenId.toString(),
     };
   }
 

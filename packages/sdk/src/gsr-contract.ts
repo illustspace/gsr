@@ -27,24 +27,29 @@ export interface GsrContractOpts {
 export class GsrContract {
   public contract: GeoSpatialRegistry;
   private verifier: AssetTypeVerifier;
+  public gsrProvider: Provider;
 
   constructor(
     providerKeys: ProviderKeys,
     { chainId = 137, customGsrProvider, customGsrAddress }: GsrContractOpts = {}
   ) {
-    const gsrProvider =
+    this.gsrProvider =
       customGsrProvider || getChainProvider(chainId, providerKeys);
 
     this.verifier = new AssetTypeVerifier(providerKeys);
 
     this.contract = GeoSpatialRegistry__factory.connect(
       customGsrAddress || GsrAddress[chainId],
-      gsrProvider
+      this.gsrProvider
     );
   }
 
   /** Watch for GSR events */
-  watchEvents(onEvent: (event: GsrPlacement) => void): () => void {
+  watchEvents(
+    onEvent: (event: GsrPlacement) => void,
+    onBlock?: (blockNumber: number) => void,
+    sinceBlockNumber?: number
+  ): () => void {
     const listener: TypedListener<GsrPlacementEvent> = (...args) => {
       const event = args[args.length - 1] as GsrPlacementEvent;
       const placement = decodeGsrPlacementEvent(event, this.verifier);
@@ -54,11 +59,30 @@ export class GsrContract {
 
     const placementEvent = this.contract.filters.GsrPlacement();
 
-    // TODO
+    // If requesting historical data, start fetching that as well as starting the listener.
+    if (sinceBlockNumber) {
+      this.contract
+        .queryFilter(placementEvent, sinceBlockNumber)
+        .then((events) => {
+          events.forEach((event) => {
+            const placement = decodeGsrPlacementEvent(event, this.verifier);
+
+            onEvent(placement);
+          });
+        });
+    }
+
+    if (onBlock) {
+      this.gsrProvider.on("block", onBlock);
+    }
+
     this.contract.on(placementEvent, listener);
 
     return () => {
       this.contract.off(placementEvent, listener);
+      if (onBlock) {
+        this.contract.off("block", onBlock);
+      }
     };
   }
 
@@ -71,7 +95,13 @@ export class GsrContract {
     publisher: string
   ): Promise<PlaceOf | null> {
     const assetId = this.verifier.hashAssetId(decodedAssetId);
-    return this.contract.placeOf(assetId, publisher);
+    const result = await this.contract.placeOf(assetId, publisher);
+
+    return {
+      geohash: result.geohash,
+      bitPrecision: result.bitPrecision,
+      startTime: new Date(result.startTime.toNumber() * 1000),
+    };
   }
 
   async sceneURI(

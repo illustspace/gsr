@@ -9,7 +9,11 @@ contract TestToken is ERC721, Ownable {
     // solhint-disable-next-line no-empty-blocks
     constructor() ERC721("MyToken", "MTK") {}
 
-    function mint(address to, uint256 tokenId) public onlyOwner {
+    function mint(address to, uint256 tokenId) public {
         _safeMint(to, tokenId);
+    }
+
+    function burn(uint256 tokenId) public {
+        _burn(tokenId);
     }
 }

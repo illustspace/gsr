@@ -3,7 +3,8 @@
   "scripts": {
     "serve": "npm run build && node build/index.js",
     "start": "nodemon",
-    "build": "rimraf ./build && tsc"
+    "build": "rimraf ./build && tsc",
+    "migrate": "prisma migrate dev --name"
   },
   "dependencies": {
     "@gsr/sdk": "^0.0.0",
