@@ -5,8 +5,22 @@ name: Deploy to staging from develop
       - develop
 
 jobs:
-  set-up-repo:
+  build-and-test:
     runs-on: ubuntu-20.04
+    services:
+      # Set up postgres
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_PASSWORD: postgres
+        # Set health checks to wait until postgres has started
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: "Check out code"
         if: ${{ !env.ACT }}
@@ -17,4 +31,27 @@ jobs:
 
       - run: yarn build
       - run: yarn lint
-      - run: yarn test
+      - name: Unit Tests
+        run: yarn test
+
+      # ===
+      # E2E Test
+      # ===
+
+      # Start local blockchain
+      - name: Start blockchain
+        run: yarn ws contracts start &
+
+      # Start indexer
+      - name: Start indexer
+        run: yarn ws indexer start &
+        env:
+          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
+          GSR_CHAIN_ID: 1337
+
+      - name: wait for services
+        run: sleep 20s
+
+      # Run e2e test once services are started
+      - name: E2E Tests
+        run: yarn ws e2e test:e2e

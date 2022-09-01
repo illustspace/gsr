@@ -2,7 +2,7 @@ name: Check PR
 "on": pull_request
 
 jobs:
-  set-up-repo:
+  build-and-test:
     runs-on: ubuntu-20.04
     services:
       # Set up postgres
@@ -37,15 +37,18 @@ jobs:
 
       # Start local blockchain
       - name: Start blockchain
-        run: yarn ws contracts start & wait-on http://locahost:8545
+        run: yarn ws contracts start &
 
       # Start indexer
       - name: Start indexer
-        run: yarn ws indexer start & wait-on http://locahost:3000
+        run: yarn ws indexer start &
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
           GSR_CHAIN_ID: 1337
 
-      # Run e2e test
+      - name: wait for services
+        run: sleep 20s
+
+      # Run e2e test once services are started
       - name: E2E Tests
         run: yarn ws e2e test:e2e
