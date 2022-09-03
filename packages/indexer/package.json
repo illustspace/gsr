@@ -1,11 +1,18 @@
 {
   "name": "@gsr/indexer",
+  "version": "0.0.0",
   "scripts": {
     "start": "nodemon",
     "serve": "npm run build && node build/index.js",
     "build": "rimraf ./build && tsc"
   },
   "dependencies": {
+    "@ethersproject/abi": "^5.4.1",
+    "@ethersproject/bignumber": "^5.4.1",
+    "@ethersproject/contracts": "^5.4.1",
+    "@ethersproject/keccak256": "^5.4.0",
+    "@ethersproject/providers": "^5.4.5",
+    "@ethersproject/strings": "^5.4.0",
     "@gsr/db": "^0.0.0",
     "@gsr/sdk": "^0.0.0",
     "@types/node": "^15.0.2"
