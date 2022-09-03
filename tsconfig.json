@@ -15,7 +15,6 @@
     "noImplicitReturns": true,
     "allowJs": true,
     "noEmit": true,
-    "jsx": "react",
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },

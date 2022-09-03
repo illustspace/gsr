@@ -2,7 +2,7 @@ import { BigNumber } from "@ethersproject/bignumber";
 import { Contract, ContractReceipt } from "@ethersproject/contracts";
 import { Wallet } from "@ethersproject/wallet";
 import { bitsToGeohash, GsrContract, assetTypes } from "@gsr/sdk";
-import { PlaceOf } from "@gsr/sdk/dist/place";
+import { PlaceOf } from "@gsr/sdk/lib/esm/place";
 // import EthWallet from "ethereumjs-wallet";
 import axios from "axios";
 

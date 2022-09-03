@@ -1,0 +1,30 @@
+{
+  "name": "@gsr/db",
+  "version": "0.0.0",
+  "author": "Illust",
+  "license": "MIT",
+  "main": "lib/cjs/db.js",
+  "module": "lib/esm/db.js",
+  "files": [
+    "lib/"
+  ],
+  "scripts": {
+    "start": "npm-run-all --parallel start:*",
+    "start:tsc": "tsc --watch",
+    "start:alias": "tsc-alias -p tsconfig.json --watch --silent",
+    "build": "npm-run-all -p 'build:*'",
+    "build:cjs": "rimraf dist/cjs && tsc -p tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
+    "build:esm": "rimraf dist/esm && tsc && tsc-alias -p tsconfig.json",
+    "migrate": "prisma migrate dev --name"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.2.1",
+    "prisma": "^4.2.1"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "rimraf": "^3.0.2",
+    "tsc-alias": "^1.7.0",
+    "typescript": "^4.7.4"
+  }
+}

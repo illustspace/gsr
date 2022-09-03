@@ -1,44 +1,55 @@
-import express from "express";
+/* eslint-disable no-console */
+import { GsrChainId, GsrContract } from "@gsr/sdk";
+import { prisma } from "@gsr/db";
 
-import { startIndexer } from "./indexer";
-import { prisma } from "./prisma";
-
-const app = express();
-const port = 3000;
-
-app.get("/placement", async (req, res) => {
-  const query = {
-    assetType: req.query.assetType,
-    chainId: Number(req.query.chainId),
-    contractAddress: req.query.contractAddress,
-    tokenId: req.query.tokenId,
-  };
-
-  try {
-    const placement = await prisma.placement.findFirst({
-      where: {
-        placedByOwner: true,
-        decodedAssetId: { equals: query },
-      },
-      orderBy: {
-        placedAt: "desc",
-      },
-    });
-
-    if (placement) {
-      res.status(200).send(placement);
-    } else {
-      res.status(404).send("no placement");
+/** Start the indexer when the server starts. */
+export const startIndexer = async () => {
+  const gsr = new GsrContract(
+    {},
+    {
+      chainId: Number(process.env.GSR_CHAIN_ID) as GsrChainId,
     }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error);
-  }
-});
+  );
 
-app.listen(port, () => {
-  // eslint-disable-next-line no-console
-  console.log(`Example app listening on port ${port}`);
-});
+  const sinceBlockNumber = await getLastBlockedProcessed();
 
-startIndexer();
+  console.log("Starting indexer from block", sinceBlockNumber);
+
+  gsr.watchEvents(
+    async (placement) => {
+      const placedByOwner = await gsr.verifyPlacement(placement);
+
+      console.log("placement", placement.assetId, placedByOwner);
+
+      const finalPlacement = {
+        ...placement,
+        placedByOwner,
+      };
+
+      // prisma
+      return prisma.placement.create({ data: finalPlacement });
+
+      // TODO: Call webhooks
+    },
+    async (lastBlockNumber: number) => {
+      console.log("block", lastBlockNumber);
+      const result = await prisma.serviceState.upsert({
+        where: { id: 0 },
+        create: { id: 0, lastBlockNumber },
+        update: { lastBlockNumber },
+      });
+      console.log("result", result);
+    },
+    sinceBlockNumber
+  );
+};
+
+const getLastBlockedProcessed = async () => {
+  const serviceState = await prisma.serviceState.findUnique({
+    where: { id: 0 },
+  });
+
+  if (!serviceState) return undefined;
+
+  return serviceState.lastBlockNumber;
+};

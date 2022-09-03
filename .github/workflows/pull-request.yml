@@ -26,8 +26,12 @@ jobs:
       - name: Setup Deps
         uses: ./.github/actions/setup
 
-      - run: yarn build
-      - run: yarn lint
+      - name: Build
+        run: yarn build
+
+      - name: Lint
+        run: yarn lint
+
       - name: Unit Tests
         run: yarn test
 
@@ -35,20 +39,30 @@ jobs:
       # E2E Test
       # ===
 
-      # Start local blockchain
-      - name: Start blockchain
-        run: yarn ws contracts start &
+      # # Start local blockchain
+      # - name: Start blockchain
+      #   run: yarn ws contracts start &
 
-      # Start indexer
-      - name: Start indexer
-        run: yarn ws indexer start &
-        env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
-          GSR_CHAIN_ID: 1337
+      # # Start indexer
+      # - name: Start indexer
+      #   run: yarn ws indexer start &
+      #   env:
+      #     DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
+      #     GSR_CHAIN_ID: 1337
 
-      - name: wait for services
-        run: sleep 20s
+      # - name: wait for services
+      #   run: sleep 20s
 
-      # Run e2e test once services are started
-      - name: E2E Tests
-        run: yarn ws e2e test:e2e
+      # # Run e2e test once services are started
+      # - name: E2E Tests
+      #   run: yarn ws e2e test:e2e
+
+      - name: Deploy Lookup to Vercel
+        uses: amondnet/vercel-action@v25
+        with:
+          vercel-args: --build-env
+          github-comment: true
+          vercel-token: ${{ secrets.VERCEL_TOKEN }}
+          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
+          vercel-org-id: ${{ secrets.VERCEL_TEAM_ID }}
+          scope: ${{ secrets.VERCEL_TEAM_ID }}

@@ -1,0 +1,40 @@
+{
+  "name": "lookup",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "@chakra-ui/icons": "^2.0.9",
+    "@chakra-ui/react": "^2.3.1",
+    "@emotion/react": "^11.10.4",
+    "@emotion/styled": "^11.10.4",
+    "@ethersproject/abi": "^5.4.1",
+    "@ethersproject/bignumber": "^5.4.1",
+    "@ethersproject/contracts": "^5.4.1",
+    "@ethersproject/keccak256": "^5.4.0",
+    "@ethersproject/providers": "^5.4.5",
+    "@ethersproject/strings": "^5.4.0",
+    "@gsr/db": "^0.0.0",
+    "@gsr/sdk": "^0.0.0",
+    "@walletconnect/web3-provider": "^1.8.0",
+    "next": "12.2.5",
+    "ngeohash": "^0.6.3",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-hook-form": "^7.34.2",
+    "react-map-gl": "^7.0.19"
+  },
+  "devDependencies": {
+    "@types/node": "18.7.14",
+    "@types/react": "18.0.18",
+    "@types/react-dom": "18.0.6",
+    "eslint": "8.23.0",
+    "eslint-config-next": "12.2.5",
+    "typescript": "4.8.2"
+  }
+}

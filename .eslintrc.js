@@ -60,8 +60,18 @@ module.exports = {
           "**/*.stories.{ts,tsx}",
           "**/migrate-db/**/*.{ts,tsx}",
           "**/setupTests.ts",
-          "**/rollup.config.js",
         ],
+      },
+    ],
+    // Don't require object destructuring
+    "prefer-destructuring": [
+      "error",
+      {
+        array: true,
+        object: false,
+      },
+      {
+        enforceForRenamedProperties: false,
       },
     ],
     // Make this an error instead of a warning.
