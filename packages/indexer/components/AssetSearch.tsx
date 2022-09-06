@@ -59,14 +59,10 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
   const provider = useProvider();
   const gsr = useGsr();
 
-  console.log("hi");
-
   const handleSearch = handleSubmit(async (form) => {
     if (!gsr) return;
 
     const assetId = assetIdFromForm(form);
-
-    console.log("assetId", assetId);
 
     setTxError("");
     setPlacement(null);

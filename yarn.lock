@@ -3751,9 +3751,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gsr/lookup@workspace:packages/lookup":
+"@gsr/indexer@workspace:packages/indexer":
   version: 0.0.0-use.local
-  resolution: "@gsr/lookup@workspace:packages/lookup"
+  resolution: "@gsr/indexer@workspace:packages/indexer"
   dependencies:
     "@chakra-ui/icons": ^2.0.9
     "@chakra-ui/react": ^2.3.1
