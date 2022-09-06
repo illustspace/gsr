@@ -1,7 +1,8 @@
 name: indexer-cron
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    # Every hour
+    - cron: "0 */1 * * *"
 jobs:
   cron:
     runs-on: ubuntu-latest

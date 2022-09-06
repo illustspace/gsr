@@ -3,7 +3,7 @@ name: Deploy to staging from develop
   push:
     branches:
       - developenv:
-  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
   NEXT_PUBLIC_ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
   NEXT_PUBLIC_INFURA_ID: ${{ secrets.INFURA_ID }}
   NEXT_PUBLIC_GSR_CHAIN_ID: 80001
@@ -40,7 +40,9 @@ jobs:
       - run: yarn test
 
       - name: Apply DB Migrations
-        run: prisma migrate deploy
+        run: yarn ws indexer prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.PROD_MIGRATE_URL }}
 
       # ===
       # E2E Test
