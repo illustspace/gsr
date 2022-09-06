@@ -1,5 +1,15 @@
 name: Check PR
 "on": pull_request
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
+  NEXT_PUBLIC_ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+  NEXT_PUBLIC_INFURA_ID: ${{ secrets.INFURA_ID }}
+  NEXT_PUBLIC_GSR_CHAIN_ID: 80001
+  NEXT_PUBLIC_MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
+  NEXT_PUBLIC_MAPBOX_STYLE_URL: ${{ secrets.MAPBOX_STYLE_URL }}
+
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   build-and-test:
@@ -26,14 +36,9 @@ jobs:
       - name: Setup Deps
         uses: ./.github/actions/setup
 
-      - name: Build
-        run: yarn build
-
-      - name: Lint
-        run: yarn lint
-
-      - name: Unit Tests
-        run: yarn test
+      - run: yarn build
+      - run: yarn lint
+      - run: yarn test
 
       # ===
       # E2E Test
@@ -56,13 +61,9 @@ jobs:
       # # Run e2e test once services are started
       # - name: E2E Tests
       #   run: yarn ws e2e test:e2e
-
-      - name: Deploy Lookup to Vercel
-        uses: amondnet/vercel-action@v25
-        with:
-          vercel-args: --build-env
-          github-comment: true
-          vercel-token: ${{ secrets.VERCEL_TOKEN }}
-          vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
-          vercel-org-id: ${{ secrets.VERCEL_TEAM_ID }}
-          scope: ${{ secrets.VERCEL_TEAM_ID }}
+      - name: Pull Vercel Environment Information
+        run: yarn vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}

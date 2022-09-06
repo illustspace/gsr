@@ -7,6 +7,10 @@ export * from "./gsr-contract";
 export * from "./typechain/GeoSpatialRegistry";
 export * from "./typechain/factories/GeoSpatialRegistry__factory";
 export * as placementEvent from "./placement-event";
+export * from "./api-responses";
+export * from "./gsr-indexer";
+export * from "./stats";
+export * from "./geo-json";
 
 export type {
   DecodedAssetId as AssetId,

@@ -1,11 +1,18 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { prisma, Placement } from "@gsr/db";
+import { prisma } from "@gsr/db";
+import { ApiResponseType, SinglePlacementResponse } from "@gsr/sdk";
+import {
+  apiFailure,
+  apiServerFailure,
+  apiSuccess,
+} from "~/features/indexer/api-responses";
+import { dbToPlacement } from "~/features/placements/dbToPlacement";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Placement | string>
+  res: NextApiResponse<ApiResponseType<SinglePlacementResponse>>
 ) {
   const query = {
     assetType: req.query.assetType,
@@ -26,13 +33,12 @@ export default async function handler(
     });
 
     if (placement) {
-      res.status(200).json(placement);
+      const validatedPlacement = dbToPlacement(placement);
+      res.status(200).json(apiSuccess(validatedPlacement));
     } else {
-      res.status(404).send("no placement");
+      res.status(404).send(apiFailure("no placement", "NO_PLACEMENT"));
     }
-  } catch (e) {
-    const error = e as Error;
-    console.error(error);
-    res.status(500).send(error.message);
+  } catch (error) {
+    res.status(500).send(apiServerFailure(error));
   }
 }

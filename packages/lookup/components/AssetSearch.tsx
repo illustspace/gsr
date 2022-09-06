@@ -15,11 +15,12 @@ import { useForm } from "react-hook-form";
 // import { geohashForLocation } from "geofire-common";
 
 import { AssetId, bitsToGeohash, geohashToBits, GsrContract } from "@gsr/sdk";
+import { Erc721AssetId } from "@gsr/sdk/lib/cjs/asset-types";
 
-import { PlacementMap } from "./PlacementMap";
 import { getInjectedCredentials } from "~/features/providers/injected-login";
 import { getEnv } from "~/features/config/env";
-import { Erc721AssetId } from "~/../sdk/lib/cjs/asset-types";
+
+import { PlacementMap } from "./PlacementMap";
 
 interface PlaceOfReturn {
   geohash: BigNumber;
@@ -58,10 +59,14 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
   const provider = useProvider();
   const gsr = useGsr();
 
+  console.log("hi");
+
   const handleSearch = handleSubmit(async (form) => {
     if (!gsr) return;
 
     const assetId = assetIdFromForm(form);
+
+    console.log("assetId", assetId);
 
     setTxError("");
     setPlacement(null);
@@ -176,7 +181,7 @@ const useProvider = () => {
   const [provider, setProvider] = useState<Web3Provider | null>(null);
 
   useEffect(() => {
-    getInjectedCredentials(1337).then(({ provider }) => {
+    getInjectedCredentials(getEnv("gsrChainId")).then(({ provider }) => {
       setProvider(provider);
     });
   }, []);

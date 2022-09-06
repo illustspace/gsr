@@ -15,27 +15,56 @@ import {
   AssetTypeVerifier,
   DecodedAssetId,
 } from "./asset-types/AssetTypeVerifier";
-import { TypedListener } from "./typechain/common";
-import { decodeGsrPlacementEvent, GsrPlacement } from "./placement-event";
+import {
+  decodeGsrPlacementEvent,
+  GsrPlacement,
+  ValidatedGsrPlacement,
+} from "./placement-event";
 
 export interface GsrContractOpts {
+  /**
+   * Chain ID of the GSR smart contract
+   * @default 137 (polygon)
+   */
   chainId?: GsrChainId;
+  /**
+   * Pass in a custom provider for the GSR smart contract for custom chain IDs
+   * If not passed in, the Alchemy provider will be used.
+   */
   customGsrProvider?: Provider;
+  /**
+   * Custom address for the GSR smart contract.
+   * Otherwise will pick a deployed contract based on the chain ID.
+   */
   customGsrAddress?: string;
+  /**
+   * URL of the indexer API
+   * Defaults to the production API server
+   */
+  indexerUrl?: string;
 }
 
+/** Make requests to the GSR smart contract using decoded asset IDs. */
 export class GsrContract {
   public contract: GeoSpatialRegistry;
-  private verifier: AssetTypeVerifier;
   public gsrProvider: Provider;
+
+  private verifier: AssetTypeVerifier;
+  private indexerUrl: string;
 
   constructor(
     providerKeys: ProviderKeys,
-    { chainId = 137, customGsrProvider, customGsrAddress }: GsrContractOpts = {}
+    {
+      chainId = 137,
+      indexerUrl = "https://gsr.illust.space",
+      customGsrProvider,
+      customGsrAddress,
+    }: GsrContractOpts = {}
   ) {
     this.gsrProvider =
       customGsrProvider || getChainProvider(chainId, providerKeys);
 
+    this.indexerUrl = indexerUrl;
     this.verifier = new AssetTypeVerifier(providerKeys);
 
     this.contract = GeoSpatialRegistry__factory.connect(
@@ -44,52 +73,34 @@ export class GsrContract {
     );
   }
 
-  /** Watch for GSR events */
-  watchEvents(
-    onEvent: (event: GsrPlacement) => void,
-    onBlock?: (blockNumber: number) => void,
-    sinceBlockNumber?: number
-  ): () => void {
-    const listener: TypedListener<GsrPlacementEvent> = (...args) => {
-      const event = args[args.length - 1] as GsrPlacementEvent;
-      const placement = decodeGsrPlacementEvent(event, this.verifier);
-
-      onEvent(placement);
-    };
+  /** Fetch GSR events since a specified block number. */
+  async fetchEvents(sinceBlockNumber: number) {
+    const blockNumber = await this.gsrProvider.getBlockNumber();
 
     const placementEvent = this.contract.filters.GsrPlacement();
 
     // If requesting historical data, start fetching that as well as starting the listener.
-    if (sinceBlockNumber) {
-      this.contract
-        .queryFilter(placementEvent, sinceBlockNumber)
-        .then((events) => {
-          events.forEach((event) => {
-            const placement = decodeGsrPlacementEvent(event, this.verifier);
+    const encodedEvents = await this.contract.queryFilter(
+      placementEvent,
+      sinceBlockNumber || blockNumber
+    );
 
-            onEvent(placement);
-          });
-        });
-    }
+    const events = encodedEvents.map((event) => {
+      return this.decodePlacementEvent(event);
+    });
 
-    if (onBlock) {
-      this.gsrProvider.on("block", onBlock);
-    }
+    return { blockNumber, events };
+  }
 
-    this.contract.on(placementEvent, listener);
-
-    return () => {
-      this.contract.off(placementEvent, listener);
-      if (onBlock) {
-        this.contract.off("block", onBlock);
-      }
+  /** Verify if a placement was done by the owner.  */
+  async verifyPlacement(placement: GsrPlacement): Promise<ValidatedGsrPlacement> {
+    return {
+      ...placement,
+      placedByOwner: await this.verifier.verifyAssetOwnership(placement),
     };
   }
 
-  verifyPlacement(placement: GsrPlacement): Promise<boolean> {
-    return this.verifier.verifyAssetOwnership(placement);
-  }
-
+  /** Direct GSR query of the location of an asset by a specific address. */
   async placeOf(
     decodedAssetId: DecodedAssetId,
     publisher: string
@@ -104,6 +115,7 @@ export class GsrContract {
     };
   }
 
+  /** Get the scene metadata for a placement */
   async sceneURI(
     decodedAssetId: DecodedAssetId,
     publisher: string
@@ -112,6 +124,7 @@ export class GsrContract {
     return this.contract.sceneURI(assetId, publisher);
   }
 
+  /** Check if a placement is within a geohash bounding box */
   async isWithin(
     boundingGeohash: GeohashBits,
     decodedAssetId: DecodedAssetId,
@@ -121,6 +134,7 @@ export class GsrContract {
     return this.contract.isWithin(boundingGeohash, assetId, publisher);
   }
 
+  /** Place an asset on the GSR with a transaction. */
   async place(
     signer: Signer,
     decodedAssetId: DecodedAssetId,
@@ -146,6 +160,7 @@ export class GsrContract {
     }
   }
 
+  /** Place an asset inside another asset in the GSR */
   async placeInside(
     signer: Signer,
     decodedAssetId: DecodedAssetId,
@@ -161,12 +176,14 @@ export class GsrContract {
       .placeInside(encodedAssetId, hashedTargetAssetId, timeRange);
   }
 
+  /** Clear an asset's placement */
   async removePlacement(signer: Signer, decodedAssetId: DecodedAssetId) {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
     this.contract.connect(signer).removePlacement(encodedAssetId);
   }
 
+  /** Update the scene metadata for a placement without moving the item */
   async updateSceneUri(
     signer: Signer,
     decodedAssetId: DecodedAssetId,
@@ -175,5 +192,10 @@ export class GsrContract {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
     this.contract.connect(signer).updateSceneUri(encodedAssetId, sceneUri);
+  }
+
+  /** Decode a Placement event into useful data. */
+  decodePlacementEvent(event: GsrPlacementEvent): GsrPlacement {
+    return decodeGsrPlacementEvent(event, this.verifier);
   }
 }

@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -30,7 +31,10 @@ model Placement {
   timeRangeStart DateTime
   timeRangeEnd   DateTime
 
+  // block number for the placement
   blockNumber   Int
+  // TX hash of the placement
+  tx            String  @default("") @db.VarChar(255)
   // If true, validated as placed by owner.
   placedByOwner Boolean @default(false)
 }

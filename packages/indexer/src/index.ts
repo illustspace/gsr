@@ -5,9 +5,12 @@ import { prisma } from "@gsr/db";
 /** Start the indexer when the server starts. */
 export const startIndexer = async () => {
   const gsr = new GsrContract(
-    {},
     {
-      chainId: Number(process.env.GSR_CHAIN_ID) as GsrChainId,
+      alchemy: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
+      infura: process.env.NEXT_PUBLIC_INFURA_ID,
+    },
+    {
+      chainId: Number(process.env.NEXT_PUBLIC_GSR_CHAIN_ID) as GsrChainId,
     }
   );
 
@@ -17,14 +20,7 @@ export const startIndexer = async () => {
 
   gsr.watchEvents(
     async (placement) => {
-      const placedByOwner = await gsr.verifyPlacement(placement);
-
-      console.log("placement", placement.assetId, placedByOwner);
-
-      const finalPlacement = {
-        ...placement,
-        placedByOwner,
-      };
+      const finalPlacement = await gsr.verifyPlacement(placement);
 
       // prisma
       return prisma.placement.create({ data: finalPlacement });
@@ -53,3 +49,5 @@ const getLastBlockedProcessed = async () => {
 
   return serviceState.lastBlockNumber;
 };
+
+startIndexer();

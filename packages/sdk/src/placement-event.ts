@@ -5,18 +5,25 @@ import { GsrPlacementEvent } from "./typechain/GeoSpatialRegistry";
 
 export interface GsrPlacement {
   assetId: string;
-  parentAssetId: string;
+  parentAssetId: string | null;
   decodedAssetId: DecodedAssetId;
   publisher: string;
   published: boolean;
   geohash: string;
-  sceneUri: string;
+  sceneUri: string | null;
   placedAt: Date;
   timeRangeStart: Date;
   timeRangeEnd: Date;
   blockNumber: number;
+  tx: string;
   // TODO: add this to the GSR
   linkedAccount?: string;
+}
+
+/** A GsrPlacement that has gone through ownership validation. */
+export interface ValidatedGsrPlacement extends GsrPlacement {
+  /** If true, validated as placed by owner. */
+  placedByOwner: boolean;
 }
 
 export function decodeGsrPlacementEvent(
@@ -25,7 +32,9 @@ export function decodeGsrPlacementEvent(
 ): GsrPlacement {
   return {
     assetId: event.args.assetId,
-    parentAssetId: event.args.parentAssetId,
+    parentAssetId: isNullAddress(event.args.parentAssetId)
+      ? null
+      : event.args.parentAssetId,
     decodedAssetId: verifier.decodeAssetId(event.args.fullAssetId),
     publisher: event.args.publisher,
     published: event.args.published,
@@ -42,5 +51,10 @@ export function decodeGsrPlacementEvent(
     timeRangeEnd: new Date(event.args.timeRange.end.toNumber() * 1000),
 
     blockNumber: event.blockNumber,
+    tx: event.transactionHash,
   };
 }
+
+const isNullAddress = (address: string) => {
+  return /0x0+$/.test(address);
+};

@@ -1,6 +1,11 @@
 # syntax=docker/dockerfile:1
 
-FROM node:18
+ARG DATABASE_URL
+ARG NEXT_PUBLIC_GSR_CHAIN_ID
+ARG NEXT_PUBLIC_ALCHEMY_API_KEY
+ARG NEXT_PUBLIC_INFURA_ID
+
+FROM node:lts-slim AS build
 
 WORKDIR /app
 
@@ -22,7 +27,20 @@ COPY "packages/db/package.json" "./packages/db/"
 COPY "packages/indexer/package.json" "./packages/indexer/"
 RUN yarn install
 
-# Copy over source code
+# pull in env vars
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
+ARG NEXT_PUBLIC_GSR_CHAIN_ID
+ENV NEXT_PUBLIC_GSR_CHAIN_ID=$NEXT_PUBLIC_GSR_CHAIN_ID
+
+ARG NEXT_PUBLIC_ALCHEMY_API_KEY
+ENV NEXT_PUBLIC_ALCHEMY_API_KEY=$NEXT_PUBLIC_ALCHEMY_API_KEY
+
+ARG NEXT_PUBLIC_INFURA_ID
+ENV NEXT_PUBLIC_INFURA_ID=$NEXT_PUBLIC_INFURA_ID
+
+# Build packges
 
 COPY "tsconfig.json" "./"
 COPY "bin" "./bin/"
@@ -32,11 +50,46 @@ RUN yarn ws contracts build
 COPY "packages/sdk/" "./packages/sdk/"
 RUN yarn ws sdk build
 
+RUN apt update && apt install -y \
+  libssl1.1 \
+	&& rm -rf /var/lib/apt/lists/*
+
 COPY "packages/db/" "./packages/db/"
 RUN yarn ws db build
 
 COPY "packages/indexer/" "./packages/indexer/"
-RUN yarn ws indexer build
+RUN yarn ws indexer tsc
+
+# ====
+# Build the final image
+# ====
+
+from node:lts-slim
+
+WORKDIR /app
+
+RUN apt update && apt install -y \
+  libssl1.1 \
+	&& rm -rf /var/lib/apt/lists/*
+
+# pull in env vars
+ARG DATABASE_URL
+ENV DATABASE_URL=$DATABASE_URL
+
+ARG NEXT_PUBLIC_GSR_CHAIN_ID
+ENV NEXT_PUBLIC_GSR_CHAIN_ID=$NEXT_PUBLIC_GSR_CHAIN_ID
+
+ARG NEXT_PUBLIC_ALCHEMY_API_KEY
+ENV NEXT_PUBLIC_ALCHEMY_API_KEY=$NEXT_PUBLIC_ALCHEMY_API_KEY
+
+ARG NEXT_PUBLIC_INFURA_ID
+ENV NEXT_PUBLIC_INFURA_ID=$NEXT_PUBLIC_INFURA_ID
+
+COPY --from=build /app/package.json .
+COPY --from=build /app/node_modules ./node_modules
+COPY --from=build /app/packages/sdk ./packages/sdk
+COPY --from=build /app/packages/db ./packages/db
+COPY --from=build /app/packages/indexer ./packages/indexer
 
 # Run the indexer
-CMD [ "yarn", "ws", "indexer", "serve" ]
+CMD [ "node", "packages/indexer/build/index.js" ]

@@ -2,7 +2,13 @@ name: Deploy to staging from develop
 "on":
   push:
     branches:
-      - develop
+      - developenv:
+  DATABASE_URL: ${{ secrets.DATABASE_URL }}
+  NEXT_PUBLIC_ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+  NEXT_PUBLIC_INFURA_ID: ${{ secrets.INFURA_ID }}
+  NEXT_PUBLIC_GSR_CHAIN_ID: 80001
+  NEXT_PUBLIC_MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
+  NEXT_PUBLIC_MAPBOX_STYLE_URL: ${{ secrets.MAPBOX_STYLE_URL }}
 
 jobs:
   build-and-test:
@@ -31,8 +37,10 @@ jobs:
 
       - run: yarn build
       - run: yarn lint
-      - name: Unit Tests
-        run: yarn test
+      - run: yarn test
+
+      - name: Apply DB Migrations
+        run: prisma migrate deploy
 
       # ===
       # E2E Test
@@ -55,3 +63,10 @@ jobs:
       # Run e2e test once services are started
       - name: E2E Tests
         run: yarn ws e2e test:e2e
+
+      - name: Pull Vercel Environment Information
+        run: yarn vercel pull --yes --environment=development --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}

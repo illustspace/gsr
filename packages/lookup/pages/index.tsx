@@ -1,12 +1,19 @@
-import { Container, Heading } from "@chakra-ui/react";
+import { Container } from "@chakra-ui/react";
 import type { NextPage } from "next";
 
 import { AssetSearch } from "~/components/AssetSearch";
+import { GsrStatsBlock } from "~/features/dashboard/GsrStatsBlock";
+import { GsrMap } from "~/features/map/GsrMap";
+import { TopNav } from "~/features/nav/TopNav";
 
 const Home: NextPage = () => {
   return (
     <Container>
-      <Heading>GSR</Heading>
+      <TopNav />
+
+      <GsrStatsBlock />
+
+      <GsrMap />
 
       <AssetSearch />
     </Container>

@@ -12,7 +12,7 @@
     "ws": "./bin/ws.sh",
     "wss": "yarn workspaces foreach -vpi --exclude gsr-contracts run",
     "start": "yarn wss start",
-    "build": "yarn ws contracts build && yarn ws sdk build",
+    "build": "yarn ws contracts build && yarn workspaces foreach -vpit --exclude gsr-contracts --exclude @gsr/contracts run build",
     "test": "yarn wss test",
     "lint": "npm-run-all -p 'lint:*'",
     "lint:prettier": "prettier --check './**/*.{ts,tsx,js,sol,html,css,md,json,yml}'",
@@ -41,6 +41,7 @@
     "prettier": "^2.7.1",
     "prettier-plugin-solidity": "^1.0.0-beta.15",
     "solhint-plugin-prettier": "^0.0.5",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "vercel": "^28.2.2"
   }
 }

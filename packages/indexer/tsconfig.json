@@ -5,10 +5,11 @@
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "target": "es2018",
-    "module": "commonjs",
+    "module": "CommonJS",
     "isolatedModules": false,
     "outDir": "build",
     "baseUrl": "src",
+		"noEmit": false,
     "paths": {
       "~/*": ["./*"]
     }

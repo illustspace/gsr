@@ -60,9 +60,12 @@ module.exports = {
           "**/*.stories.{ts,tsx}",
           "**/migrate-db/**/*.{ts,tsx}",
           "**/setupTests.ts",
+          "**/rollup.config.js",
         ],
       },
     ],
+    // Prisma uses underscored names for aggregation
+    "no-underscore-dangle": "off",
     // Don't require object destructuring
     "prefer-destructuring": [
       "error",

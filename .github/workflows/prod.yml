@@ -3,6 +3,13 @@ name: Deploy to prod from main
   push:
     branches:
       - main
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
+  NEXT_PUBLIC_ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
+  NEXT_PUBLIC_INFURA_ID: ${{ secrets.INFURA_ID }}
+  NEXT_PUBLIC_GSR_CHAIN_ID: 80001
+  NEXT_PUBLIC_MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
+  NEXT_PUBLIC_MAPBOX_STYLE_URL: ${{ secrets.MAPBOX_STYLE_URL }}
 
 jobs:
   build-and-test:
@@ -31,28 +38,38 @@ jobs:
 
       - run: yarn build
       - run: yarn lint
-      - name: Unit Tests
-        run: yarn test
+      - run: yarn test
+
+      - name: Apply DB Migrations
+        run: yarn ws db prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.STAGING_MIGRATE_URL }}
 
       # ===
       # E2E Test
       # ===
 
       # Start local blockchai
-      # Start local blockchain
-      - name: Start blockchain
-        run: yarn ws contracts start &
+      # - name: Start blockchain
+      #   run: yarn ws contracts start &
 
-      # Start indexer
-      - name: Start indexer
-        run: yarn ws indexer start &
-        env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
-          GSR_CHAIN_ID: 1337
+      # # Start indexer
+      # - name: Start indexer
+      #   run: yarn ws indexer start &
+      #   env:
+      #     DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
+      #     GSR_CHAIN_ID: 1337
 
-      - name: wait for services
-        run: sleep 20s
+      # - name: wait for services
+      #   run: sleep 20s
 
-      # Run e2e test once services are started
-      - name: E2E Tests
-        run: yarn ws e2e test:e2e
+      # # Run e2e test once services are started
+      # - name: E2E Tests
+      #   run: yarn ws e2e test:e2e
+
+      - name: Pull Vercel Environment Information
+        run: yarn vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}

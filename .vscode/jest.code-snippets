@@ -1,0 +1,63 @@
+{
+  "Jest Test File": {
+    "scope": "typescriptreact,typescript",
+    "prefix": "test",
+    "body": [
+      "import {} from './$1';",
+      "",
+      "describe('$1', () => {",
+      "  it('should $2', () => {",
+      "    expect(true).toBe(true);",
+      "  });",
+      "});"
+    ],
+    "description": "basic jest test"
+  },
+  "React Component Test": {
+    "scope": "typescriptreact",
+    "prefix": "testcomp",
+    "body": [
+      "import React from \"react\";",
+      "import { screen, render } from \"@testing-library/react\";",
+      "import userEvent from \"@testing-library/user-event\";",
+      "import { ChakraProvider } from \"@chakra-ui/react\";",
+      "",
+      "import { theme } from \"@shared/theme\";",
+      "",
+      "import { $1, $1Props } from \"./$1\";",
+      "",
+      "describe(\"$1\", () => {",
+      "  let props: $1Props;",
+      "",
+      "  beforeEach(() => {",
+      "    props = {",
+      "    };",
+      "  });",
+      "",
+      "  const renderComponent = () => {",
+      "    return render(",
+      "      <ChakraProvider theme={theme}>",
+      "        <$1 {...props} />",
+      "      </ChakraProvider>",
+      "    );",
+      "  };",
+      "",
+      "  it(\"renders a button\", () => {",
+      "    renderComponent();",
+      "",
+      "    expect(",
+      "      screen.getByRole(\"button\", { name: \"Click Me\" })",
+      "    ).toBeInTheDocument();",
+      "  });",
+      "",
+      "  it(\"clicks a button\", () => {",
+      "    renderComponent();",
+      "",
+      "    userEvent.click(screen.getByRole(\"button\", { name: \"Click Me\" }));",
+      "  });",
+      "",
+      "});"
+    ],
+    "description": "basic jest test for a react component"
+  }
+}

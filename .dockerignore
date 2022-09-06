@@ -6,6 +6,21 @@ yarn-error.log*
 
 *.DS_Store
 
+
+packages/contracts/artifacts
+packages/contracts/cache
+packages/contracts/coverage
+packages/contracts/.env
+packages/contracts/coverage.json
+
+packages/contracts/.env
+packages/contracts/lib
+
+packages/indexer/build
+packages/indexer/.env
+
+packages/sdk/lib
+
 .pnp.*
 .yarn/*
 !.yarn/patches
