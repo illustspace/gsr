@@ -93,7 +93,9 @@ export class GsrContract {
   }
 
   /** Verify if a placement was done by the owner.  */
-  async verifyPlacement(placement: GsrPlacement): Promise<ValidatedGsrPlacement> {
+  async verifyPlacement(
+    placement: GsrPlacement
+  ): Promise<ValidatedGsrPlacement> {
     return {
       ...placement,
       placedByOwner: await this.verifier.verifyAssetOwnership(placement),

@@ -17,3 +17,6 @@ packages/contracts/cache
 packages/contracts/contracts/openzepplin
 packages/sdk/src/typechain
 packages/sdk/lib
+
+.vercel
+.next

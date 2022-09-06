@@ -31,7 +31,9 @@ export type IndexerSyncResponse = ApiResponseSuccess<{
 }>;
 
 /** /api/placements */
-export type PlacementQueryResponse = ApiResponseSuccess<ValidatedGsrPlacement[]>;
+export type PlacementQueryResponse = ApiResponseSuccess<
+  ValidatedGsrPlacement[]
+>;
 
 /** /api/placements/single */
 export type SinglePlacementResponse = ApiResponseSuccess<ValidatedGsrPlacement>;
