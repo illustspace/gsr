@@ -4,10 +4,14 @@ import { GeoJsonFeaturesCollection } from "./geo-json";
 import {
   GsrStatsResponse,
   PlacementGeoJsonResponse,
+  PlacementQueryResponse,
   SinglePlacementResponse,
 } from "./api-responses";
 import { DecodedAssetId } from "./asset-types";
-import { GsrPlacement } from "./placement-event";
+import {
+  deserializeGsrPlacement,
+  ValidatedGsrPlacement,
+} from "./placement-event";
 
 export class GsrIndexer {
   private axios;
@@ -18,7 +22,9 @@ export class GsrIndexer {
     });
   }
 
-  async placeOf(decodedAssetId: DecodedAssetId): Promise<GsrPlacement | null> {
+  async placeOf(
+    decodedAssetId: DecodedAssetId
+  ): Promise<ValidatedGsrPlacement | null> {
     try {
       const {
         data: { response },
@@ -26,11 +32,23 @@ export class GsrIndexer {
         params: decodedAssetId,
       });
 
-      return response;
+      return deserializeGsrPlacement(response);
     } catch (e) {
       console.error(e);
       return null;
     }
+  }
+
+  async query(
+    query: Partial<DecodedAssetId>
+  ): Promise<ValidatedGsrPlacement[]> {
+    const {
+      data: { response },
+    } = await this.axios.get<PlacementQueryResponse>("/placements", {
+      params: query,
+    });
+
+    return response.map(deserializeGsrPlacement);
   }
 
   async geoJson(

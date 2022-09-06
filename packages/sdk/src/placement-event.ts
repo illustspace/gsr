@@ -3,10 +3,10 @@ import { AssetTypeVerifierMethods } from "./asset-types/AssetTypeVerifierMethods
 import { bitsToGeohash } from "./geohash";
 import { GsrPlacementEvent } from "./typechain/GeoSpatialRegistry";
 
-export interface GsrPlacement {
+export interface GsrPlacement<AssetId extends DecodedAssetId = DecodedAssetId> {
   assetId: string;
   parentAssetId: string | null;
-  decodedAssetId: DecodedAssetId;
+  decodedAssetId: AssetId;
   publisher: string;
   published: boolean;
   geohash: string;
@@ -24,6 +24,17 @@ export interface GsrPlacement {
 export interface ValidatedGsrPlacement extends GsrPlacement {
   /** If true, validated as placed by owner. */
   placedByOwner: boolean;
+}
+
+/** A ValidatedGsrPlacement to be sent over the wire */
+export interface SerializedGsrPlacement
+  extends Omit<
+    ValidatedGsrPlacement,
+    "placedAt" | "timeRangeStart" | "timeRangeEnd"
+  > {
+  placedAt: string;
+  timeRangeStart: string;
+  timeRangeEnd: string;
 }
 
 export function decodeGsrPlacementEvent(
@@ -58,3 +69,25 @@ export function decodeGsrPlacementEvent(
 const isNullAddress = (address: string) => {
   return /0x0+$/.test(address);
 };
+
+export function serializeGsrPlacement(
+  placement: ValidatedGsrPlacement
+): SerializedGsrPlacement {
+  return {
+    ...placement,
+    placedAt: placement.placedAt.toISOString(),
+    timeRangeStart: placement.timeRangeStart.toISOString(),
+    timeRangeEnd: placement.timeRangeEnd.toISOString(),
+  };
+}
+
+export function deserializeGsrPlacement(
+  serializeGsrPlacement: SerializedGsrPlacement
+): ValidatedGsrPlacement {
+  return {
+    ...serializeGsrPlacement,
+    placedAt: new Date(serializeGsrPlacement.placedAt),
+    timeRangeStart: new Date(serializeGsrPlacement.timeRangeStart),
+    timeRangeEnd: new Date(serializeGsrPlacement.timeRangeEnd),
+  };
+}

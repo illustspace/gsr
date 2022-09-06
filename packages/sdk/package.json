@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "author": "Illust",
   "license": "MIT",
-  "main": "lib/cjs/gsr.js",
-  "module": "lib/esm/gsr.js",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
   "files": [
     "lib/"
   ],

@@ -1,10 +1,14 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { Contract, ContractReceipt } from "@ethersproject/contracts";
 import { Wallet } from "@ethersproject/wallet";
-import { bitsToGeohash, GsrContract, assetTypes } from "@gsr/sdk";
+import {
+  bitsToGeohash,
+  GsrContract,
+  assetTypes,
+  GsrIndexer,
+  placementEvent,
+} from "@gsr/sdk";
 import { PlaceOf } from "@gsr/sdk/lib/esm/place";
-// import EthWallet from "ethereumjs-wallet";
-import axios from "axios";
 
 import { getDefaultProvider, Provider } from "@ethersproject/providers";
 import { abi as testTokenAbi } from "../../contracts/artifacts/contracts/test/Erc721.sol/TestToken.json";
@@ -18,6 +22,7 @@ const testPrivateKey =
 describe("", () => {
   // let owner1: EthWallet;
   let gsr: GsrContract;
+  let gsrIndexer: GsrIndexer;
   let signer: Wallet;
   let provider: Provider;
   let erc721: Contract;
@@ -36,6 +41,8 @@ describe("", () => {
         chainId,
       }
     );
+
+    gsrIndexer = new GsrIndexer("http://localhost:3000/api");
 
     provider = getDefaultProvider("http://127.0.0.1:8545/");
 
@@ -92,28 +99,30 @@ describe("", () => {
 
     await wait(4_000);
 
-    const { data } = await axios.get("http://localhost:3000/placement", {
-      params: decodedAssetId,
-    });
+    const placement = await gsrIndexer.placeOf(decodedAssetId);
 
-    const expectedResponse = {
-      id: data.id,
+    if (!placement) {
+      throw new Error("no indexed placement");
+    }
+
+    const expectedResponse: placementEvent.ValidatedGsrPlacement = {
       assetId: new assetTypes.Erc721Verifier({}).hashAssetId(decodedAssetId),
       blockNumber: receipt.blockNumber,
       decodedAssetId,
       geohash: bitsToGeohash(0b11111, 5),
-      placedAt: new Date(timestamp * 1000).toISOString(),
+      placedAt: new Date(timestamp * 1000),
       placedByOwner: true,
       published: true,
       publisher: signer.address,
       sceneUri: "https://example.com/scene.json",
-      timeRangeEnd: new Date(timeRangeEnd * 1000).toISOString(),
-      timeRangeStart: new Date(0).toISOString(),
+      timeRangeEnd: new Date(timeRangeEnd * 1000),
+      timeRangeStart: new Date(0),
       parentAssetId:
         "0x0000000000000000000000000000000000000000000000000000000000000000",
+      tx: tx.hash,
     };
 
-    expect(data).toEqual(expectedResponse);
+    expect(placement).toEqual(expectedResponse);
   });
 });
 

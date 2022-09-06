@@ -3,7 +3,7 @@
  */
 
 import { GeoJsonFeaturesCollection } from "./geo-json";
-import { ValidatedGsrPlacement } from "./placement-event";
+import { SerializedGsrPlacement } from "./placement-event";
 import { GsrStats } from "./stats";
 
 /** A success response */
@@ -32,11 +32,12 @@ export type IndexerSyncResponse = ApiResponseSuccess<{
 
 /** /api/placements */
 export type PlacementQueryResponse = ApiResponseSuccess<
-  ValidatedGsrPlacement[]
+  SerializedGsrPlacement[]
 >;
 
 /** /api/placements/single */
-export type SinglePlacementResponse = ApiResponseSuccess<ValidatedGsrPlacement>;
+export type SinglePlacementResponse =
+  ApiResponseSuccess<SerializedGsrPlacement>;
 
 /** /api/placements/geojson */
 export type PlacementGeoJsonResponse =
