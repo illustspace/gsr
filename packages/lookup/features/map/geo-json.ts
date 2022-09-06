@@ -1,7 +1,8 @@
 import { decode } from "ngeohash";
 
-import { Placement } from "@gsr/db";
 import { GeoJsonFeaturesCollection } from "@gsr/sdk";
+
+import { Placement } from "~/features/db";
 
 export const emptyGeoJson: GeoJsonFeaturesCollection = {
   type: "geojson",

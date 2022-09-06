@@ -1,9 +1,9 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { prisma } from "@gsr/db";
 import { ApiResponseType, GsrStatsResponse } from "@gsr/sdk";
 
+import { prisma } from "~/features/db";
 import { apiServerFailure, apiSuccess } from "~/features/indexer/api-responses";
 
 export default async function handler(

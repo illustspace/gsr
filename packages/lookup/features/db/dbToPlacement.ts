@@ -1,5 +1,6 @@
-import { Placement } from "@gsr/db";
 import { placementEvent, assetTypes } from "@gsr/sdk";
+
+import { Placement } from "~/features/db";
 
 /** Convert a DB placement to an SDK type */
 export const dbToPlacement = (

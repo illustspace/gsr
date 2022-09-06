@@ -41,7 +41,7 @@ jobs:
       - run: yarn test
 
       - name: Apply DB Migrations
-        run: yarn ws db prisma migrate deploy
+        run: yarn ws lookup prisma migrate deploy
         env:
           DATABASE_URL: ${{ secrets.STAGING_MIGRATE_URL }}
 

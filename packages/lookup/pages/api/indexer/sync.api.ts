@@ -7,8 +7,8 @@ import {
   GsrContract,
   IndexerSyncResponse,
 } from "@gsr/sdk";
-import { prisma } from "@gsr/db";
 
+import { prisma } from "~/features/db";
 import {
   apiFailure,
   apiServerFailure,
