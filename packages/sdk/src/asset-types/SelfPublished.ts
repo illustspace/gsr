@@ -1,8 +1,6 @@
-import { Contract } from "@ethersproject/contracts";
-import { Provider } from "@ethersproject/providers";
 import { defaultAbiCoder } from "@ethersproject/abi";
 
-import { getChainProvider, ProviderKeys } from "~/provider";
+import { ProviderKeys } from "~/provider";
 
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
@@ -15,43 +13,16 @@ export type SelfPublishedAssetId = {
   assetHash: string;
 };
 
-const ERC_721_ABI = [
-  {
-    inputs: [
-      {
-        internalType: "uint256",
-        name: "tokenId",
-        type: "uint256",
-      },
-    ],
-    name: "ownerOf",
-    outputs: [
-      {
-        internalType: "address",
-        name: "",
-        type: "address",
-      },
-    ],
-    stateMutability: "view",
-    type: "function",
-  },
-];
-
 const assetTypeAbis = {
   collectionId: ["address"],
   itemId: ["uint256"],
 };
 
-export class Erc721Verifier extends BaseAssetTypeVerifier {
+export class SelfPublishedVerifier extends BaseAssetTypeVerifier {
   single = true;
   assetType = "SELF_PUBLISHED" as const;
 
-  constructor(
-    private providerKeys: ProviderKeys,
-    private customProviders: {
-      [chainId: number]: Provider;
-    } = {}
-  ) {
+  constructor(private providerKeys: ProviderKeys) {
     super();
   }
 
@@ -88,25 +59,13 @@ export class Erc721Verifier extends BaseAssetTypeVerifier {
     };
   }
 
+  /** Just verify that the asset ID matches the poster. */
   async verifyAssetOwnership({
     decodedAssetId,
     publisher,
-  }: GsrPlacement): Promise<boolean> {
-    const provider =
-      this.customProviders[decodedAssetId.chainId] ||
-      getChainProvider(decodedAssetId.chainId, this.providerKeys);
-
-    const contract = new Contract(
-      decodedAssetId.contractAddress,
-      ERC_721_ABI,
-      provider
+  }: GsrPlacement<SelfPublishedAssetId>): Promise<boolean> {
+    return (
+      decodedAssetId.publisherAddress.toLowerCase() === publisher.toLowerCase()
     );
-
-    // Get the owner, returning '' if the asset does not exist.
-    const owner = await contract
-      .ownerOf(decodedAssetId.tokenId)
-      .catch(() => "");
-
-    return publisher.toLowerCase() === owner.toLowerCase();
   }
 }

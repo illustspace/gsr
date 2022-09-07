@@ -1,8 +1,10 @@
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 
 import { GeoJsonFeaturesCollection } from "./geo-json";
 import {
+  ApiResponseSuccess,
   GsrStatsResponse,
+  IndexerSyncResponse,
   PlacementGeoJsonResponse,
   PlacementQueryResponse,
   SinglePlacementResponse,
@@ -13,10 +15,24 @@ import {
   ValidatedGsrPlacement,
 } from "./placement-event";
 
+const indexersByChainId: Record<number, string> = {
+  137: "https://gsr.network/api",
+  80001: "https://testnet.gsr.network/api",
+  1337: "http://localhost:3000/api",
+};
+
+export interface GsrIndexerOpts {
+  customIndexerUrl?: string;
+}
+
 export class GsrIndexer {
   private axios;
 
-  constructor(indexerUrl = "https://gsr.illust.space") {
+  constructor(
+    public chainId: number,
+    { customIndexerUrl }: GsrIndexerOpts = {}
+  ) {
+    const indexerUrl = customIndexerUrl || indexersByChainId[chainId];
     this.axios = axios.create({
       baseURL: indexerUrl,
     });
@@ -26,13 +42,16 @@ export class GsrIndexer {
     decodedAssetId: DecodedAssetId
   ): Promise<ValidatedGsrPlacement | null> {
     try {
-      const {
-        data: { response },
-      } = await this.axios.get<SinglePlacementResponse>("/placements/single", {
-        params: decodedAssetId,
-      });
+      const response = await this.axios.get<SinglePlacementResponse>(
+        "/placements/single",
+        {
+          params: decodedAssetId,
+        }
+      );
 
-      return deserializeGsrPlacement(response);
+      const placement = this.getResponse(response);
+
+      return deserializeGsrPlacement(placement);
     } catch (e) {
       console.error(e);
       return null;
@@ -42,32 +61,47 @@ export class GsrIndexer {
   async query(
     query: Partial<DecodedAssetId>
   ): Promise<ValidatedGsrPlacement[]> {
-    const {
-      data: { response },
-    } = await this.axios.get<PlacementQueryResponse>("/placements", {
-      params: query,
-    });
+    const response = await this.axios.get<PlacementQueryResponse>(
+      "/placements",
+      {
+        params: query,
+      }
+    );
 
-    return response.map(deserializeGsrPlacement);
+    const placements = this.getResponse(response);
+
+    return placements.map(deserializeGsrPlacement);
   }
 
   async geoJson(
     query?: Partial<DecodedAssetId>
   ): Promise<GeoJsonFeaturesCollection> {
-    const {
-      data: { response },
-    } = await this.axios.get<PlacementGeoJsonResponse>("/placements/geojson", {
-      params: query,
-    });
+    const response = await this.axios.get<PlacementGeoJsonResponse>(
+      "/placements/geojson",
+      {
+        params: query,
+      }
+    );
 
-    return response;
+    return this.getResponse(response);
   }
 
   async stats() {
-    const {
-      data: { response },
-    } = await this.axios.get<GsrStatsResponse>("/stats");
+    const response = await this.axios.get<GsrStatsResponse>("/stats");
 
-    return response;
+    return this.getResponse(response);
+  }
+
+  /** Request a sync from the indexer. Should be done after a placement tx has finished. */
+  async sync() {
+    const response = await this.axios.post<IndexerSyncResponse>("/sync");
+    return this.getResponse(response);
+  }
+
+  /** Fetch the response success payload from the response. */
+  private getResponse<T extends ApiResponseSuccess<any>>(
+    response: AxiosResponse<T>
+  ): T["response"] {
+    return response.data.response;
   }
 }

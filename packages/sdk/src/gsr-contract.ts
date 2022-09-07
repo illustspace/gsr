@@ -1,7 +1,7 @@
-import type { Signer } from "ethers";
+import type { ContractTransaction, Signer } from "ethers";
 import { Provider } from "@ethersproject/providers";
 
-import { GsrAddress, GsrChainId } from "./addresses";
+import { GsrAddress } from "./addresses";
 import {
   GeoSpatialRegistry,
   GsrPlacementEvent,
@@ -20,13 +20,14 @@ import {
   GsrPlacement,
   ValidatedGsrPlacement,
 } from "./placement-event";
+import { GsrIndexer } from "./gsr-indexer";
 
 export interface GsrContractOpts {
   /**
    * Chain ID of the GSR smart contract
    * @default 137 (polygon)
    */
-  chainId?: GsrChainId;
+  chainId?: number;
   /**
    * Pass in a custom provider for the GSR smart contract for custom chain IDs
    * If not passed in, the Alchemy provider will be used.
@@ -37,11 +38,12 @@ export interface GsrContractOpts {
    * Otherwise will pick a deployed contract based on the chain ID.
    */
   customGsrAddress?: string;
+
   /**
-   * URL of the indexer API
-   * Defaults to the production API server
+   * If you have instantiated a GsrIndexer instance, pass it in here.
+   * Otherwise a new instance will be created.
    */
-  indexerUrl?: string;
+  indexer?: GsrIndexer;
 }
 
 /** Make requests to the GSR smart contract using decoded asset IDs. */
@@ -50,21 +52,26 @@ export class GsrContract {
   public gsrProvider: Provider;
 
   private verifier: AssetTypeVerifier;
-  private indexerUrl: string;
+  private indexer: GsrIndexer;
 
   constructor(
     providerKeys: ProviderKeys,
     {
       chainId = 137,
-      indexerUrl = "https://gsr.illust.space",
       customGsrProvider,
       customGsrAddress,
+      indexer = new GsrIndexer(chainId),
     }: GsrContractOpts = {}
   ) {
     this.gsrProvider =
       customGsrProvider || getChainProvider(chainId, providerKeys);
 
-    this.indexerUrl = indexerUrl;
+    if (indexer.chainId !== chainId) {
+      // eslint-disable-next-line no-console
+      console.warn("GsrIndexer and GsrContract have different chain IDs");
+    }
+
+    this.indexer = indexer;
     this.verifier = new AssetTypeVerifier(providerKeys);
 
     this.contract = GeoSpatialRegistry__factory.connect(
@@ -151,15 +158,17 @@ export class GsrContract {
   ) {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
-    if (sceneUri) {
-      return this.contract
-        .connect(signer)
-        .placeWithScene(encodedAssetId, geohash, timeRange, sceneUri);
-    } else {
-      return this.contract
-        .connect(signer)
-        .place(encodedAssetId, geohash, timeRange);
-    }
+    const tx = sceneUri
+      ? await this.contract
+          .connect(signer)
+          .placeWithScene(encodedAssetId, geohash, timeRange, sceneUri)
+      : await this.contract
+          .connect(signer)
+          .place(encodedAssetId, geohash, timeRange);
+
+    this.syncAfterTx(tx);
+
+    return tx;
   }
 
   /** Place an asset inside another asset in the GSR */
@@ -173,16 +182,35 @@ export class GsrContract {
 
     const hashedTargetAssetId = this.verifier.hashAssetId(decodedTargetAssetId);
 
-    this.contract
+    const tx = await this.contract
       .connect(signer)
       .placeInside(encodedAssetId, hashedTargetAssetId, timeRange);
+
+    this.syncAfterTx(tx);
+
+    return tx;
+  }
+
+  private async syncAfterTx(tx: ContractTransaction) {
+    try {
+      await tx.wait();
+      await this.indexer.sync();
+    } catch (e) {
+      console.error(e);
+    }
   }
 
   /** Clear an asset's placement */
   async removePlacement(signer: Signer, decodedAssetId: DecodedAssetId) {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
-    this.contract.connect(signer).removePlacement(encodedAssetId);
+    const tx = await this.contract
+      .connect(signer)
+      .removePlacement(encodedAssetId);
+
+    this.syncAfterTx(tx);
+
+    return tx;
   }
 
   /** Update the scene metadata for a placement without moving the item */
@@ -193,7 +221,13 @@ export class GsrContract {
   ) {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
-    this.contract.connect(signer).updateSceneUri(encodedAssetId, sceneUri);
+    const tx = await this.contract
+      .connect(signer)
+      .updateSceneUri(encodedAssetId, sceneUri);
+
+    this.syncAfterTx(tx);
+
+    return tx;
   }
 
   /** Decode a Placement event into useful data. */

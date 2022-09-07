@@ -14,8 +14,11 @@ import {
   GeoSpatialRegistry,
   GeoSpatialRegistry__factory,
   GsrPlacementEvent,
-  assetTypes,
-  placementEvent,
+  GsrPlacement,
+  Erc721AssetId,
+  decodeGsrPlacementEvent,
+  EncodedAssetId,
+  Erc721Verifier,
 } from "@gsr/sdk";
 
 const tokenId = BigNumber.from(1);
@@ -58,15 +61,15 @@ describe("GeoSpatialRegistry", () => {
   let admin: SignerWithAddress;
   let nftOwner: SignerWithAddress;
   let user: SignerWithAddress;
-  let encodedAssetId: assetTypes.EncodedAssetId;
+  let encodedAssetId: EncodedAssetId;
   let assetId: string;
   let timeRange: GeoSpatialRegistry.TimeRangeStruct;
-  let verifier: assetTypes.Erc721Verifier;
+  let verifier: Erc721Verifier;
 
   beforeEach(async () => {
     chainId = Number(await getChainId());
 
-    verifier = new assetTypes.Erc721Verifier(
+    verifier = new Erc721Verifier(
       {},
       {
         [chainId]: ethers.provider,
@@ -143,7 +146,7 @@ describe("GeoSpatialRegistry", () => {
     assetType,
     collectionId,
     itemId,
-  }: assetTypes.EncodedAssetId) => {
+  }: EncodedAssetId) => {
     return [assetType, collectionId, itemId];
   };
 
@@ -153,7 +156,7 @@ describe("GeoSpatialRegistry", () => {
     timestamp: number,
     opts: any = {}
   ) => {
-    const expectedEncodedAssetId: assetTypes.EncodedAssetId =
+    const expectedEncodedAssetId: EncodedAssetId =
       opts.externalAssetId ?? encodedAssetId;
 
     return expect(tx)
@@ -200,10 +203,10 @@ describe("GeoSpatialRegistry", () => {
             return gsr.interface.parseLog(log);
           });
           const event = logs[0] as any as GsrPlacementEvent;
-          const placement = placementEvent.decodeGsrPlacementEvent(
+          const placement = decodeGsrPlacementEvent(
             event,
             verifier
-          );
+          ) as GsrPlacement<Erc721AssetId>;
 
           expect(await verifier.verifyAssetOwnership(placement)).to.eq(false);
         });
@@ -231,10 +234,10 @@ describe("GeoSpatialRegistry", () => {
             return gsr.interface.parseLog(log);
           });
           const event = logs[0] as any as GsrPlacementEvent;
-          const placement = placementEvent.decodeGsrPlacementEvent(
+          const placement = decodeGsrPlacementEvent(
             event,
             verifier
-          );
+          ) as GsrPlacement<Erc721AssetId>;
 
           expect(await verifier.verifyAssetOwnership(placement)).to.eq(true);
         });
@@ -257,10 +260,10 @@ describe("GeoSpatialRegistry", () => {
             return gsr.interface.parseLog(log);
           });
           const event = logs[0] as any as GsrPlacementEvent;
-          const placement = placementEvent.decodeGsrPlacementEvent(
+          const placement = decodeGsrPlacementEvent(
             event,
             verifier
-          );
+          ) as GsrPlacement<Erc721AssetId>;
 
           expect(await verifier.verifyAssetOwnership(placement)).to.eq(false);
         });
@@ -601,7 +604,7 @@ describe("GeoSpatialRegistry", () => {
       /** AssetId for another asset placed inside assetId */
       const secondaryTokenId = tokenId.add(1);
       let decodedSecondaryAssetId: AssetId;
-      let encodedSecondaryAssetId: assetTypes.EncodedAssetId;
+      let encodedSecondaryAssetId: EncodedAssetId;
       let secondaryAssetId: string;
 
       beforeEach(() => {

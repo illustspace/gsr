@@ -9,10 +9,15 @@ import {
   EncodedAssetId,
 } from "./AssetTypeVerifierMethods";
 import { GsrPlacement } from "~/placement-event";
-import { SelfPublishedAssetId } from "./SelfPublished";
+import { SelfPublishedAssetId, SelfPublishedVerifier } from "./SelfPublished";
 
 /** Add Verifiers here to make them available for use */
-const verifierClasses = [Erc721Verifier, Erc1155Verifier, Fa2Verifier];
+const verifierClasses = [
+  Erc721Verifier,
+  Erc1155Verifier,
+  Fa2Verifier,
+  SelfPublishedVerifier,
+];
 
 export type DecodedAssetId =
   | Erc721AssetId

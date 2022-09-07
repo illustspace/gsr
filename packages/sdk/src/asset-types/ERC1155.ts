@@ -102,7 +102,7 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
   async verifyAssetOwnership({
     decodedAssetId,
     publisher,
-  }: GsrPlacement): Promise<boolean> {
+  }: GsrPlacement<Erc1155AssetId>): Promise<boolean> {
     const provider =
       this.customProviders[decodedAssetId.chainId] ||
       getChainProvider(decodedAssetId.chainId, this.providerKeys);

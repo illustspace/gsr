@@ -43,7 +43,9 @@ export class Fa2Verifier extends BaseAssetTypeVerifier {
     };
   }
 
-  async verifyAssetOwnership(placement: GsrPlacement): Promise<boolean> {
+  async verifyAssetOwnership(
+    placement: GsrPlacement<Fa2AssetId>
+  ): Promise<boolean> {
     if (!placement.linkedAccount) return false;
 
     const [linkedService, linkedAccount] = defaultAbiCoder.decode(

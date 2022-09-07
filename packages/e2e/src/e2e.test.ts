@@ -4,9 +4,10 @@ import { Wallet } from "@ethersproject/wallet";
 import {
   bitsToGeohash,
   GsrContract,
-  assetTypes,
   GsrIndexer,
-  placementEvent,
+  ValidatedGsrPlacement,
+  DecodedAssetId,
+  Erc721Verifier,
 } from "@gsr/sdk";
 import { PlaceOf } from "@gsr/sdk/lib/esm/place";
 
@@ -42,7 +43,7 @@ describe("", () => {
       }
     );
 
-    gsrIndexer = new GsrIndexer("http://localhost:3000/api");
+    gsrIndexer = new GsrIndexer(1337, { customIndexerUrl: "/api" });
 
     provider = getDefaultProvider("http://127.0.0.1:8545/");
 
@@ -60,7 +61,7 @@ describe("", () => {
   });
 
   it("places and indexes", async () => {
-    const decodedAssetId: assetTypes.DecodedAssetId = {
+    const decodedAssetId: DecodedAssetId = {
       assetType: "ERC721",
       chainId,
       contractAddress: erc721.address,
@@ -105,8 +106,8 @@ describe("", () => {
       throw new Error("no indexed placement");
     }
 
-    const expectedResponse: placementEvent.ValidatedGsrPlacement = {
-      assetId: new assetTypes.Erc721Verifier({}).hashAssetId(decodedAssetId),
+    const expectedResponse: ValidatedGsrPlacement = {
+      assetId: new Erc721Verifier({}).hashAssetId(decodedAssetId),
       blockNumber: receipt.blockNumber,
       decodedAssetId,
       geohash: bitsToGeohash(0b11111, 5),

@@ -1,7 +1,7 @@
 import {
-  assetTypes,
   serializeGsrPlacement,
   SerializedGsrPlacement,
+  DecodedAssetId,
 } from "@gsr/sdk";
 
 import { Placement } from "~/features/db";
@@ -10,6 +10,6 @@ import { Placement } from "~/features/db";
 export const dbToPlacement = (placement: Placement): SerializedGsrPlacement => {
   return serializeGsrPlacement({
     ...placement,
-    decodedAssetId: placement.decodedAssetId as assetTypes.DecodedAssetId,
+    decodedAssetId: placement.decodedAssetId as DecodedAssetId,
   });
 };

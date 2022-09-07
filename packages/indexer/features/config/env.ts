@@ -1,9 +1,7 @@
-import { GsrChainId } from "@gsr/sdk";
-
 interface Env {
   alchemyApiKey: string;
   infuraId: string;
-  gsrChainId: GsrChainId;
+  gsrChainId: number;
   mapboxApiKey: string;
   mapboxStyleUrl: string;
 }
@@ -19,7 +17,7 @@ function setEnv(): Env {
   const env = {
     alchemyApiKey: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY as string,
     infuraId: process.env.NEXT_PUBLIC_INFURA_ID as string,
-    gsrChainId: Number(process.env.NEXT_PUBLIC_GSR_CHAIN_ID) as GsrChainId,
+    gsrChainId: Number(process.env.NEXT_PUBLIC_GSR_CHAIN_ID),
     mapboxApiKey: process.env.NEXT_PUBLIC_MAPBOX_API_KEY as string,
     mapboxStyleUrl: process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL as string,
   };

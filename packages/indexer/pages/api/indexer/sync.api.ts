@@ -1,12 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import {
-  ApiResponseType,
-  GsrChainId,
-  GsrContract,
-  IndexerSyncResponse,
-} from "@gsr/sdk";
+import { ApiResponseType, GsrContract, IndexerSyncResponse } from "@gsr/sdk";
 
 import { prisma } from "~/features/db";
 import {
@@ -22,9 +17,14 @@ let lastUpdatedTimestamp = 0;
 
 /** Request an indexer run against the GSR. Should be called when a new placement has been added to the GSR. */
 export default async function handler(
-  _req: NextApiRequest,
+  req: NextApiRequest,
   res: NextApiResponse<ApiResponseType<IndexerSyncResponse>>
 ) {
+  if (req.method !== "POST") {
+    res.status(404).send(apiFailure("not found", "NOT_FOUND"));
+    return;
+  }
+
   const now = Date.now();
   if (lastUpdatedTimestamp > now - RATE_LIMIT_MS) {
     res
@@ -46,7 +46,7 @@ export default async function handler(
       infura: process.env.NEXT_PUBLIC_INFURA_ID,
     },
     {
-      chainId: Number(process.env.NEXT_PUBLIC_GSR_CHAIN_ID) as GsrChainId,
+      chainId: Number(process.env.NEXT_PUBLIC_GSR_CHAIN_ID),
     }
   );
 
