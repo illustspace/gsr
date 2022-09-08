@@ -3,9 +3,9 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ApiResponseType, PlacementQueryResponse } from "@gsr/sdk";
 
-import { prisma } from "~/features/db";
-import { dbToPlacement } from "~/features/db/dbToPlacement";
-import { apiServerFailure, apiSuccess } from "~/features/indexer/api-responses";
+import { prisma } from "~/api/db";
+import { dbToPlacement } from "~/api/db/dbToPlacement";
+import { apiServerFailure, apiSuccess } from "~/api/api-responses";
 
 export default async function handler(
   req: NextApiRequest,
@@ -23,6 +23,16 @@ export default async function handler(
       // Get assets that match the query.
       where: {
         placedByOwner: true,
+        OR: [
+          {
+            timeRangeStart: {
+              lte: new Date(),
+            },
+          },
+          {
+            timeRangeStart: new Date(0),
+          },
+        ],
         decodedAssetId: { equals: query },
       },
       // Only return return the latest placement for the asset.

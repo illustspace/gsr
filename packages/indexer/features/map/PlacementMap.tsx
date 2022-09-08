@@ -14,10 +14,9 @@ import Map, {
   MapLayerMouseEvent,
   Source,
 } from "react-map-gl";
-import { BigNumber } from "@ethersproject/bignumber";
 import { encode_int, decode_bbox_int } from "ngeohash";
 
-import { GeoSpatialRegistry } from "@gsr/sdk";
+import { ValidatedGsrPlacement } from "@gsr/sdk";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
@@ -26,19 +25,14 @@ import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 // import "@shared/styles/mapbox-overrides.scss";
 import { getEnv } from "~/features/config/env";
 import { Optional } from "~/features/utils/optional";
-
-interface PlaceOfReturn {
-  geohash: BigNumber;
-  bitPrecision: number;
-}
+import { AutoGeolocationButton } from "~/features/map/AutoGeolocateButton";
 
 export interface PlacementMapProps extends BoxProps {
-  placement?: PlaceOfReturn;
-}
-
-interface Geohash {
-  geohash: number;
-  bitPrecision: number;
+  placement?: ValidatedGsrPlacement | null;
+  onLocationChange: (location: {
+    geohash: number;
+    bitPrecision: number;
+  }) => void;
 }
 
 const mapApi = getEnv("mapboxApiKey");
@@ -73,22 +67,9 @@ const pinStyle = {
   },
 };
 
-const convertGeohashStruct = (
-  geohash: Optional<GeoSpatialRegistry.GeohashStruct>
-): Geohash | null => {
-  if (!geohash) return null;
-  return {
-    geohash: BigNumber.isBigNumber(geohash.geohash)
-      ? geohash.geohash.toNumber()
-      : Number(geohash.geohash),
-    bitPrecision: BigNumber.isBigNumber(geohash.bitPrecision)
-      ? geohash.bitPrecision.toNumber()
-      : Number(geohash.bitPrecision),
-  };
-};
-
 export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
   placement,
+  onLocationChange,
   ...props
 }) => {
   const initialBoundingBox = useInitialBbox(placement);
@@ -96,7 +77,7 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
 
   const [point, setPoint] = useState(initialBoundingBoxCenter);
   const [bitPrecision, setBitPrecision] = useState(
-    placement?.bitPrecision || 50
+    placement?.location.bitPrecision || 50
   );
 
   const newGeohash = coordinatesToGeohash(point, bitPrecision);
@@ -105,7 +86,12 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
   const handleMapClick = (event: MapLayerMouseEvent) => {
     const { lat, lng } = event.lngLat;
 
-    setPoint({ latitude: lat, longitude: lng });
+    const point = { latitude: lat, longitude: lng };
+
+    setPoint(point);
+
+    const geohash = coordinatesToGeohash(point, bitPrecision);
+    onLocationChange({ geohash: geohash || 0, bitPrecision });
   };
 
   const source = getLayerData(initialBoundingBox);
@@ -128,6 +114,8 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
           height: "100%",
         }}
       >
+        <AutoGeolocationButton />
+
         {source && (
           <Source id="bbox" type="geojson" data={source}>
             <Layer {...fillStyle} />
@@ -250,12 +238,13 @@ const getInitialViewport = (
   };
 };
 
-const useInitialBbox = (placement: Optional<PlaceOfReturn>) => {
+const useInitialBbox = (placement: Optional<ValidatedGsrPlacement>) => {
   return useMemo(() => {
-    const geohash = convertGeohashStruct(placement);
-
-    return geohash
-      ? decode_bbox_int(geohash.geohash, geohash.bitPrecision)
+    return placement?.location
+      ? decode_bbox_int(
+          placement.location.geohash,
+          placement.location.bitPrecision
+        )
       : null;
   }, [placement]);
 };

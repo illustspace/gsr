@@ -1,0 +1,25 @@
+name: "Depoy Indexer to Vercel"
+inputs:
+  environment:
+    description: "Vercel enviornment"
+    required: true
+    default: preview
+  token:
+    description: "Vercel token"
+    required: true
+runs:
+  using: "composite"
+  steps:
+    - name: Pull Vercel Environment Information
+      run: yarn vercel pull --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
+
+    - name: Build Project Artifacts
+      run: vercel build --token=${{ inputs.vercel-token }}
+
+    - name: Deploy to Vercel Preview
+      if: ${{ inputs.environment == 'preview' }}
+      run: vercel deploy --prebuilt --token=${{ inputs.token }}
+
+    - name: Deploy to Vercel Production
+      if: ${{ inputs.environment == 'preview' }}
+      run: vercel deploy --prebuilt --token=${{ inputs.token }} --prod

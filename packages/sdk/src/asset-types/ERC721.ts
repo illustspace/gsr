@@ -43,7 +43,7 @@ const assetTypeAbis = {
   itemId: ["uint256"],
 };
 
-export class Erc721Verifier extends BaseAssetTypeVerifier {
+export class Erc721Verifier extends BaseAssetTypeVerifier<Erc721AssetId> {
   single = true;
   assetType = "ERC721" as const;
 
@@ -105,9 +105,7 @@ export class Erc721Verifier extends BaseAssetTypeVerifier {
     );
 
     // Get the owner, returning '' if the asset does not exist.
-    const owner = await contract
-      .ownerOf(decodedAssetId.tokenId)
-      .catch(() => "");
+    const owner = await contract.ownerOf(decodedAssetId.tokenId);
 
     return publisher.toLowerCase() === owner.toLowerCase();
   }

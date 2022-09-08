@@ -18,7 +18,7 @@ const assetTypeAbis = {
   itemId: ["uint256"],
 };
 
-export class SelfPublishedVerifier extends BaseAssetTypeVerifier {
+export class SelfPublishedVerifier extends BaseAssetTypeVerifier<SelfPublishedAssetId> {
   single = true;
   assetType = "SELF_PUBLISHED" as const;
 

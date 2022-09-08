@@ -11,7 +11,9 @@ import {
 /**
  * Base class for asset type verifiers. Implement this to add a new asset type.
  */
-export abstract class BaseAssetTypeVerifier extends AssetTypeVerifierMethods {
+export abstract class BaseAssetTypeVerifier<
+  T extends DecodedAssetId = DecodedAssetId
+> extends AssetTypeVerifierMethods {
   abstract assetType: string;
   private cachedEncodedAssetType?: string;
   abstract single: boolean;
@@ -21,14 +23,14 @@ export abstract class BaseAssetTypeVerifier extends AssetTypeVerifierMethods {
     return this.cachedEncodedAssetType;
   }
 
-  abstract decodeAssetId(assetId: EncodedAssetId): DecodedAssetId;
+  abstract decodeAssetId(assetId: EncodedAssetId): T;
 
-  abstract encodeAssetId(assetId: DecodedAssetId): EncodedAssetId;
+  abstract encodeAssetId(assetId: T): EncodedAssetId;
 
   abstract verifyAssetOwnership(placement: GsrPlacement): Promise<boolean>;
 
   /** Hash a decoded AssetId to a simple AssetId used for GSR queries. */
-  hashAssetId(assetId: DecodedAssetId): string {
+  hashAssetId(assetId: T): string {
     const encodedAssetId = this.encodeAssetId(assetId);
     return this.hashEncodedAssetId(encodedAssetId);
   }

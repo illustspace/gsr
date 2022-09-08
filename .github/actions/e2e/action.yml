@@ -1,0 +1,21 @@
+runs:
+  using: "composite"
+  steps:
+    - name: Start blockchain
+      run: yarn ws contracts start &
+
+    - name: Build test indexer
+      run: NODE_ENV=test yarn ws indexer build
+
+    - name: Start test indexer
+      run: NODE_ENV=test yarn ws indexer serve &
+      env:
+        DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
+
+    # TODO: use https://www.npmjs.com/package/start-server-and-test
+    - name: wait for services
+      run: sleep 20s
+
+    # Run e2e test once services are started
+    - name: E2E Tests
+      run: yarn ws e2e test:e2e

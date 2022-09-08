@@ -18,7 +18,7 @@ export type Fa2AssetId = {
 
 const tezosService = keccak256(toUtf8Bytes("TEZOS"));
 
-export class Fa2Verifier extends BaseAssetTypeVerifier {
+export class Fa2Verifier extends BaseAssetTypeVerifier<Fa2AssetId> {
   single = false;
   assetType = "FA2" as const;
 

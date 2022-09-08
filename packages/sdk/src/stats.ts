@@ -1,4 +1,6 @@
 /** Statistics about the GSR */
 export interface GsrStats {
-  totalPlacements: number;
+  totalOwnedPlacements: number;
+  totalUnownedPlacements: number;
+  totalPublishers: number;
 }

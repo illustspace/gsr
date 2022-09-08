@@ -3,23 +3,15 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ApiResponseType, GsrStatsResponse } from "@gsr/sdk";
 
-import { prisma } from "~/features/db";
-import { apiServerFailure, apiSuccess } from "~/features/indexer/api-responses";
+import { apiServerFailure, apiSuccess } from "~/api/api-responses";
+import { getStats } from "~/api/stats";
 
 export default async function handler(
   _req: NextApiRequest,
   res: NextApiResponse<ApiResponseType<GsrStatsResponse>>
 ) {
   try {
-    const statsResponse = await prisma.placement.aggregate({
-      _count: {
-        placedByOwner: true,
-      },
-    });
-
-    const stats = {
-      totalPlacements: statsResponse._count.placedByOwner,
-    };
+    const stats = await getStats();
 
     res.status(200).json(apiSuccess(stats));
   } catch (error) {

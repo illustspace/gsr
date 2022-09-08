@@ -4,6 +4,7 @@
 
 import { GeoJsonFeaturesCollection } from "./geo-json";
 import { SerializedGsrPlacement } from "./placement-event";
+import { GsrSceneMetadata } from "./scene-metadata";
 import { GsrStats } from "./stats";
 
 /** A success response */
@@ -43,4 +44,14 @@ export type SinglePlacementResponse =
 export type PlacementGeoJsonResponse =
   ApiResponseSuccess<GeoJsonFeaturesCollection>;
 
+/** /api/self-serve/create */
+export type SelfServeCreateResponse = ApiResponseSuccess<{
+  assetId: string;
+  sceneUri: string;
+}>;
+
+/** /api/placements/geojson */
+export type SelfServeMetadataResponse = ApiResponseSuccess<GsrSceneMetadata>;
+
+/** /api/stats */
 export type GsrStatsResponse = ApiResponseSuccess<GsrStats>;

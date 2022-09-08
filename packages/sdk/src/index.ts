@@ -11,6 +11,7 @@ export * from "./api-responses";
 export * from "./gsr-indexer";
 export * from "./stats";
 export * from "./geo-json";
+export * from "./scene-metadata";
 
 export type {
   DecodedAssetId as AssetId,

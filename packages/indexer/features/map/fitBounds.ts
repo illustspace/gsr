@@ -5,8 +5,10 @@ import { InitialViewState } from "./InitialViewState";
 
 export const createBounds = (
   features: GeoJsonFeaturesCollection
-): LngLatBounds | null => {
-  if (features.data.features.length === 0) return null;
+): LngLatBounds => {
+  if (features.data.features.length === 0) {
+    return new LngLatBounds([-180, -90], [180, 90]);
+  }
 
   const bounds = new LngLatBounds();
 
@@ -25,7 +27,5 @@ export const getBoundsViewport = (
 ): InitialViewState | null => {
   const bounds = createBounds(features);
 
-  return bounds
-    ? { bounds, fitBoundsOptions: { padding: 100, maxZoom: 14 } }
-    : null;
+  return { bounds, fitBoundsOptions: { padding: 100, maxZoom: 14 } };
 };

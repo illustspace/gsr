@@ -3,12 +3,9 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ApiResponseType, GsrContract, IndexerSyncResponse } from "@gsr/sdk";
 
-import { prisma } from "~/features/db";
-import {
-  apiFailure,
-  apiServerFailure,
-  apiSuccess,
-} from "~/features/indexer/api-responses";
+import { prisma } from "~/api/db";
+import { apiFailure, apiServerFailure, apiSuccess } from "~/api/api-responses";
+import { placementToDb } from "~/api/db/dbToPlacement";
 
 /** How long to wait between sync requests. */
 const RATE_LIMIT_MS = 1000;
@@ -17,14 +14,9 @@ let lastUpdatedTimestamp = 0;
 
 /** Request an indexer run against the GSR. Should be called when a new placement has been added to the GSR. */
 export default async function handler(
-  req: NextApiRequest,
+  _req: NextApiRequest,
   res: NextApiResponse<ApiResponseType<IndexerSyncResponse>>
 ) {
-  if (req.method !== "POST") {
-    res.status(404).send(apiFailure("not found", "NOT_FOUND"));
-    return;
-  }
-
   const now = Date.now();
   if (lastUpdatedTimestamp > now - RATE_LIMIT_MS) {
     res
@@ -65,7 +57,7 @@ export default async function handler(
       const finalPlacement = await gsr.verifyPlacement(placement);
 
       // todo: transaction
-      return prisma.placement.create({ data: finalPlacement });
+      return prisma.placement.create({ data: placementToDb(finalPlacement) });
     });
 
     await Promise.all(promises);

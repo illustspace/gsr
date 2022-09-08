@@ -43,33 +43,10 @@ jobs:
       - name: Apply DB Migrations
         run: yarn ws indexer prisma migrate deploy
         env:
-          DATABASE_URL: ${{ secrets.STAGING_MIGRATE_URL }}
+          DATABASE_URL: ${{ secrets.PROD_MIGRATE_URL }}
 
-      # ===
-      # E2E Test
-      # ===
+      - name: E2E Tests
+        uses: ./.github/actions/e2e
 
-      # Start local blockchai
-      # - name: Start blockchain
-      #   run: yarn ws contracts start &
-
-      # # Start indexer
-      # - name: Start indexer
-      #   run: yarn ws indexer start &
-      #   env:
-      #     DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
-      #     GSR_CHAIN_ID: 1337
-
-      # - name: wait for services
-      #   run: sleep 20s
-
-      # # Run e2e test once services are started
-      # - name: E2E Tests
-      #   run: yarn ws e2e test:e2e
-
-      - name: Pull Vercel Environment Information
-        run: yarn vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Build Project Artifacts
-        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Indexer
+        uses: ./.github/actions/vercel --token=${{ secrets.VERCEL_TOKEN }} --environment=production

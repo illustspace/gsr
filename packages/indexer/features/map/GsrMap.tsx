@@ -1,4 +1,6 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
+import { Box } from "@chakra-ui/react";
+
 import { GeoJsonFeaturesCollection } from "@gsr/sdk";
 
 import { gsrIndexer } from "../gsr/gsr-indexer";
@@ -8,7 +10,11 @@ import { GeoJsonMap } from "./GeoJsonMap";
 export const GsrMap: FunctionComponent = () => {
   const [features] = useGsrMap();
 
-  return <GeoJsonMap mapId="gsr-map" features={features} />;
+  return (
+    <Box height="300px">
+      <GeoJsonMap mapId="gsr-map" features={features} />;
+    </Box>
+  );
 };
 
 const useGsrMap = (): [

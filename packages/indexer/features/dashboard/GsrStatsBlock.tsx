@@ -1,33 +1,50 @@
-import { Box, SimpleGrid } from "@chakra-ui/react";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import { Box, BoxProps, Heading, SimpleGrid, Text } from "@chakra-ui/react";
+import React, { FunctionComponent } from "react";
 
 import { GsrStats } from "@gsr/sdk";
 
-import { gsrIndexer } from "../gsr/gsr-indexer";
-import { CenteredSpinner } from "../utils/CenteredSpinner";
+export interface GsrStatsBlockProps {
+  stats: GsrStats | null;
+}
 
-export const GsrStatsBlock: FunctionComponent = () => {
-  const [stats] = useStats();
-
-  if (!stats) return <CenteredSpinner />;
-
+export const GsrStatsBlock: FunctionComponent<GsrStatsBlockProps> = ({
+  stats,
+}) => {
+  if (!stats) {
+    return (
+      <Box>
+        <Heading as="h2" size="md">
+          Something went wrong when fetching GSR stats
+        </Heading>
+      </Box>
+    );
+  }
   return (
-    <SimpleGrid>
-      <Box>{stats.totalPlacements}</Box>
+    <SimpleGrid my={3} minChildWidth="200px">
+      <StatCard title="Owned Placements" value={stats.totalOwnedPlacements} />
+      <StatCard
+        title="Unowned Placements"
+        value={stats.totalUnownedPlacements}
+      />
+      <StatCard title="Total Publishers" value={stats.totalPublishers} />
     </SimpleGrid>
   );
 };
 
-const useStats = (): [stats: GsrStats | null, isLoaded: boolean] => {
-  const [stats, setStats] = useState<GsrStats | null>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
+interface StatCardProps extends BoxProps {
+  title: string;
+  value: string | number;
+}
 
-  useEffect(() => {
-    gsrIndexer.stats().then((stats) => {
-      setIsLoaded(true);
-      setStats(stats);
-    });
-  }, []);
-
-  return [stats, isLoaded];
+const StatCard: FunctionComponent<StatCardProps> = ({
+  title,
+  value,
+  ...props
+}) => {
+  return (
+    <Box p={5} shadow="md" borderWidth="1px" {...props}>
+      <Heading fontSize="lg">{title}</Heading>
+      <Text mt={4}>{value}</Text>
+    </Box>
+  );
 };

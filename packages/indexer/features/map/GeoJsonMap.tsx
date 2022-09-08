@@ -18,7 +18,7 @@ import React, {
   RefObject,
   FunctionComponent,
 } from "react";
-import { Box, BoxProps, useTheme } from "@chakra-ui/react";
+import { Box, BoxProps } from "@chakra-ui/react";
 import { GeoJsonFeaturesCollection } from "@gsr/sdk";
 
 import mapPin from "~/assets/map-pin.png";
@@ -99,7 +99,6 @@ export const GeoJsonMap: FunctionComponent<BaseMapProps> = ({
   const [loadedPinImage, setLoadedPinImage] = useState(false);
 
   const initialViewport = useInitialViewport(features);
-  const theme = useTheme();
 
   useFollowFeatures(features, mapRef);
 
@@ -175,7 +174,7 @@ export const GeoJsonMap: FunctionComponent<BaseMapProps> = ({
         0,
         "rgba(33,102,172,0)",
         0.1,
-        `${theme.colors.brand.highlight}`,
+        "green",
         0.4,
         `#f493ba`,
         0.9,
@@ -262,7 +261,7 @@ export const GeoJsonMap: FunctionComponent<BaseMapProps> = ({
           {children}
 
           {/* Render the mayer once the pin is ready to display */}
-          {loadedPinImage && features?.data?.features?.length && (
+          {loadedPinImage && (
             <MapSource id="data" type="geojson" data={features.data}>
               <Layer {...layerStyle} />
               <Layer {...heatMapStyle} />

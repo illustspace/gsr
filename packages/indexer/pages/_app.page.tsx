@@ -1,10 +1,10 @@
 import type { AppProps } from "next/app";
 import { ChakraProvider } from "@chakra-ui/react";
 
-function GsrApp({ Component }: AppProps) {
+function GsrApp({ Component, pageProps }: AppProps) {
   return (
     <ChakraProvider>
-      <Component />
+      <Component {...pageProps} />
     </ChakraProvider>
   );
 }

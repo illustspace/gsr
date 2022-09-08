@@ -1,5 +1,6 @@
 import { Contract } from "@ethersproject/contracts";
 import { Provider } from "@ethersproject/providers";
+import { BigNumber } from "@ethersproject/bignumber";
 import { defaultAbiCoder } from "@ethersproject/abi";
 
 import { getChainProvider, ProviderKeys } from "~/provider";
@@ -41,15 +42,16 @@ export type Erc1155AssetId = {
   chainId: number;
   contractAddress: string;
   tokenId: string;
+  publisherAddress: string;
   itemNumber: string;
 };
 
 const assetTypeAbis = {
-  collectionId: ["uint256", "address"],
-  itemId: ["uint256", "uint256"],
+  collectionId: ["uint256", "address", "uint256"],
+  itemId: ["address", "uint256"],
 };
 
-export class Erc1155Verifier extends BaseAssetTypeVerifier {
+export class Erc1155Verifier extends BaseAssetTypeVerifier<Erc1155AssetId> {
   single = false;
   assetType = "ERC1155" as const;
 
@@ -63,12 +65,12 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
   }
 
   decodeAssetId(assetId: EncodedAssetId): Erc1155AssetId {
-    const [chainId, contractAddress] = defaultAbiCoder.decode(
+    const [chainId, contractAddress, tokenId] = defaultAbiCoder.decode(
       assetTypeAbis.collectionId,
       assetId.collectionId
     );
 
-    const [tokenId, itemNumber] = defaultAbiCoder.decode(
+    const [publisherAddress, itemNumber] = defaultAbiCoder.decode(
       assetTypeAbis.itemId,
       assetId.collectionId
     );
@@ -78,6 +80,7 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
       chainId: chainId.toNumber(),
       contractAddress,
       tokenId,
+      publisherAddress,
       itemNumber,
     };
   }
@@ -85,10 +88,10 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
   encodeAssetId(assetId: Erc1155AssetId) {
     const encodedCollectionId = defaultAbiCoder.encode(
       assetTypeAbis.collectionId,
-      [assetId.chainId, assetId.contractAddress]
+      [assetId.chainId, assetId.contractAddress, assetId.tokenId]
     );
     const encodedItemId = defaultAbiCoder.encode(assetTypeAbis.itemId, [
-      assetId.tokenId,
+      assetId.publisherAddress,
       assetId.itemNumber,
     ]);
 
@@ -103,6 +106,13 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
     decodedAssetId,
     publisher,
   }: GsrPlacement<Erc1155AssetId>): Promise<boolean> {
+    // For 1155, each assetId is unique for a given publisher.
+    if (
+      decodedAssetId.publisherAddress.toLowerCase() !== publisher.toLowerCase()
+    ) {
+      return false;
+    }
+
     const provider =
       this.customProviders[decodedAssetId.chainId] ||
       getChainProvider(decodedAssetId.chainId, this.providerKeys);
@@ -114,11 +124,14 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
     );
 
     // Get the owner, returning '' if the asset does not exist.
-    return contract
+    const balance = contract
       .balanceOf(publisher, decodedAssetId.tokenId)
       .catch((error: any) => {
         console.error(error);
-        return "";
+        return 0;
       });
+
+    // Ensure the owner has enough assets to own numbered placement.
+    return BigNumber.from(balance).gte(decodedAssetId.itemNumber);
   }
 }

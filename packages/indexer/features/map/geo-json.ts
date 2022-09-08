@@ -1,8 +1,8 @@
-import { decode } from "ngeohash";
+import { decode_int } from "ngeohash";
 
 import { GeoJsonFeaturesCollection } from "@gsr/sdk";
 
-import { Placement } from "~/features/db";
+import { Placement } from "~/api/db";
 
 export const emptyGeoJson: GeoJsonFeaturesCollection = {
   type: "geojson",
@@ -24,7 +24,10 @@ export const placementsToGeoJson = (
     data: {
       type: "FeatureCollection",
       features: placements.map((placement) => {
-        const point = decode(placement.geohash);
+        const point = decode_int(
+          placement.geohashBits,
+          placement.geohashBitPrecision
+        );
         const coordinates = [point.longitude, point.latitude];
         return {
           type: "Feature",

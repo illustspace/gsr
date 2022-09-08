@@ -40,30 +40,8 @@ jobs:
       - run: yarn lint
       - run: yarn test
 
-      # ===
-      # E2E Test
-      # ===
+      - name: E2E Tests
+        uses: ./.github/actions/e2e
 
-      # # Start local blockchain
-      # - name: Start blockchain
-      #   run: yarn ws contracts start &
-
-      # # Start indexer
-      # - name: Start indexer
-      #   run: yarn ws indexer start &
-      #   env:
-      #     DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
-      #     GSR_CHAIN_ID: 1337
-
-      # - name: wait for services
-      #   run: sleep 20s
-
-      # # Run e2e test once services are started
-      # - name: E2E Tests
-      #   run: yarn ws e2e test:e2e
-      - name: Pull Vercel Environment Information
-        run: yarn vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Build Project Artifacts
-        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
-      - name: Deploy Project Artifacts to Vercel
-        run: vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Indexer
+        uses: ./.github/actions/vercel --token=${{ secrets.VERCEL_TOKEN }}

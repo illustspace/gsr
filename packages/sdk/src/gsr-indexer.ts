@@ -1,4 +1,5 @@
-import axios, { AxiosResponse } from "axios";
+// eslint-disable-next-line max-classes-per-file
+import axios, { AxiosError, AxiosResponse } from "axios";
 
 import { GeoJsonFeaturesCollection } from "./geo-json";
 import {
@@ -25,6 +26,13 @@ export interface GsrIndexerOpts {
   customIndexerUrl?: string;
 }
 
+export class GsrIndexerError extends Error {
+  constructor(message: string, public code: string) {
+    super(message);
+    this.name = "GsrIndexerError";
+  }
+}
+
 export class GsrIndexer {
   private axios;
 
@@ -40,7 +48,7 @@ export class GsrIndexer {
 
   async placeOf(
     decodedAssetId: DecodedAssetId
-  ): Promise<ValidatedGsrPlacement | null> {
+  ): Promise<ValidatedGsrPlacement> {
     try {
       const response = await this.axios.get<SinglePlacementResponse>(
         "/placements/single",
@@ -53,8 +61,14 @@ export class GsrIndexer {
 
       return deserializeGsrPlacement(placement);
     } catch (e) {
-      console.error(e);
-      return null;
+      const error = e as AxiosError;
+
+      const data = error.response?.data || ({} as any);
+
+      throw new GsrIndexerError(
+        data.message || "Something went wrong",
+        data.code || "UNKNOWN_ERROR"
+      );
     }
   }
 
@@ -94,7 +108,9 @@ export class GsrIndexer {
 
   /** Request a sync from the indexer. Should be done after a placement tx has finished. */
   async sync() {
-    const response = await this.axios.post<IndexerSyncResponse>("/sync");
+    const response = await this.axios.post<IndexerSyncResponse>(
+      "/indexer/sync"
+    );
     return this.getResponse(response);
   }
 

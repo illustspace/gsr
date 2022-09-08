@@ -3,8 +3,8 @@ import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ApiResponseType, PlacementGeoJsonResponse } from "@gsr/sdk";
 
-import { prisma } from "~/features/db";
-import { apiServerFailure, apiSuccess } from "~/features/indexer/api-responses";
+import { prisma } from "~/api/db";
+import { apiServerFailure, apiSuccess } from "~/api/api-responses";
 import { placementsToGeoJson } from "~/features/map/geo-json";
 
 export default async function handler(

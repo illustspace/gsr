@@ -74,10 +74,18 @@ export class GsrContract {
     this.indexer = indexer;
     this.verifier = new AssetTypeVerifier(providerKeys);
 
+    const address = customGsrAddress || GsrAddress[chainId];
+
     this.contract = GeoSpatialRegistry__factory.connect(
-      customGsrAddress || GsrAddress[chainId],
+      address,
       this.gsrProvider
     );
+
+    // eslint-disable-next-line no-console
+    console.info("Initialized GSR Contract", {
+      chainId,
+      address,
+    });
   }
 
   /** Fetch GSR events since a specified block number. */
