@@ -1,5 +1,5 @@
 {
-  "name": "@gsr/contracts",
+  "name": "@geospatialregistry/contracts",
   "version": "0.0.0",
   "private": true,
   "scripts": {
@@ -27,7 +27,7 @@
     "@ethersproject/abi": "5.4.1",
     "@ethersproject/bignumber": "5.4.1",
     "@ethersproject/providers": "5.4.5",
-    "@gsr/sdk": "0.0.0",
+    "@geospatialregistry/sdk": "0.0.0",
     "@nomiclabs/hardhat-ethers": "^2.0.5",
     "@nomiclabs/hardhat-etherscan": "^3.0.1",
     "@nomiclabs/hardhat-solhint": "^2.0.0",

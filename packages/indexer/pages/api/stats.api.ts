@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { ApiResponseType, GsrStatsResponse } from "@gsr/sdk";
+import { ApiResponseType, GsrStatsResponse } from "@geospatialregistry/sdk";
 
 import { apiServerFailure, apiSuccess } from "~/api/api-responses";
 import { getStats } from "~/api/stats";

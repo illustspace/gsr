@@ -34,7 +34,7 @@ You will have to do this at least once to build the typechain types needed for t
 yarn build
 ```
 
-This will compile the smart contracts, and also generate TypeChain ethers.js classes, which are placed in the `@gsr/sdk` library for general use.
+This will compile the smart contracts, and also generate TypeChain ethers.js classes, which are placed in the `@geospatialregistry/sdk` library for general use.
 
 ### Live testing
 

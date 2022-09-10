@@ -1,7 +1,7 @@
 import { Box, BoxProps, Heading, SimpleGrid, Text } from "@chakra-ui/react";
 import React, { FunctionComponent } from "react";
 
-import { GsrStats } from "@gsr/sdk";
+import { GsrStats } from "@geospatialregistry/sdk";
 
 export interface GsrStatsBlockProps {
   stats: GsrStats | null;

@@ -12,7 +12,7 @@
     "ws": "./bin/ws.sh",
     "wss": "yarn workspaces foreach -vpi --exclude gsr-contracts run",
     "start": "yarn wss start",
-    "build": "yarn ws contracts build && yarn workspaces foreach -vpit --exclude gsr-contracts --exclude @gsr/contracts run build",
+    "build": "yarn ws contracts build && yarn workspaces foreach -vpit --exclude gsr-contracts --exclude @geospatialregistry/contracts run build",
     "test": "yarn wss test",
     "lint": "npm-run-all -p 'lint:*'",
     "lint:prettier": "prettier --check './**/*.{ts,tsx,js,sol,html,css,md,json,yml}'",

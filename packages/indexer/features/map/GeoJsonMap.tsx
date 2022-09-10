@@ -19,7 +19,7 @@ import React, {
   FunctionComponent,
 } from "react";
 import { Box, BoxProps } from "@chakra-ui/react";
-import { GeoJsonFeaturesCollection } from "@gsr/sdk";
+import { GeoJsonFeaturesCollection } from "@geospatialregistry/sdk";
 
 import mapPin from "~/assets/map-pin.png";
 import { CenteredSpinner } from "~/features/utils/CenteredSpinner";

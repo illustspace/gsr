@@ -19,7 +19,7 @@ import {
   decodeGsrPlacementEvent,
   EncodedAssetId,
   Erc721Verifier,
-} from "@gsr/sdk";
+} from "@geospatialregistry/sdk";
 
 const tokenId = BigNumber.from(1);
 

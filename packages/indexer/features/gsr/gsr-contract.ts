@@ -1,4 +1,4 @@
-import { GsrContract } from "@gsr/sdk";
+import { GsrContract } from "@geospatialregistry/sdk";
 
 import { getEnv } from "../config/env";
 import { gsrIndexer } from "./gsr-indexer";

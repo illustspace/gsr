@@ -1,6 +1,6 @@
 import { decode_int } from "ngeohash";
 
-import { GeoJsonFeaturesCollection } from "@gsr/sdk";
+import { GeoJsonFeaturesCollection } from "@geospatialregistry/sdk";
 
 import { Placement } from "~/api/db";
 

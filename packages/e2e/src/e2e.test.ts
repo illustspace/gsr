@@ -11,7 +11,7 @@ import {
   Erc721AssetId,
   SelfPublishedAssetId,
   SelfPublishedVerifier,
-} from "@gsr/sdk";
+} from "@geospatialregistry/sdk";
 
 import { getDefaultProvider, Provider } from "@ethersproject/providers";
 import { abi as testTokenAbi } from "../../contracts/artifacts/contracts/test/Erc721.sol/TestToken.json";

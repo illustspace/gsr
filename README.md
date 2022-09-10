@@ -8,17 +8,17 @@ This repo contains the GeoSpatialRegistry smart contract, a TypeScript SDK for m
 
 See each packages's README for details on usage and development.
 
-### @gsr/contracts
+### @geospatialregistry/contracts
 
 The smart contracts hardhat package can be found in [packages/contracts](./packages/contracts/), and the contracts themselves in [packages/contracts/contracts](./packages/contracts/contracts)
 
 See [packages/contracts/docs](./packages/contracts/docs/README.md) for a full walk-through of the smart contract logic.
 
-### @gsr/sdk
+### @geospatialregistry/sdk
 
-The TypeScript SDK can be found in [packages/sdk](./packages/indexer).
+The TypeScript SDK can be found in [packages/sdk](./packages/sdk).
 
-### @gsr/indexer
+### @geospatialregistry/indexer
 
 The indexer service can be found in [packages/indexer](./packages/indexer)
 
@@ -48,7 +48,12 @@ yarn test
 Run E2E tests of the contracts, SDK, and indexer APIs
 
 ```bash
-yarn ws e2e test:e2e
+# Start a local blockchain
+yarn ws contracts start
+# Start up the test DB, and serve a text indexer on localhost:3001
+yarn ws indexer e2e
+# Run e2e tests
+yarn ws e2e e2e:test
 ```
 
 For development, you can either start a local blockchain and all services in one command:
@@ -60,7 +65,18 @@ yarn start
 Or start each one individually
 
 ```bash
+# local blockchain
 yarn ws contracts start
+# SDK builder
 yarn ws sdk start
+# Indexer
 yarn ws indexer start
 ```
+
+## Deployment
+
+Github actions will run tests in CI when a commit goes up to a branch
+
+Commits to develop will deploy to the testnet site
+
+Commits to main will deploy to the mainnet site.

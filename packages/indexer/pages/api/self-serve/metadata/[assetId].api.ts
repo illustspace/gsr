@@ -5,7 +5,7 @@ import {
   ApiResponseType,
   GsrSceneMetadata,
   SelfServeMetadataResponse,
-} from "@gsr/sdk";
+} from "@geospatialregistry/sdk";
 
 import { prisma } from "~/api/db";
 import { apiFailure, apiServerFailure, apiSuccess } from "~/api/api-responses";

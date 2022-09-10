@@ -17,7 +17,7 @@ import {
   GsrIndexerError,
   GeohashBits,
   AssetType,
-} from "@gsr/sdk";
+} from "@geospatialregistry/sdk";
 
 import { getInjectedCredentials } from "~/features/providers/injected-login";
 import { getEnv } from "~/features/config/env";

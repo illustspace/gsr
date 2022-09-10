@@ -16,7 +16,7 @@ import Map, {
 } from "react-map-gl";
 import { encode_int, decode_bbox_int } from "ngeohash";
 
-import { ValidatedGsrPlacement } from "@gsr/sdk";
+import { ValidatedGsrPlacement } from "@geospatialregistry/sdk";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";

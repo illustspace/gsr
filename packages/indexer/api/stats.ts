@@ -1,4 +1,4 @@
-import { GsrStats } from "@gsr/sdk";
+import { GsrStats } from "@geospatialregistry/sdk";
 import { prisma } from "~/api/db";
 
 export const getStats = async (): Promise<GsrStats> => {

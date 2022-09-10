@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState } from "react";
 import { Box } from "@chakra-ui/react";
 
-import { GeoJsonFeaturesCollection } from "@gsr/sdk";
+import { GeoJsonFeaturesCollection } from "@geospatialregistry/sdk";
 
 import { gsrIndexer } from "../gsr/gsr-indexer";
 import { emptyGeoJson } from "./geo-json";

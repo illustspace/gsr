@@ -3673,14 +3673,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gsr/contracts@workspace:packages/contracts":
+"@geospatialregistry/contracts@workspace:packages/contracts":
   version: 0.0.0-use.local
-  resolution: "@gsr/contracts@workspace:packages/contracts"
+  resolution: "@geospatialregistry/contracts@workspace:packages/contracts"
   dependencies:
     "@ethersproject/abi": 5.4.1
     "@ethersproject/bignumber": 5.4.1
     "@ethersproject/providers": 5.4.5
-    "@gsr/sdk": 0.0.0
+    "@geospatialregistry/sdk": 0.0.0
     "@manifoldxyz/creator-core-solidity": ^1.0.4
     "@manifoldxyz/libraries-solidity": ^1.0.2
     "@nomiclabs/hardhat-ethers": ^2.0.5
@@ -3724,9 +3724,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gsr/e2e@workspace:packages/e2e":
+"@geospatialregistry/e2e@workspace:packages/e2e":
   version: 0.0.0-use.local
-  resolution: "@gsr/e2e@workspace:packages/e2e"
+  resolution: "@geospatialregistry/e2e@workspace:packages/e2e"
   dependencies:
     "@babel/core": ^7.18.13
     "@babel/preset-env": ^7.18.10
@@ -3738,7 +3738,7 @@ __metadata:
     "@ethersproject/providers": 5.4.5
     "@ethersproject/strings": 5.4.0
     "@ethersproject/wallet": ^5.4.0
-    "@gsr/sdk": ^0.0.0
+    "@geospatialregistry/sdk": ^0.0.0
     "@types/jest": ^28.1.8
     axios: ^0.27.2
     babel-jest: ^29.0.0
@@ -3751,9 +3751,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gsr/indexer@workspace:packages/indexer":
+"@geospatialregistry/indexer@workspace:packages/indexer":
   version: 0.0.0-use.local
-  resolution: "@gsr/indexer@workspace:packages/indexer"
+  resolution: "@geospatialregistry/indexer@workspace:packages/indexer"
   dependencies:
     "@chakra-ui/icons": ^2.0.9
     "@chakra-ui/react": ^2.3.1
@@ -3765,7 +3765,7 @@ __metadata:
     "@ethersproject/keccak256": ^5.4.0
     "@ethersproject/providers": ^5.4.5
     "@ethersproject/strings": ^5.4.0
-    "@gsr/sdk": ^0.0.0
+    "@geospatialregistry/sdk": ^0.0.0
     "@mapbox/mapbox-gl-geocoder": ^5.0.1
     "@prisma/client": ^4.2.1
     "@types/geojson": ^7946.0.10
@@ -3791,9 +3791,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gsr/sdk@0.0.0, @gsr/sdk@^0.0.0, @gsr/sdk@workspace:packages/sdk":
+"@geospatialregistry/sdk@0.0.0, @geospatialregistry/sdk@^0.0.0, @geospatialregistry/sdk@workspace:packages/sdk":
   version: 0.0.0-use.local
-  resolution: "@gsr/sdk@workspace:packages/sdk"
+  resolution: "@geospatialregistry/sdk@workspace:packages/sdk"
   dependencies:
     "@babel/core": ^7.18.13
     "@babel/preset-env": ^7.18.10

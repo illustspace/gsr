@@ -1,4 +1,4 @@
-import { ApiResponseError, ApiResponseSuccess } from "@gsr/sdk";
+import { ApiResponseError, ApiResponseSuccess } from "@geospatialregistry/sdk";
 
 /** @file helpers for generating typed API responses */
 

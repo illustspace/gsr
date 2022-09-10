@@ -1,5 +1,5 @@
 import { LngLatBounds } from "mapbox-gl";
-import { GeoJsonFeaturesCollection } from "@gsr/sdk";
+import { GeoJsonFeaturesCollection } from "@geospatialregistry/sdk";
 
 import { InitialViewState } from "./InitialViewState";
 

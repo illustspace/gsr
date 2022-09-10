@@ -6,7 +6,7 @@ import {
   ApiResponseType,
   SelfServeCreateResponse,
   SelfPublishedVerifier,
-} from "@gsr/sdk";
+} from "@geospatialregistry/sdk";
 
 import { prisma } from "~/api/db";
 import { apiServerFailure, apiSuccess } from "~/api/api-responses";

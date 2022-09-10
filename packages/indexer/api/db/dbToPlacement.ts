@@ -3,7 +3,7 @@ import {
   SerializedGsrPlacement,
   DecodedAssetId,
   ValidatedGsrPlacement,
-} from "@gsr/sdk";
+} from "@geospatialregistry/sdk";
 import { Prisma } from "@prisma/client";
 
 import { Placement } from "~/api/db";

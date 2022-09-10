@@ -1,5 +1,5 @@
 {
-  "name": "@gsr/indexer",
+  "name": "@geospatialregistry/indexer",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -33,7 +33,7 @@
     "@ethersproject/keccak256": "^5.4.0",
     "@ethersproject/providers": "^5.4.5",
     "@ethersproject/strings": "^5.4.0",
-    "@gsr/sdk": "^0.0.0",
+    "@geospatialregistry/sdk": "^0.0.0",
     "@mapbox/mapbox-gl-geocoder": "^5.0.1",
     "@prisma/client": "^4.2.1",
     "@types/geojson": "^7946.0.10",

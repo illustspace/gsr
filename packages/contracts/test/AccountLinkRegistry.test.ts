@@ -5,8 +5,8 @@ import { expect } from "chai";
 import { InMemorySigner } from "@taquito/signer";
 import { verifySignature } from "@taquito/utils";
 
-import { AccountLinkRegistry__factory } from "@gsr/sdk/lib/esm/typechain/factories/AccountLinkRegistry__factory";
-import { AccountLinkRegistry } from "@gsr/sdk/lib/esm/typechain/AccountLinkRegistry";
+import { AccountLinkRegistry__factory } from "@geospatialregistry/sdk/lib/esm/typechain/factories/AccountLinkRegistry__factory";
+import { AccountLinkRegistry } from "@geospatialregistry/sdk/lib/esm/typechain/AccountLinkRegistry";
 import {
   defaultAbiCoder,
   keccak256,

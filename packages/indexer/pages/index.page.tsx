@@ -1,6 +1,6 @@
 import { Container } from "@chakra-ui/react";
 import type { NextPage, GetServerSideProps } from "next";
-import { GsrStats } from "@gsr/sdk";
+import { GsrStats } from "@geospatialregistry/sdk";
 
 import { AssetSearch } from "~/features/asset-types/AssetSearch";
 import { GsrStatsBlock } from "~/features/dashboard/GsrStatsBlock";

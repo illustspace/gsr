@@ -1,7 +1,10 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { ApiResponseType, PlacementGeoJsonResponse } from "@gsr/sdk";
+import {
+  ApiResponseType,
+  PlacementGeoJsonResponse,
+} from "@geospatialregistry/sdk";
 
 import { prisma } from "~/api/db";
 import { apiServerFailure, apiSuccess } from "~/api/api-responses";

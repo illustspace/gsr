@@ -5,12 +5,12 @@ TypeScript SDK for interacting with the GeoSpatialRegistry
 ## Install
 
 ```bash
-yarn install @gsr/sdk
-npm install @gsr/sdk
+yarn install @geospatialregistry/sdk
+npm install @geospatialregistry/sdk
 ```
 
 ```ts
-import { encodeAssetId, decodeAssetId } from "@gsr/sdk";
+import { encodeAssetId, decodeAssetId } from "@geospatialregistry/sdk";
 ```
 
 ## Development
@@ -18,25 +18,25 @@ import { encodeAssetId, decodeAssetId } from "@gsr/sdk";
 ### Test
 
 ```test
-yarn ws @gsr/sdk test
+yarn ws @geospatialregistry/sdk test
 ```
 
 Or for test coverage
 
 ```test
-yarn ws @gsr/sdk test:coverage
+yarn ws @geospatialregistry/sdk test:coverage
 ```
 
 ### Build
 
 ```bash
-yarn ws @gsr/sdk build
+yarn ws @geospatialregistry/sdk build
 ```
 
 ### Format
 
 ```bash
-yarn ws @gsr/sdk format
+yarn ws @geospatialregistry/sdk format
 ```
 
 ### Adding an AssetType
