@@ -13,11 +13,11 @@
     "start": "npm-run-all --parallel 'start:**'",
     "start:cjs": "tsc -p tsconfig.cjs.json --watch",
     "start:cjs:alias": "tsc-alias -p tsconfig.cjs.json --watch --silent",
-    "start:esm": "tsc -p tsconfig.json --watch",
-    "start:esm:alias": "tsc-alias -p tsconfig.json --watch --silent",
+    "start:esm": "tsc -p tsconfig.esm.json --watch",
+    "start:esm:alias": "tsc-alias -p tsconfig.esm.json --watch --silent",
     "build": "npm-run-all -p 'build:*'",
     "build:cjs": "rimraf dist/cjs && tsc -p tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
-    "build:esm": "rimraf dist/esm && tsc && tsc-alias -p tsconfig.json",
+    "build:esm": "rimraf dist/esm && tsc -p tsconfig.esm.json && tsc-alias -p tsconfig.esm.json",
     "test": "jest"
   },
   "dependencies": {
@@ -26,7 +26,8 @@
     "@types/ngeohash": "^0.6.4",
     "axios": "^0.27.2",
     "lodash": "^4.17.21",
-    "ngeohash": "^0.6.3"
+    "ngeohash": "^0.6.3",
+    "yup": "^v1.0.0-beta.7"
   },
   "devDependencies": {
     "@babel/core": "^7.18.13",

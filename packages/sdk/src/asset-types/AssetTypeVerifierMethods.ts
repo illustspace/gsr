@@ -12,6 +12,8 @@ export interface EncodedAssetId {
 }
 
 export abstract class AssetTypeVerifierMethods {
+  abstract parseAssetId(decodedAssetId: any, partial?: boolean): DecodedAssetId;
+
   abstract decodeAssetId(assetId: EncodedAssetId): DecodedAssetId;
 
   abstract encodeAssetId(assetId: DecodedAssetId): EncodedAssetId;

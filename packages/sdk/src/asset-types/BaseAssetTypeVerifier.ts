@@ -1,6 +1,7 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { keccak256 } from "@ethersproject/keccak256";
 import { toUtf8Bytes } from "@ethersproject/strings";
+import { ObjectSchema } from "yup";
 import { GsrPlacement } from "~/placement-event";
 import type { DecodedAssetId } from "./AssetTypeVerifier";
 import {
@@ -17,10 +18,30 @@ export abstract class BaseAssetTypeVerifier<
   abstract assetType: string;
   private cachedEncodedAssetType?: string;
   abstract single: boolean;
+  /** Yup schema for parsing incoming decoded asset IDs */
+  abstract schema: ObjectSchema<T>;
 
-  get encodedAssetType(): string {
+  public get encodedAssetType(): string {
     this.cachedEncodedAssetType ||= keccak256(toUtf8Bytes(this.assetType));
     return this.cachedEncodedAssetType;
+  }
+
+  /** Parse and validated a decoded asset ID */
+  parseAssetId(decodedAssetId: unknown, partial?: false): T;
+
+  /** Parse and validated a decoded asset ID, allowing missing fields. */
+  parseAssetId(decodedAssetId: unknown, partial: true): Partial<T>;
+
+  parseAssetId(decodedAssetId: unknown, partial = false) {
+    if (partial) {
+      return this.schema
+        .partial()
+        .validateSync(decodedAssetId, { stripUnknown: true }) as Partial<T>;
+    }
+
+    return this.schema.validateSync(decodedAssetId, {
+      stripUnknown: true,
+    }) as T;
   }
 
   abstract decodeAssetId(assetId: EncodedAssetId): T;

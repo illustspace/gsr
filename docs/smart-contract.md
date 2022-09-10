@@ -2,6 +2,9 @@
 
 The GSR is a smart contract designed to take digital assets from any chain or centralized storage system, and allow owners to record a location and configure a scene for the asset.
 
+See the diagram for a walkthrough of the placing flow.
+![](./gsr.drawio.svg)
+
 See the Litepaper for the full description. However in short, this is the expected flow:
 
 1. An Owner purchases a digital asset

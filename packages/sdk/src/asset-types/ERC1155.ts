@@ -2,12 +2,17 @@ import { Contract } from "@ethersproject/contracts";
 import { Provider } from "@ethersproject/providers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { defaultAbiCoder } from "@ethersproject/abi";
+import { object, string, number, Asserts } from "yup";
 
 import { getChainProvider, ProviderKeys } from "~/provider";
 
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
 import { GsrPlacement } from "~/placement-event";
+import {
+  transformBigNumberToDecimalString,
+  transformBigNumberToInteger,
+} from "./schema";
 
 const ERC_1155_ABI = [
   {
@@ -36,15 +41,25 @@ const ERC_1155_ABI = [
   },
 ];
 
+/** Validation schema for ERC721 */
+const schema = object({
+  assetType: string().oneOf(["ERC1155"]).required(),
+  chainId: number()
+    .transform(transformBigNumberToInteger)
+    .integer()
+    .positive()
+    .required(),
+  contractAddress: string().lowercase().defined(),
+  tokenId: string()
+    .transform(transformBigNumberToDecimalString)
+    .lowercase()
+    .required(),
+  publisherAddress: string().lowercase().required(),
+  itemNumber: string().transform(transformBigNumberToDecimalString).required(),
+});
+
 /** Decoded AssetId for an EVM ERC 1155 1:1 NFT */
-export type Erc1155AssetId = {
-  assetType: "ERC1155";
-  chainId: number;
-  contractAddress: string;
-  tokenId: string;
-  publisherAddress: string;
-  itemNumber: string;
-};
+export type Erc1155AssetId = Asserts<typeof schema>;
 
 const assetTypeAbis = {
   collectionId: ["uint256", "address", "uint256"],
@@ -54,6 +69,7 @@ const assetTypeAbis = {
 export class Erc1155Verifier extends BaseAssetTypeVerifier<Erc1155AssetId> {
   single = false;
   assetType = "ERC1155" as const;
+  schema = schema;
 
   constructor(
     private providerKeys: ProviderKeys,
@@ -72,16 +88,16 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier<Erc1155AssetId> {
 
     const [publisherAddress, itemNumber] = defaultAbiCoder.decode(
       assetTypeAbis.itemId,
-      assetId.collectionId
+      assetId.itemId
     );
 
     return {
       assetType: this.assetType,
       chainId: chainId.toNumber(),
-      contractAddress,
-      tokenId,
-      publisherAddress,
-      itemNumber,
+      contractAddress: contractAddress.toLowerCase(),
+      tokenId: tokenId.toString(),
+      publisherAddress: publisherAddress.toLowerCase(),
+      itemNumber: itemNumber.toString(),
     };
   }
 

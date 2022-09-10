@@ -9,7 +9,7 @@ module.exports = {
     // https://jestjs.io/docs/webpack#handling-static-assets
     "^.+\\.(jpg|jpeg|png|gif|webp|svg)$": `<rootDir>/__mocks__/fileMock.js`,
     // Alias
-    "~/(.*)": "<rootDir>/$1",
+    "~/(.*)": "<rootDir>/src/$1",
   },
   testPathIgnorePatterns: ["<rootDir>/node_modules/"],
   transform: {
@@ -27,4 +27,5 @@ module.exports = {
   },
   transformIgnorePatterns: ["/node_modules/(?!lodash-es/.*)"],
   // setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
+  modulePathIgnorePatterns: ["<rootDir>/lib"],
 };

@@ -1,4 +1,6 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
+import { BigNumber } from "@ethersproject/bignumber";
+import { object, string, Asserts } from "yup";
 
 import { ProviderKeys } from "~/provider";
 
@@ -6,21 +8,24 @@ import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
 import { GsrPlacement } from "~/placement-event";
 
+const schema = object({
+  assetType: string().oneOf(["SELF_PUBLISHED"]).required(),
+  publisherAddress: string().lowercase().required(),
+  assetHash: string().required(),
+});
+
 /** Decoded AssetId for an EVM ERC 721 1:1 NFT */
-export type SelfPublishedAssetId = {
-  assetType: "SELF_PUBLISHED";
-  publisherAddress: string;
-  assetHash: string;
-};
+export type SelfPublishedAssetId = Asserts<typeof schema>;
 
 const assetTypeAbis = {
-  collectionId: ["address"],
-  itemId: ["uint256"],
+  collectionId: ["uint256"],
+  itemId: ["address"],
 };
 
 export class SelfPublishedVerifier extends BaseAssetTypeVerifier<SelfPublishedAssetId> {
   single = true;
   assetType = "SELF_PUBLISHED" as const;
+  schema = schema;
 
   constructor(private providerKeys: ProviderKeys) {
     super();
@@ -38,8 +43,8 @@ export class SelfPublishedVerifier extends BaseAssetTypeVerifier<SelfPublishedAs
 
     return {
       assetType: this.assetType,
-      publisherAddress,
-      assetHash,
+      publisherAddress: publisherAddress.toLowerCase(),
+      assetHash: BigNumber.from(assetHash).toHexString(),
     };
   }
 

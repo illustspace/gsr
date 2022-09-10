@@ -6,17 +6,13 @@ import { ApiResponseType, PlacementQueryResponse } from "@gsr/sdk";
 import { prisma } from "~/api/db";
 import { dbToPlacement } from "~/api/db/dbToPlacement";
 import { apiServerFailure, apiSuccess } from "~/api/api-responses";
+import { gsr } from "~/features/gsr/gsr-contract";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponseType<PlacementQueryResponse>>
 ) {
-  const query = {
-    assetType: req.query.assetType,
-    chainId: req.query.chainId ? Number(req.query.chainId) : undefined,
-    contractAddress: req.query.contractAddress,
-    tokenId: req.query.tokenId,
-  };
+  const query = gsr.parseAssetId(req.query, true);
 
   try {
     const placements = await prisma.placement.findMany({
@@ -30,7 +26,7 @@ export default async function handler(
             },
           },
           {
-            timeRangeStart: new Date(0),
+            timeRangeStart: null,
           },
         ],
         decodedAssetId: { equals: query },

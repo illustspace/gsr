@@ -2,7 +2,7 @@
   "name": "@gsr/e2e",
   "description": "E2E tests for the GSR",
   "scripts": {
-    "test:e2e": "jest"
+    "e2e:test": "jest"
   },
   "dependencies": {
     "@ethersproject/abi": "5.4.1",

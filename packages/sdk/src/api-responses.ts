@@ -5,7 +5,6 @@
 import { GeoJsonFeaturesCollection } from "./geo-json";
 import { SerializedGsrPlacement } from "./placement-event";
 import { GsrSceneMetadata } from "./scene-metadata";
-import { GsrStats } from "./stats";
 
 /** A success response */
 export interface ApiResponseSuccess<T> {
@@ -52,6 +51,13 @@ export type SelfServeCreateResponse = ApiResponseSuccess<{
 
 /** /api/placements/geojson */
 export type SelfServeMetadataResponse = ApiResponseSuccess<GsrSceneMetadata>;
+
+/** Statistics about the GSR */
+export interface GsrStats {
+  totalOwnedPlacements: number;
+  totalUnownedPlacements: number;
+  totalPublishers: number;
+}
 
 /** /api/stats */
 export type GsrStatsResponse = ApiResponseSuccess<GsrStats>;

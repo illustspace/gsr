@@ -1,20 +1,36 @@
 import { Contract } from "@ethersproject/contracts";
 import { Provider } from "@ethersproject/providers";
 import { defaultAbiCoder } from "@ethersproject/abi";
+import { object, number, string, Asserts } from "yup";
 
 import { getChainProvider, ProviderKeys } from "~/provider";
 
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
 import { GsrPlacement } from "~/placement-event";
+import {
+  transformBigNumberToDecimalString,
+  transformBigNumberToInteger,
+} from "./schema";
+// import { number, object, ObjectSchema, string } from "yup";
+
+/** Validation schema for ERC721 */
+const schema = object({
+  assetType: string().oneOf(["ERC721"]).required(),
+  chainId: number()
+    .transform(transformBigNumberToInteger)
+    .integer()
+    .positive()
+    .required(),
+  contractAddress: string().lowercase().defined(),
+  tokenId: string()
+    .transform(transformBigNumberToDecimalString)
+    .lowercase()
+    .required(),
+});
 
 /** Decoded AssetId for an EVM ERC 721 1:1 NFT */
-export type Erc721AssetId = {
-  assetType: "ERC721";
-  chainId: number;
-  contractAddress: string;
-  tokenId: string;
-};
+export type Erc721AssetId = Asserts<typeof schema>;
 
 const ERC_721_ABI = [
   {
@@ -47,6 +63,8 @@ export class Erc721Verifier extends BaseAssetTypeVerifier<Erc721AssetId> {
   single = true;
   assetType = "ERC721" as const;
 
+  schema = schema;
+
   constructor(
     private providerKeys: ProviderKeys,
     private customProviders: {
@@ -54,6 +72,10 @@ export class Erc721Verifier extends BaseAssetTypeVerifier<Erc721AssetId> {
     } = {}
   ) {
     super();
+  }
+
+  parseAssetId(serializedAssetId: unknown): Erc721AssetId {
+    return schema.validateSync(serializedAssetId);
   }
 
   decodeAssetId(assetId: EncodedAssetId): Erc721AssetId {
@@ -69,7 +91,7 @@ export class Erc721Verifier extends BaseAssetTypeVerifier<Erc721AssetId> {
     return {
       assetType: this.assetType,
       chainId: chainId.toNumber(),
-      contractAddress,
+      contractAddress: contractAddress.toLowerCase(),
       tokenId: tokenId.toString(),
     };
   }

@@ -1,5 +1,6 @@
 import type { ContractTransaction, Signer } from "ethers";
 import { Provider } from "@ethersproject/providers";
+import { BigNumber } from "@ethersproject/bignumber";
 
 import { GsrAddress } from "./addresses";
 import {
@@ -8,9 +9,7 @@ import {
 } from "./typechain/GeoSpatialRegistry";
 import { GeoSpatialRegistry__factory } from "./typechain/factories/GeoSpatialRegistry__factory";
 import { getChainProvider, ProviderKeys } from "./provider";
-import { TimeRange } from "./time-range";
 import { GeohashBits } from "./geohash";
-import { PlaceOf } from "./place";
 import {
   AssetTypeVerifier,
   DecodedAssetId,
@@ -21,6 +20,18 @@ import {
   ValidatedGsrPlacement,
 } from "./placement-event";
 import { GsrIndexer } from "./gsr-indexer";
+
+/** Return value from placeOf */
+export interface PlaceOf {
+  geohash: BigNumber;
+  bitPrecision: number;
+  startTime: Date;
+}
+
+export interface TimeRange {
+  start: number;
+  end: number;
+}
 
 export interface GsrContractOpts {
   /**
@@ -86,6 +97,16 @@ export class GsrContract {
       chainId,
       address,
     });
+  }
+
+  parseAssetId(decodedAssetId: any, partial?: false): DecodedAssetId;
+  parseAssetId(decodedAssetId: any, partial: true): Partial<DecodedAssetId>;
+  parseAssetId(decodedAssetId: any, partial?: boolean) {
+    if (partial) {
+      return this.verifier.parseAssetId(decodedAssetId, false);
+    } else {
+      return this.verifier.parseAssetId(decodedAssetId, true);
+    }
   }
 
   /** Fetch GSR events since a specified block number. */
@@ -162,6 +183,7 @@ export class GsrContract {
     }: {
       timeRange?: TimeRange;
       sceneUri?: string;
+      /** If true don't resolve the promise until the placement is minted and synced.  */
     } = {}
   ) {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
@@ -174,9 +196,9 @@ export class GsrContract {
           .connect(signer)
           .place(encodedAssetId, geohash, timeRange);
 
-    this.syncAfterTx(tx);
+    const sync = this.syncAfterTx(tx);
 
-    return tx;
+    return { tx, sync };
   }
 
   /** Place an asset inside another asset in the GSR */
@@ -194,18 +216,9 @@ export class GsrContract {
       .connect(signer)
       .placeInside(encodedAssetId, hashedTargetAssetId, timeRange);
 
-    this.syncAfterTx(tx);
+    const sync = this.syncAfterTx(tx);
 
-    return tx;
-  }
-
-  private async syncAfterTx(tx: ContractTransaction) {
-    try {
-      await tx.wait();
-      await this.indexer.sync();
-    } catch (e) {
-      console.error(e);
-    }
+    return { tx, sync };
   }
 
   /** Clear an asset's placement */
@@ -216,9 +229,9 @@ export class GsrContract {
       .connect(signer)
       .removePlacement(encodedAssetId);
 
-    this.syncAfterTx(tx);
+    const sync = this.syncAfterTx(tx);
 
-    return tx;
+    return { tx, sync };
   }
 
   /** Update the scene metadata for a placement without moving the item */
@@ -233,13 +246,22 @@ export class GsrContract {
       .connect(signer)
       .updateSceneUri(encodedAssetId, sceneUri);
 
-    this.syncAfterTx(tx);
+    const sync = this.syncAfterTx(tx);
 
-    return tx;
+    return { tx, sync };
   }
 
   /** Decode a Placement event into useful data. */
   decodePlacementEvent(event: GsrPlacementEvent): GsrPlacement {
     return decodeGsrPlacementEvent(event, this.verifier);
+  }
+
+  private async syncAfterTx(tx: ContractTransaction) {
+    try {
+      await tx.wait();
+      await this.indexer.sync();
+    } catch (e) {
+      console.error(e);
+    }
   }
 }

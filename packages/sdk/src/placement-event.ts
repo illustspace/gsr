@@ -1,3 +1,4 @@
+import { BigNumber } from "@ethersproject/bignumber";
 import { DecodedAssetId } from "./asset-types";
 import { AssetTypeVerifierMethods } from "./asset-types/AssetTypeVerifierMethods";
 import { GsrPlacementEvent } from "./typechain/GeoSpatialRegistry";
@@ -53,15 +54,15 @@ export function decodeGsrPlacementEvent(
       ? null
       : event.args.parentAssetId,
     decodedAssetId: verifier.decodeAssetId(event.args.fullAssetId),
-    publisher: event.args.publisher,
+    publisher: event.args.publisher.toLowerCase(),
     published: event.args.published,
 
     location: {
       geohash: event.args.geohash.geohash.toNumber(),
-      bitPrecision: event.args.geohash.bitPrecision,
+      bitPrecision: BigNumber.from(event.args.geohash.bitPrecision).toNumber(),
     },
 
-    sceneUri: event.args.sceneUri,
+    sceneUri: event.args.sceneUri || null,
     placedAt: new Date(event.args.placedAt.toNumber() * 1000),
 
     timeRange: {

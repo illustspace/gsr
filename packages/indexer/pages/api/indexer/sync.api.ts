@@ -1,14 +1,15 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { ApiResponseType, GsrContract, IndexerSyncResponse } from "@gsr/sdk";
+import { ApiResponseType, IndexerSyncResponse } from "@gsr/sdk";
 
 import { prisma } from "~/api/db";
 import { apiFailure, apiServerFailure, apiSuccess } from "~/api/api-responses";
 import { placementToDb } from "~/api/db/dbToPlacement";
+import { gsr } from "~/features/gsr/gsr-contract";
 
 /** How long to wait between sync requests. */
-const RATE_LIMIT_MS = 1000;
+const RATE_LIMIT_MS = Number(process.env.SYNC_RATE_LIMIT_MS);
 /** Last time the update function was run. Used to stop DDOS requests. */
 let lastUpdatedTimestamp = 0;
 
@@ -32,35 +33,32 @@ export default async function handler(
 
   lastUpdatedTimestamp = now;
 
-  const gsr = new GsrContract(
-    {
-      alchemy: process.env.NEXT_PUBLIC_ALCHEMY_API_KEY,
-      infura: process.env.NEXT_PUBLIC_INFURA_ID,
-    },
-    {
-      chainId: Number(process.env.NEXT_PUBLIC_GSR_CHAIN_ID),
-    }
-  );
-
   const sinceBlockNumber = await getLastBlockedProcessed();
 
-  const { blockNumber, events } = await gsr.fetchEvents(sinceBlockNumber || 0);
+  const { blockNumber, events } = await gsr.fetchEvents(sinceBlockNumber);
 
   try {
-    await prisma.serviceState.upsert({
-      where: { id: 0 },
-      create: { id: 0, lastBlockNumber: blockNumber },
-      update: { lastBlockNumber: blockNumber },
-    });
+    // Verify placements.
+    const placements = await Promise.all(
+      events.map(async (placement) => {
+        return gsr.verifyPlacement(placement);
+      })
+    );
 
-    const promises = events.map(async (placement) => {
-      const finalPlacement = await gsr.verifyPlacement(placement);
+    await prisma.$transaction([
+      // Save the processed block
+      prisma.serviceState.upsert({
+        where: { id: 0 },
+        create: { id: 0, lastBlockNumber: sinceBlockNumber },
+        update: { lastBlockNumber: sinceBlockNumber },
+      }),
 
-      // todo: transaction
-      return prisma.placement.create({ data: placementToDb(finalPlacement) });
-    });
-
-    await Promise.all(promises);
+      // Save all new placements.
+      ...placements.map((placement) => {
+        // todo: transaction
+        return prisma.placement.create({ data: placementToDb(placement) });
+      }),
+    ]);
 
     res.status(200).json(
       apiSuccess({
@@ -78,7 +76,7 @@ const getLastBlockedProcessed = async () => {
     where: { id: 0 },
   });
 
-  if (!serviceState) return undefined;
+  if (!serviceState) return 0;
 
-  return serviceState.lastBlockNumber;
+  return serviceState.lastBlockNumber || 0;
 };

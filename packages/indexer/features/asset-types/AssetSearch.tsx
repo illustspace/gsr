@@ -75,11 +75,16 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
     setSuccessMessage("");
 
     try {
-      const tx = await gsr.place(provider?.getSigner(), assetId, newLocation, {
-        timeRange: { start: 0, end: 0 },
-      });
+      const { sync } = await gsr.place(
+        provider?.getSigner(),
+        assetId,
+        newLocation,
+        {
+          timeRange: { start: 0, end: 0 },
+        }
+      );
 
-      await tx.wait();
+      await sync;
 
       setSuccessMessage("Asset placed");
     } catch (e) {

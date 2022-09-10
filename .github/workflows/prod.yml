@@ -19,8 +19,10 @@ jobs:
       postgres:
         # Docker Hub image
         image: postgres
-        # Provide the password for postgres
         env:
+          # E2E port
+          PGPORT: 5433
+          # Provide the password for postgres
           POSTGRES_PASSWORD: postgres
         # Set health checks to wait until postgres has started
         options: >-

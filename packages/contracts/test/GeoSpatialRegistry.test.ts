@@ -244,7 +244,7 @@ describe("GeoSpatialRegistry", () => {
       });
 
       describe("when the token is placed by a non-owner", () => {
-        it("emits an event that can be used to fail ownership", async () => {
+        it.only("emits an event that can be used to fail ownership", async () => {
           const tx = await gsr
             // Not the owner
             .connect(user)
