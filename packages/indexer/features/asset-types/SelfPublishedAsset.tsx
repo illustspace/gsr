@@ -1,13 +1,16 @@
 import {
   Box,
+  Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
+  InputGroup,
 } from "@chakra-ui/react";
 import React, { FunctionComponent } from "react";
 import { useForm } from "react-hook-form";
 import { SelfPublishedAssetId } from "~/../sdk/lib/cjs";
+import { getProvider } from "../providers/getProvider";
 
 export interface SelfPublishedAssetProps {
   onChange: (assetId: SelfPublishedAssetId) => void;
@@ -20,6 +23,7 @@ export const SelfPublishedAsset: FunctionComponent<SelfPublishedAssetProps> = ({
     register,
     formState: { errors },
     getValues,
+    setValue,
   } = useForm<SelfPublishedAssetId>({
     defaultValues: {
       assetType: "SELF_PUBLISHED",
@@ -27,6 +31,12 @@ export const SelfPublishedAsset: FunctionComponent<SelfPublishedAssetProps> = ({
       publisherAddress: "",
     },
   });
+
+  const handleMyAddress = async () => {
+    const provider = await getProvider();
+
+    setValue("publisherAddress", await provider.getSigner().getAddress());
+  };
 
   return (
     <Box
@@ -43,8 +53,11 @@ export const SelfPublishedAsset: FunctionComponent<SelfPublishedAssetProps> = ({
       </FormControl>
 
       <FormControl isInvalid={!!errors.publisherAddress} isRequired>
-        <FormLabel>Contract Address</FormLabel>
-        <Input {...register("publisherAddress", { required: true })} />
+        <FormLabel>Publisher Address</FormLabel>
+        <InputGroup>
+          <Input {...register("publisherAddress", { required: true })} />
+          <Button onClick={handleMyAddress}>My Address</Button>
+        </InputGroup>
 
         <FormErrorMessage>{errors.publisherAddress?.message}</FormErrorMessage>
       </FormControl>

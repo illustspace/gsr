@@ -1,4 +1,4 @@
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, { FunctionComponent, useState } from "react";
 import {
   Button,
   FormControl,
@@ -7,8 +7,6 @@ import {
   VStack,
   Text,
 } from "@chakra-ui/react";
-import { Web3Provider } from "@ethersproject/providers";
-// import { geohashForLocation } from "geofire-common";
 
 import {
   AssetId,
@@ -19,13 +17,11 @@ import {
   AssetType,
 } from "@geospatialregistry/sdk";
 
-import { getInjectedCredentials } from "~/features/providers/injected-login";
-import { getEnv } from "~/features/config/env";
-
 import { PlacementMap } from "~/features/map/PlacementMap";
 import { gsr } from "~/features/gsr/gsr-contract";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { AssetTypeEntry } from "./AssetTypeEntry";
+import { getProvider } from "../providers/getProvider";
 
 export type AssetSearchProps = Record<never, never>;
 
@@ -46,16 +42,16 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
     tokenId: "1",
   });
 
-  const provider = useProvider();
-
   const handleSearch = async () => {
     if (!gsr) return;
 
     setTxError("");
     setPlacement(null);
 
+    const decodedAssetId = gsr.parseAssetId(assetId);
+
     try {
-      const placement = await gsrIndexer.placeOf(assetId);
+      const placement = await gsrIndexer.placeOf(decodedAssetId);
       setPlacement(placement);
     } catch (e) {
       if (e instanceof GsrIndexerError) {
@@ -67,16 +63,16 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
     }
   };
 
-  // const handleMint = () =>{}
-
   const handlePlace = async () => {
+    const provider = await getProvider();
+
     if (!gsr || !provider || !newLocation) return;
 
     setSuccessMessage("");
 
     try {
       const { sync } = await gsr.place(
-        provider?.getSigner(),
+        provider.getSigner(),
         assetId,
         newLocation,
         {
@@ -143,16 +139,4 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
       <Button onClick={handlePlace}>Place</Button>
     </VStack>
   );
-};
-
-const useProvider = () => {
-  const [provider, setProvider] = useState<Web3Provider | null>(null);
-
-  useEffect(() => {
-    getInjectedCredentials(getEnv("gsrChainId")).then(({ provider }) => {
-      setProvider(provider);
-    });
-  }, []);
-
-  return provider;
 };

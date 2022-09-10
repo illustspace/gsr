@@ -7,11 +7,12 @@ import { ProviderKeys } from "~/provider";
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
 import { GsrPlacement } from "~/placement-event";
+import { transformBigNumberToHexString } from "./schema";
 
 const schema = object({
   assetType: string().oneOf(["SELF_PUBLISHED"]).required(),
   publisherAddress: string().lowercase().required(),
-  assetHash: string().required(),
+  assetHash: string().transform(transformBigNumberToHexString).required(),
 });
 
 /** Decoded AssetId for an EVM ERC 721 1:1 NFT */

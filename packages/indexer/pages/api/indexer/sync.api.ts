@@ -49,8 +49,8 @@ export default async function handler(
       // Save the processed block
       prisma.serviceState.upsert({
         where: { id: 0 },
-        create: { id: 0, lastBlockNumber: sinceBlockNumber },
-        update: { lastBlockNumber: sinceBlockNumber },
+        create: { id: 0, lastBlockNumber: blockNumber },
+        update: { lastBlockNumber: blockNumber },
       }),
 
       // Save all new placements.

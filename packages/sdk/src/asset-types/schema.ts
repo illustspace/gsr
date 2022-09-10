@@ -18,3 +18,13 @@ export const transformBigNumberToDecimalString = (
 ) => {
   return BigNumber.from(originalValue).toString();
 };
+
+/**
+ * Yup transformer to parse a possible BigNumber into hex string
+ */
+export const transformBigNumberToHexString = (
+  _value: any,
+  originalValue: any
+) => {
+  return BigNumber.from(originalValue).toHexString();
+};

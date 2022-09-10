@@ -22,7 +22,7 @@ model Placement {
   published Boolean @default(false)
 
   // geohash
-  geohashBits         Int @default(0)
+  geohashBits         BigInt @default(0)
   geohashBitPrecision Int @default(0)
 
   sceneUri String?
