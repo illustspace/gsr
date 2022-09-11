@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "start": "next dev",
+    "start": "db:start && next dev",
     "build": "next build",
     "serve": "next start",
     "lint": "next lint",

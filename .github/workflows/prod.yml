@@ -4,12 +4,9 @@ name: Deploy to prod from main
     branches:
       - main
 env:
-  DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
-  NEXT_PUBLIC_ALCHEMY_API_KEY: ${{ secrets.ALCHEMY_API_KEY }}
-  NEXT_PUBLIC_INFURA_ID: ${{ secrets.INFURA_ID }}
-  NEXT_PUBLIC_GSR_CHAIN_ID: 80001
-  NEXT_PUBLIC_MAPBOX_API_KEY: ${{ secrets.MAPBOX_API_KEY }}
-  NEXT_PUBLIC_MAPBOX_STYLE_URL: ${{ secrets.MAPBOX_STYLE_URL }}
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/gsr?schema=public"
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   build-and-test:
@@ -51,4 +48,7 @@ jobs:
         uses: ./.github/actions/e2e
 
       - name: Deploy Indexer
-        uses: ./.github/actions/vercel --token=${{ secrets.VERCEL_TOKEN }} --environment=production
+        uses: ./.github/actions/vercel
+        with:
+          environment: production
+          token: ${{ secrets.VERCEL_TOKEN }}

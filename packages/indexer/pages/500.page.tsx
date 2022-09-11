@@ -7,7 +7,7 @@ const NotFoundPage: NextPage = () => {
     <Container>
       <Center>
         <Heading as="h1" mb={3}>
-          404 Not Found
+          Something went wrong
         </Heading>
       </Center>
     </Container>

@@ -39,22 +39,32 @@ Build all packages:
 yarn build
 ```
 
+### Tests
+
+#### Unit Tests
+
 Run all unit tests
 
 ```bash
 yarn test
 ```
 
+#### E2E Tests
+
 Run E2E tests of the contracts, SDK, and indexer APIs
 
 ```bash
 # Start a local blockchain
 yarn ws contracts start
+# Build the SDK
+yarn ws sdk start
 # Start up the test DB, and serve a text indexer on localhost:3001
 yarn ws indexer e2e
 # Run e2e tests
 yarn ws e2e e2e:test
 ```
+
+### Dev Server
 
 For development, you can either start a local blockchain and all services in one command:
 

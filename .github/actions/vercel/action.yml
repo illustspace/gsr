@@ -11,15 +11,15 @@ runs:
   using: "composite"
   steps:
     - name: Pull Vercel Environment Information
-      run: yarn vercel pull --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
+      run: yarn vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.token }}
 
     - name: Build Project Artifacts
-      run: vercel build --token=${{ inputs.vercel-token }}
+      run: vercel build --token=${{ secrets.vercel-token }}
 
     - name: Deploy to Vercel Preview
       if: ${{ inputs.environment == 'preview' }}
-      run: vercel deploy --prebuilt --token=${{ inputs.token }}
+      run: vercel deploy --prebuilt --token=${{ secrets.token }}
 
     - name: Deploy to Vercel Production
-      if: ${{ inputs.environment == 'preview' }}
-      run: vercel deploy --prebuilt --token=${{ inputs.token }} --prod
+      if: ${{ inputs.environment == 'production' }}
+      run: vercel deploy --prebuilt --token=${{ secrets.token }} --prod
