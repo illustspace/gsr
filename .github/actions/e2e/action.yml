@@ -18,7 +18,7 @@ runs:
       shell: bash
 
     - name: Wait for indexer to start
-      run: yarn wait-on 3001
+      run: yarn wait-on http://localhost:3001
       shell: bash
 
     # Run e2e test once services are started
