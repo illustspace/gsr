@@ -11,7 +11,7 @@ import { dbToPlacement } from "~/api/db/dbToPlacement";
 import { apiFailure, apiServerFailure, apiSuccess } from "~/api/api-responses";
 import { gsr } from "~/features/gsr/gsr-contract";
 
-export default async function handler(
+export default async function placementsSingle(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponseType<SinglePlacementResponse>>
 ) {

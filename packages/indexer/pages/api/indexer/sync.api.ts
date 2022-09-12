@@ -14,7 +14,7 @@ const RATE_LIMIT_MS = Number(process.env.SYNC_RATE_LIMIT_MS);
 let lastUpdatedTimestamp = 0;
 
 /** Request an indexer run against the GSR. Should be called when a new placement has been added to the GSR. */
-export default async function handler(
+export default async function sync(
   _req: NextApiRequest,
   res: NextApiResponse<ApiResponseType<IndexerSyncResponse>>
 ) {

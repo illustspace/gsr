@@ -84,20 +84,25 @@ export class AssetTypeVerifier extends AssetTypeVerifierMethods {
   decodeAssetId(encodedAssetId: EncodedAssetId): DecodedAssetId {
     const verifier = this.getVerifierFromEncoded(encodedAssetId);
 
-    // TODO: Verify and throw error if bad
-    return verifier.decodeAssetId(encodedAssetId) as DecodedAssetId;
+    const decodedAssetId = verifier.decodeAssetId(
+      encodedAssetId
+    ) as DecodedAssetId;
+
+    // Verify and throw error if bad
+    return this.parseAssetId(decodedAssetId, false);
   }
 
   encodeAssetId(assetId: DecodedAssetId): EncodedAssetId {
     const verifier = this.getVerifier(assetId.assetType);
-
-    return verifier.encodeAssetId(assetId);
+    const parsedAssetId = this.parseAssetId(assetId, false);
+    return verifier.encodeAssetId(parsedAssetId);
   }
 
   /** Hash a decoded AssetId to a simple AssetId used for GSR queries. */
   hashAssetId(decodedAssetId: DecodedAssetId): string {
     const verifier = this.getVerifier(decodedAssetId.assetType);
-    return verifier.hashAssetId(decodedAssetId);
+    const parsedAssetId = this.parseAssetId(decodedAssetId, false);
+    return verifier.hashAssetId(parsedAssetId);
   }
 
   /** Hash an EncodedAssetId to a simple AssetId used for GSR queries. */

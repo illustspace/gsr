@@ -17,6 +17,8 @@ import { getDefaultProvider, Provider } from "@ethersproject/providers";
 import { abi as testTokenAbi } from "../../contracts/artifacts/contracts/test/Erc721.sol/TestToken.json";
 import { prisma } from "../../indexer/api/db";
 
+process.env.DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/gsr";
+
 const chainId = 1337;
 
 const tokenAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
@@ -35,6 +37,10 @@ describe("e2e", () => {
     const block = await gsr.gsrProvider.getBlock(blockHash);
     return block.timestamp;
   };
+
+  afterAll(() => {
+    resetDb();
+  });
 
   beforeAll(() => {
     resetDb();

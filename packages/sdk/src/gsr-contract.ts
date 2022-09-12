@@ -134,7 +134,9 @@ export class GsrContract {
   ): Promise<ValidatedGsrPlacement> {
     return {
       ...placement,
-      placedByOwner: await this.verifier.verifyAssetOwnership(placement),
+      placedByOwner: await this.verifier
+        .verifyAssetOwnership(placement)
+        .catch(() => false),
     };
   }
 
