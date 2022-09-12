@@ -5,6 +5,10 @@ runs:
       run: yarn ws contracts hardhat node --no-deploy &
       shell: bash
 
+    - name: Deploy test DB schema
+      run: yarn ws indexer e2e:db:deploy &
+      shell: bash
+
     - name: Wait for blockchain to start
       run: yarn wait-on http-get://127.0.0.1:8545
       shell: bash
