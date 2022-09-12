@@ -12,14 +12,18 @@ runs:
   steps:
     - name: Pull Vercel Environment Information
       run: yarn vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.token }}
+      shell: bash
 
     - name: Build Project Artifacts
       run: vercel build --token=${{ secrets.vercel-token }}
+      shell: bash
 
     - name: Deploy to Vercel Preview
       if: ${{ inputs.environment == 'preview' }}
       run: vercel deploy --prebuilt --token=${{ secrets.token }}
+      shell: bash
 
     - name: Deploy to Vercel Production
       if: ${{ inputs.environment == 'production' }}
       run: vercel deploy --prebuilt --token=${{ secrets.token }} --prod
+      shell: bash
