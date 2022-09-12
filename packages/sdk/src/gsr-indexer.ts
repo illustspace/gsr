@@ -33,6 +33,7 @@ export class GsrIndexerError extends Error {
   }
 }
 
+/** Supports calls to the Indexer APIs, without needing direct smart contract access. */
 export class GsrIndexer {
   private axios;
 

@@ -14,7 +14,7 @@ const decodedAssetId: SelfPublishedAssetId = {
   assetHash: keccak256(toUtf8Bytes("hello")),
 };
 
-describe("ERC721", () => {
+describe("SelfPublishedVerifier", () => {
   let verifier: SelfPublishedVerifier;
 
   beforeEach(() => {

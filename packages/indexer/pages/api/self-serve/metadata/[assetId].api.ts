@@ -1,18 +1,15 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import {
-  ApiResponseType,
-  GsrSceneMetadata,
-  SelfServeMetadataResponse,
-} from "@geospatialregistry/sdk";
+import { GsrSceneMetadata } from "@geospatialregistry/sdk";
 
 import { prisma } from "~/api/db";
-import { apiFailure, apiServerFailure, apiSuccess } from "~/api/api-responses";
+import { apiFailure, apiServerFailure } from "~/api/api-responses";
 
-export default async function selfServeCreate(
+/** Return metadata for a SceneUri */
+export default async function selfServeMetadata(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponseType<SelfServeMetadataResponse>>
+  res: NextApiResponse<GsrSceneMetadata>
 ) {
   const assetId = req.query.assetId as string;
 
@@ -45,7 +42,7 @@ export default async function selfServeCreate(
       metadata.content.message = asset.message;
     }
 
-    res.status(200).send(apiSuccess(metadata));
+    res.status(200).send(metadata);
   } catch (error) {
     res.status(500).send(apiServerFailure(error));
   }

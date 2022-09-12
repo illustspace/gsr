@@ -11,6 +11,7 @@ import {
 import { prisma } from "~/api/db";
 import { apiServerFailure, apiSuccess } from "~/api/api-responses";
 
+/** Create a self-serve asset SceneUri */
 export default async function selfServeCreate(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponseType<SelfServeCreateResponse>>
