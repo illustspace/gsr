@@ -25,7 +25,7 @@ export const placementsToGeoJson = (
       type: "FeatureCollection",
       features: placements.map((placement) => {
         const point = decode_int(
-          placement.geohashBits,
+          Number(placement.geohashBits),
           placement.geohashBitPrecision
         );
         const coordinates = [point.longitude, point.latitude];
