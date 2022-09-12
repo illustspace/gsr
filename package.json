@@ -42,6 +42,7 @@
     "prettier-plugin-solidity": "^1.0.0-beta.15",
     "solhint-plugin-prettier": "^0.0.5",
     "typescript": "^4.7.4",
-    "vercel": "^28.2.2"
+    "vercel": "^28.2.2",
+    "wait-on": "^6.0.1"
   }
 }
