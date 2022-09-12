@@ -10,7 +10,7 @@ runs:
       shell: bash
 
     - name: Deploy contracts
-      run: yarn ws contract hardhat deploy --network localhost
+      run: yarn ws contracts hardhat deploy --network localhost
       shell: bash
 
     - name: Serve test indexer
