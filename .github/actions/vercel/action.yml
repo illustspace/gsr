@@ -11,19 +11,19 @@ runs:
   using: "composite"
   steps:
     - name: Pull Vercel Environment Information
-      run: yarn vercel pull --yes --environment=${{ inputs.environment }} --token=${{ secrets.token }}
+      run: yarn vercel pull --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
       shell: bash
 
     - name: Build Project Artifacts
-      run: vercel build --token=${{ secrets.vercel-token }}
+      run: vercel build --token=${{ inputs.token }}
       shell: bash
 
     - name: Deploy to Vercel Preview
       if: ${{ inputs.environment == 'preview' }}
-      run: vercel deploy --prebuilt --token=${{ secrets.token }}
+      run: vercel deploy --prebuilt --token=${{ inputs.token }}
       shell: bash
 
     - name: Deploy to Vercel Production
       if: ${{ inputs.environment == 'production' }}
-      run: vercel deploy --prebuilt --token=${{ secrets.token }} --prod
+      run: vercel deploy --prebuilt --token=${{ inputs.token }} --prod
       shell: bash
