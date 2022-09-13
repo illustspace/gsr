@@ -2,13 +2,14 @@
   "extends": "../../tsconfig.json",
   "include": ["./scripts", "./tasks", "./deploy", "./test"],
   "files": ["./hardhat.config.ts"],
+  "references": [{ "path": "../sdk" }],
   "compilerOptions": {
     "noUnusedLocals": false,
     "noUnusedParameters": false,
     "target": "es2018",
     "module": "commonjs",
     "isolatedModules": false,
-    "outDir": "dist",
+    "outDir": "/tmp/gsr/contracts",
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]
