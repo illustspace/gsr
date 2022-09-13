@@ -1,5 +1,5 @@
 import type { ContractTransaction, Signer } from "ethers";
-import { Provider } from "@ethersproject/providers";
+import { JsonRpcSigner, Provider } from "@ethersproject/providers";
 import { BigNumber } from "@ethersproject/bignumber";
 
 import { GsrAddress } from "./addresses";
@@ -20,6 +20,7 @@ import {
   ValidatedGsrPlacement,
 } from "./placement-event";
 import { GsrIndexer } from "./gsr-indexer";
+import { getTransactionData, MetaTransaction } from "./metaTransactions";
 
 /** Return value from placeOf */
 export interface PlaceOf {
@@ -172,6 +173,35 @@ export class GsrContract {
   ) {
     const assetId = this.verifier.hashAssetId(decodedAssetId);
     return this.contract.isWithin(boundingGeohash, assetId, publisher);
+  }
+
+  async placeWithMetaTransaction(
+    signer: JsonRpcSigner,
+    decodedAssetId: DecodedAssetId,
+    geohash: GeohashBits,
+    {
+      timeRange = { start: 0, end: 0 },
+      sceneUri,
+    }: {
+      timeRange?: TimeRange;
+      sceneUri?: string;
+      /** If true don't resolve the promise until the placement is minted and synced.  */
+    } = {}
+  ): Promise<MetaTransaction> {
+    const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
+
+    return sceneUri
+      ? getTransactionData(this.contract, signer, "placeWithScene", [
+          encodedAssetId,
+          geohash,
+          timeRange,
+          sceneUri,
+        ])
+      : getTransactionData(this.contract, signer, "place", [
+          encodedAssetId,
+          geohash,
+          timeRange,
+        ]);
   }
 
   /** Place an asset on the GSR with a transaction. */
