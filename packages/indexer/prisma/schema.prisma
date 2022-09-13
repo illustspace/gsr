@@ -3,7 +3,8 @@
 
 generator client {
   provider      = "prisma-client-js"
-  binaryTargets = ["native"]
+  // Native for development, and openssl for Vercel
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
 }
 
 datasource db {
@@ -23,7 +24,7 @@ model Placement {
 
   // geohash
   geohashBits         BigInt @default(0)
-  geohashBitPrecision Int @default(0)
+  geohashBitPrecision Int    @default(0)
 
   sceneUri String?
   placedAt DateTime
@@ -61,4 +62,10 @@ model SelfServeAsset {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Holds nonces for hot wallets
+model WalletNonces {
+  address String @db.VarChar(255) @id
+  nonce   Int    @default(0)
 }

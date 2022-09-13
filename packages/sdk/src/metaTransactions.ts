@@ -1,14 +1,18 @@
 import type { Contract } from "@ethersproject/contracts";
 import type { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
+import { object, string, Asserts, number } from "yup";
+
+/** Validator schema for a metaTransaction */
+export const metaTransactionSchema = object({
+  r: string().required(),
+  s: string().required(),
+  v: number().required(),
+  functionSignature: string().required(),
+  address: string().lowercase().required(),
+});
 
 /** MetaTransaction data for a function call */
-export interface MetaTransaction {
-  r: string;
-  s: string;
-  v: number;
-  functionSignature: string;
-  address: string;
-}
+export type MetaTransaction = Asserts<typeof metaTransactionSchema>;
 
 const metaTransactionType = [
   {

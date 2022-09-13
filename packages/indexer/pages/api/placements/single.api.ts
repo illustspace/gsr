@@ -41,6 +41,7 @@ export default async function placementsSingle(
     const validatedPlacement = dbToPlacement(placement);
     res.status(200).json(apiSuccess(validatedPlacement));
   } catch (error) {
-    res.status(500).send(apiServerFailure(error));
+    const { statusCode, body } = apiServerFailure(error);
+    res.status(statusCode).send(body);
   }
 }

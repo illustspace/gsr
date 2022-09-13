@@ -61,3 +61,11 @@ export interface GsrStats {
 
 /** /api/stats */
 export type GsrStatsResponse = ApiResponseSuccess<GsrStats>;
+
+/** /api/meta-transactions/execute */
+export type MetaTransactionExecuteResponse = ApiResponseSuccess<{ tx: string }>;
+
+/** /api/meta-transactions/nonce */
+export type MetaTransactionNonceResponse = ApiResponseSuccess<{
+  nonce: number;
+}>;

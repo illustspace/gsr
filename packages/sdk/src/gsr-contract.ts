@@ -1,6 +1,9 @@
 import type { Signer } from "@ethersproject/abstract-signer";
 import type { Provider } from "@ethersproject/providers";
-import type { ContractTransaction } from "@ethersproject/contracts";
+import type {
+  ContractTransaction,
+  PayableOverrides,
+} from "@ethersproject/contracts";
 import type { BigNumber } from "@ethersproject/bignumber";
 
 import { GsrAddress } from "./addresses";
@@ -190,8 +193,10 @@ export class GsrContract {
   /** Relay a signed metaTransaction to the GSR Smart Contract */
   async executeMetaTransaction(
     signer: Signer,
-    metaTransaction: MetaTransaction
-  ): Promise<ContractCallResponse> {
+    metaTransaction: MetaTransaction,
+    /** Pass in overrides like Nonce */
+    overrides?: PayableOverrides
+  ): Promise<string> {
     const tx = await this.contract
       .connect(signer)
       .executeMetaTransaction(
@@ -199,11 +204,19 @@ export class GsrContract {
         metaTransaction.functionSignature,
         metaTransaction.r,
         metaTransaction.s,
-        metaTransaction.v
+        metaTransaction.v,
+        overrides
       );
 
-    const sync = this.syncAfterTx(tx);
+    return tx.hash;
+  }
 
+  /** Await a transaction, then do an Indexer sync. Useful for metaTransactions */
+  async syncAfterTransactionHash(
+    txHash: string
+  ): Promise<ContractCallResponse> {
+    const tx = await this.gsrProvider.getTransaction(txHash);
+    const sync = this.syncAfterTx(tx);
     return { tx, sync };
   }
 
@@ -369,7 +382,7 @@ export class GsrContract {
   }
 
   /** Sync the indexer after a transaction. */
-  private async syncAfterTx(tx: ContractTransaction) {
+  async syncAfterTx(tx: ContractTransaction) {
     try {
       await tx.wait();
       await this.indexer.sync();

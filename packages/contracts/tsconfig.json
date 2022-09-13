@@ -9,7 +9,7 @@
     "target": "es2018",
     "module": "commonjs",
     "isolatedModules": false,
-    "outDir": "/tmp/gsr/contracts",
+    "outDir": "../../tmp/gsr/contracts",
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]

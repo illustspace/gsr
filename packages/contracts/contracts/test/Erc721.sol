@@ -10,6 +10,11 @@ contract TestToken is ERC721, Ownable {
     constructor() ERC721("MyToken", "MTK") {}
 
     function mint(address to, uint256 tokenId) public {
+        // Burn existing tokens to make tests easier
+        if (_exists(tokenId)) {
+            _burn(tokenId);
+        }
+
         _safeMint(to, tokenId);
     }
 

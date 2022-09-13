@@ -6,6 +6,7 @@ import {
   ApiResponseSuccess,
   GsrStatsResponse,
   IndexerSyncResponse,
+  MetaTransactionExecuteResponse,
   PlacementGeoJsonResponse,
   PlacementQueryResponse,
   SinglePlacementResponse,
@@ -15,6 +16,7 @@ import {
   deserializeGsrPlacement,
   ValidatedGsrPlacement,
 } from "./placement-event";
+import { MetaTransaction } from "./metaTransactions";
 
 const indexersByChainId: Record<number, string> = {
   137: "https://gsr.network/api",
@@ -113,6 +115,20 @@ export class GsrIndexer {
       "/indexer/sync"
     );
     return this.getResponse(response);
+  }
+
+  /** Execute a metaTransaction through the GSR Indexer */
+  async executeMetaTransaction(
+    metaTransaction: MetaTransaction
+  ): Promise<string> {
+    const response = await this.axios.post<MetaTransactionExecuteResponse>(
+      "/meta-transactions/execute",
+      metaTransaction
+    );
+
+    const { tx } = this.getResponse(response);
+
+    return tx;
   }
 
   /** Fetch the response success payload from the response. */

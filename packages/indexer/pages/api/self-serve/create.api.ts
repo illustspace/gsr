@@ -9,7 +9,7 @@ import {
 } from "@geospatialregistry/sdk";
 
 import { prisma } from "~/api/db";
-import { apiServerFailure, apiSuccess } from "~/api/api-responses";
+import { apiFailure, apiServerFailure, apiSuccess } from "~/api/api-responses";
 
 /** Create a self-serve asset SceneUri */
 export default async function selfServeCreate(
@@ -17,7 +17,7 @@ export default async function selfServeCreate(
   res: NextApiResponse<ApiResponseType<SelfServeCreateResponse>>
 ) {
   if (req.method !== "POST") {
-    res.status(404).send(apiServerFailure("Not found"));
+    res.status(404).send(apiFailure("Not found", "NOT_FOUND"));
     return;
   }
 
@@ -55,6 +55,7 @@ export default async function selfServeCreate(
 
     res.status(201).json(apiSuccess({ assetId, sceneUri }));
   } catch (error) {
-    res.status(500).send(apiServerFailure(error));
+    const { statusCode, body } = apiServerFailure(error);
+    res.status(statusCode).send(body);
   }
 }
