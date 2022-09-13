@@ -1,5 +1,5 @@
 import type { Contract } from "@ethersproject/contracts";
-import type { JsonRpcSigner } from "@ethersproject/providers";
+import type { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
 
 /** MetaTransaction data for a function call */
 export interface MetaTransaction {
@@ -7,6 +7,7 @@ export interface MetaTransaction {
   s: string;
   v: number;
   functionSignature: string;
+  address: string;
 }
 
 const metaTransactionType = [
@@ -24,13 +25,16 @@ const metaTransactionType = [
   },
 ];
 
+/** A Signer that can sign typed data */
+export type TypedSigner = Signer & TypedDataSigner;
+
 // Based on https://github.com/ProjectOpenSea/meta-transactions/blob/main/test/erc721-test.js
 export const getTransactionData = async <T extends Contract, F extends keyof T>(
   contract: T,
-  signer: JsonRpcSigner,
+  signer: TypedSigner,
   functionName: F,
   params: T[F] extends (...args: any[]) => any ? Parameters<T[F]> : never
-) => {
+): Promise<MetaTransaction> => {
   if (!signer.provider) {
     throw new Error("Signer must have a provider");
   }
@@ -78,5 +82,6 @@ export const getTransactionData = async <T extends Contract, F extends keyof T>(
     s,
     v,
     functionSignature,
+    address,
   };
 };
