@@ -16,11 +16,13 @@ jobs:
       postgres:
         # Docker Hub image
         image: postgres
-        env:
+        ports:
           # E2E port
-          PGPORT: 5433
+          - 5433:5432
+        env:
           # Provide the password for postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: gsr
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -35,7 +37,7 @@ jobs:
       - name: Setup Deps
         uses: ./.github/actions/setup
 
-      - run: yarn build
+      - run: NODE_ENV=test yarn build
       - run: yarn lint
       - run: yarn test
 

@@ -6,6 +6,8 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "preserve",
     "outDir": "../../tmp/gsr/indexer",
+    "emitDeclarationOnly": true,
+    "noEmit": false,
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]
