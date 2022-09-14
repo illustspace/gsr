@@ -1,23 +1,33 @@
 {
-  "name": "@gsr/sdk",
+  "name": "@geospatialregistry/sdk",
   "version": "0.0.0",
   "author": "Illust",
   "license": "MIT",
+  "main": "lib/cjs/index.js",
+  "module": "lib/esm/index.js",
+  "files": [
+    "lib/",
+    "src/"
+  ],
   "scripts": {
-    "start": "rollup -cw",
-    "build": "rollup -c",
+    "start": "npm-run-all --parallel 'start:**'",
+    "start:cjs": "tsc -p tsconfig.cjs.json --watch",
+    "start:cjs:alias": "tsc-alias -p tsconfig.cjs.json --watch --silent",
+    "start:esm": "tsc -p tsconfig.esm.json --watch",
+    "start:esm:alias": "tsc-alias -p tsconfig.esm.json --watch --silent",
+    "build": "npm-run-all -p 'build:*'",
+    "build:cjs": "rimraf dist/cjs && tsc -p tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
+    "build:esm": "rimraf dist/esm && tsc -p tsconfig.esm.json && tsc-alias -p tsconfig.esm.json",
     "test": "jest"
   },
-  "main": "dist/gsr.cjs.js",
-  "module": "dist/gsr.esm.js",
-  "types": "dist/gsr.d.ts",
   "dependencies": {
-    "@types/axios": "^0.14.0",
+    "@types/geojson": "^7946.0.10",
     "@types/lodash": "^4.14.184",
     "@types/ngeohash": "^0.6.4",
     "axios": "^0.27.2",
     "lodash": "^4.17.21",
-    "ngeohash": "^0.6.3"
+    "ngeohash": "^0.6.3",
+    "yup": "^v1.0.0-beta.7"
   },
   "devDependencies": {
     "@babel/core": "^7.18.13",
@@ -29,16 +39,11 @@
     "@ethersproject/keccak256": "5.4.0",
     "@ethersproject/providers": "5.4.5",
     "@ethersproject/strings": "5.4.0",
-    "@rollup/plugin-commonjs": "^22.0.2",
-    "@rollup/plugin-json": "^4.1.0",
-    "@rollup/plugin-node-resolve": "^13.3.0",
-    "@rollup/plugin-typescript": "^8.4.0",
     "@types/jest": "^28.1.8",
     "babel-jest": "^29.0.0",
     "jest": "^29.0.0",
     "npm-run-all": "^4.1.5",
-    "rollup": "^2.78.1",
-    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rimraf": "^3.0.2",
     "tsc-alias": "^1.7.0",
     "tslib": "^2.4.0",
     "typescript": "^4.7.4"

@@ -1,13 +1,18 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./src", "rollup.config.js"],
+  "include": ["./src"],
   "compilerOptions": {
     "types": ["node", "jest"],
     "noUnusedLocals": false,
     "noUnusedParameters": false,
-    "target": "es2018",
+    "target": "es5",
+    "noEmit": false,
+    // Emit types
     "declaration": true,
-    "outDir": "dist",
+    // Emit type source maps for "Go to source definition"
+    "declarationMap": true,
+    "module": "ESNext",
+    "outDir": "lib/esm",
     "baseUrl": "src",
     "paths": {
       "~/*": ["./*"]

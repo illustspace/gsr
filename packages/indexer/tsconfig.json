@@ -1,16 +1,15 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./src"],
   "compilerOptions": {
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "target": "es2018",
-    "module": "commonjs",
-    "isolatedModules": false,
-    "outDir": "build",
-    "baseUrl": "src",
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "jsx": "preserve",
+    "incremental": true,
+    "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]
     }
-  }
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "exclude": ["node_modules"]
 }

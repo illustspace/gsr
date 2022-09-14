@@ -1,8 +1,8 @@
 {
-  "name": "@gsr/e2e",
+  "name": "@geospatialregistry/e2e",
   "description": "E2E tests for the GSR",
   "scripts": {
-    "test:e2e": "jest"
+    "e2e:test": "jest"
   },
   "dependencies": {
     "@ethersproject/abi": "5.4.1",
@@ -12,8 +12,7 @@
     "@ethersproject/providers": "5.4.5",
     "@ethersproject/strings": "5.4.0",
     "@ethersproject/wallet": "^5.4.0",
-    "@gsr/sdk": "^0.0.0",
-    "@types/axios": "^0.14.0",
+    "@geospatialregistry/sdk": "^0.0.0",
     "axios": "^0.27.2"
   },
   "devDependencies": {

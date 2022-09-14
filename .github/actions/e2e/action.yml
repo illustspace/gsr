@@ -1,0 +1,31 @@
+runs:
+  using: "composite"
+  steps:
+    - name: Start blockchain
+      run: yarn ws contracts hardhat node --no-deploy &
+      shell: bash
+
+    - name: Deploy test DB schema
+      run: yarn ws indexer e2e:db:deploy &
+      shell: bash
+
+    - name: Wait for blockchain to start
+      run: yarn wait-on http-get://127.0.0.1:8545
+      shell: bash
+
+    - name: Deploy contracts
+      run: yarn ws contracts hardhat deploy --network localhost
+      shell: bash
+
+    - name: Serve test indexer
+      run: yarn ws indexer e2e:serve &
+      shell: bash
+
+    - name: Wait for indexer to start
+      run: yarn wait-on http://localhost:3001
+      shell: bash
+
+    # Run e2e test once services are started
+    - name: E2E Tests
+      run: yarn ws e2e e2e:test
+      shell: bash

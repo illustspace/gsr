@@ -1,5 +1,9 @@
 name: Check PR
 "on": pull_request
+env:
+  DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/gsr?schema=public"
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 jobs:
   build-and-test:
@@ -9,9 +13,13 @@ jobs:
       postgres:
         # Docker Hub image
         image: postgres
-        # Provide the password for postgres
+        ports:
+          # E2E port
+          - 5433:5432
         env:
+          # Provide the password for postgres
           POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: gsr
         # Set health checks to wait until postgres has started
         options: >-
           --health-cmd pg_isready
@@ -26,29 +34,15 @@ jobs:
       - name: Setup Deps
         uses: ./.github/actions/setup
 
-      - run: yarn build
+      - run: NODE_ENV=test yarn build
       - run: yarn lint
-      - name: Unit Tests
-        run: yarn test
+      - run: yarn test
 
-      # ===
-      # E2E Test
-      # ===
-
-      # Start local blockchain
-      - name: Start blockchain
-        run: yarn ws contracts start &
-
-      # Start indexer
-      - name: Start indexer
-        run: yarn ws indexer start &
-        env:
-          DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/gsr?schema=public"
-          GSR_CHAIN_ID: 1337
-
-      - name: wait for services
-        run: sleep 20s
-
-      # Run e2e test once services are started
       - name: E2E Tests
-        run: yarn ws e2e test:e2e
+        uses: ./.github/actions/e2e
+
+      - name: Deploy Indexer
+        uses: ./.github/actions/vercel
+        with:
+          environment: preview
+          token: ${{ secrets.VERCEL_TOKEN }}

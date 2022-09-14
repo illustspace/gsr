@@ -64,6 +64,19 @@ module.exports = {
         ],
       },
     ],
+    // Prisma uses underscored names for aggregation
+    "no-underscore-dangle": "off",
+    // Don't require object destructuring
+    "prefer-destructuring": [
+      "error",
+      {
+        array: true,
+        object: false,
+      },
+      {
+        enforceForRenamedProperties: false,
+      },
+    ],
     // Make this an error instead of a warning.
     "react-hooks/exhaustive-deps": [
       "warn",

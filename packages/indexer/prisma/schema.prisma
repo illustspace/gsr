@@ -2,7 +2,8 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
 datasource db {
@@ -20,23 +21,44 @@ model Placement {
   publisher String  @db.VarChar(255)
   published Boolean @default(false)
 
-  // base32 encoded geohash
-  geohash String @db.VarChar(255)
+  // geohash
+  geohashBits         BigInt @default(0)
+  geohashBitPrecision Int @default(0)
 
   sceneUri String?
   placedAt DateTime
 
   // timeRange
-  timeRangeStart DateTime
-  timeRangeEnd   DateTime
+  timeRangeStart DateTime?
+  timeRangeEnd   DateTime?
 
+  // block number for the placement
   blockNumber   Int
+  // TX hash of the placement
+  tx            String  @default("") @db.VarChar(255)
   // If true, validated as placed by owner.
   placedByOwner Boolean @default(false)
+
+  linkedAccount String?
+
+  // Record when the record was created in the DB
+  createdAt DateTime @default(now())
 }
 
 // Holds a single row with service-side state information like the last block processed.
 model ServiceState {
   id              Int @id
   lastBlockNumber Int @default(0)
+}
+
+model SelfServeAsset {
+  assetId     String  @id @db.VarChar(255)
+  name        String  @default("")
+  publisher   String  @db.VarChar(255)
+  description String?
+  imageUrl    String?
+  message     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

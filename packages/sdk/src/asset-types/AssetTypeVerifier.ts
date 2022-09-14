@@ -9,11 +9,21 @@ import {
   EncodedAssetId,
 } from "./AssetTypeVerifierMethods";
 import { GsrPlacement } from "~/placement-event";
+import { SelfPublishedAssetId, SelfPublishedVerifier } from "./SelfPublished";
 
 /** Add Verifiers here to make them available for use */
-const verifierClasses = [Erc721Verifier, Erc1155Verifier, Fa2Verifier];
+export const verifierClasses = [
+  Erc721Verifier,
+  Erc1155Verifier,
+  Fa2Verifier,
+  SelfPublishedVerifier,
+];
 
-export type DecodedAssetId = Erc721AssetId | Erc1155AssetId | Fa2AssetId;
+export type DecodedAssetId =
+  | Erc721AssetId
+  | Erc1155AssetId
+  | Fa2AssetId
+  | SelfPublishedAssetId;
 export type DecodedAssetType = DecodedAssetId["assetType"];
 
 /**
@@ -32,23 +42,67 @@ export class AssetTypeVerifier extends AssetTypeVerifierMethods {
     this.setupVerifiers(providerKeys);
   }
 
+  /** Parse and validated a decoded asset ID */
+  parseAssetId(
+    /** A decoded asset ID object to be validated and parsed into expected data formats */
+    decodedAssetId: any,
+    /** If true, allow missing values. */
+    partial: false
+  ): DecodedAssetId;
+
+  /** Parse and validated a decoded asset ID, allowing missing fields. */
+  parseAssetId(
+    /** A decoded asset ID object to be validated and parsed into expected data formats */
+    decodedAssetId: any,
+    /** If true, allow missing values. */
+    partial: true
+  ): Partial<DecodedAssetId>;
+
+  parseAssetId(
+    /** A decoded asset ID object to be validated and parsed into expected data formats */
+    decodedAssetId: any,
+    /** If true, allow missing values. */
+    partial: boolean
+  ) {
+    if (!decodedAssetId) {
+      throw new Error("No assetId provided");
+    }
+
+    const verifier = this.getVerifier(decodedAssetId.assetType);
+
+    if (!verifier) {
+      throw new Error(`Unknown asset type: ${decodedAssetId?.assetType}`);
+    }
+
+    if (partial) {
+      return verifier.parseAssetId(decodedAssetId, true);
+    } else {
+      return verifier.parseAssetId(decodedAssetId);
+    }
+  }
+
   decodeAssetId(encodedAssetId: EncodedAssetId): DecodedAssetId {
     const verifier = this.getVerifierFromEncoded(encodedAssetId);
 
-    // TODO: Verify and throw error if bad
-    return verifier.decodeAssetId(encodedAssetId) as DecodedAssetId;
+    const decodedAssetId = verifier.decodeAssetId(
+      encodedAssetId
+    ) as DecodedAssetId;
+
+    // Verify and throw error if bad
+    return this.parseAssetId(decodedAssetId, false);
   }
 
   encodeAssetId(assetId: DecodedAssetId): EncodedAssetId {
     const verifier = this.getVerifier(assetId.assetType);
-
-    return verifier.encodeAssetId(assetId);
+    const parsedAssetId = this.parseAssetId(assetId, false);
+    return verifier.encodeAssetId(parsedAssetId);
   }
 
   /** Hash a decoded AssetId to a simple AssetId used for GSR queries. */
   hashAssetId(decodedAssetId: DecodedAssetId): string {
     const verifier = this.getVerifier(decodedAssetId.assetType);
-    return verifier.hashAssetId(decodedAssetId);
+    const parsedAssetId = this.parseAssetId(decodedAssetId, false);
+    return verifier.hashAssetId(parsedAssetId);
   }
 
   /** Hash an EncodedAssetId to a simple AssetId used for GSR queries. */

@@ -1,0 +1,46 @@
+{
+  "React Component": {
+    "scope": "typescriptreact",
+    "prefix": "comp",
+    "body": [
+      "import React, { FunctionComponent } from 'react';",
+      "",
+      "export interface $1Props {",
+      "  $2: unknown",
+      "}",
+      "",
+      "export const $1: FunctionComponent<$1Props> = ({ $2 }) => {",
+      "  return <div></div>;",
+      "};"
+    ],
+    "description": "react functional component"
+  },
+  "Next Page": {
+    "scope": "typescriptreact",
+    "prefix": "page",
+    "body": [
+      "import React from 'react';",
+      "import type { NextPage } from 'next';",
+      "import { useRouter } from 'next/router';",
+      "import { Heading } from '@chakra-ui/react';",
+      "",
+      "import { Layout } from '~/components/Layout';",
+      "",
+      "const $1Page: NextPage = () => {",
+      "  const router = useRouter();",
+      "  const { $2 } = router.query as Record<string, string>;",
+      "",
+      "  return (",
+      "    <Layout>",
+      "      <Heading as='h1' mb={3}>",
+      "        $3",
+      "      </Heading>",
+      "    </Layout>",
+      "  );",
+      "};",
+      "",
+      "export default $1Page;"
+    ],
+    "description": "react functional component"
+  }
+}

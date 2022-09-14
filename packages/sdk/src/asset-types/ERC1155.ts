@@ -1,12 +1,18 @@
 import { Contract } from "@ethersproject/contracts";
 import { Provider } from "@ethersproject/providers";
+import { BigNumber } from "@ethersproject/bignumber";
 import { defaultAbiCoder } from "@ethersproject/abi";
+import { object, string, number, Asserts } from "yup";
 
 import { getChainProvider, ProviderKeys } from "~/provider";
 
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
 import { GsrPlacement } from "~/placement-event";
+import {
+  transformBigNumberToDecimalString,
+  transformBigNumberToInteger,
+} from "./schema";
 
 const ERC_1155_ABI = [
   {
@@ -35,23 +41,35 @@ const ERC_1155_ABI = [
   },
 ];
 
+/** Validation schema for ERC721 */
+const schema = object({
+  assetType: string().oneOf(["ERC1155"]).required(),
+  chainId: number()
+    .transform(transformBigNumberToInteger)
+    .integer()
+    .positive()
+    .required(),
+  contractAddress: string().lowercase().defined(),
+  tokenId: string()
+    .transform(transformBigNumberToDecimalString)
+    .lowercase()
+    .required(),
+  publisherAddress: string().lowercase().required(),
+  itemNumber: string().transform(transformBigNumberToDecimalString).required(),
+});
+
 /** Decoded AssetId for an EVM ERC 1155 1:1 NFT */
-export type Erc1155AssetId = {
-  assetType: "ERC1155";
-  chainId: number;
-  contractAddress: string;
-  tokenId: string;
-  itemNumber: string;
-};
+export type Erc1155AssetId = Asserts<typeof schema>;
 
 const assetTypeAbis = {
-  collectionId: ["uint256", "address"],
-  itemId: ["uint256", "uint256"],
+  collectionId: ["uint256", "address", "uint256"],
+  itemId: ["address", "uint256"],
 };
 
-export class Erc1155Verifier extends BaseAssetTypeVerifier {
+export class Erc1155Verifier extends BaseAssetTypeVerifier<Erc1155AssetId> {
   single = false;
   assetType = "ERC1155" as const;
+  schema = schema;
 
   constructor(
     private providerKeys: ProviderKeys,
@@ -63,32 +81,33 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
   }
 
   decodeAssetId(assetId: EncodedAssetId): Erc1155AssetId {
-    const [chainId, contractAddress] = defaultAbiCoder.decode(
+    const [chainId, contractAddress, tokenId] = defaultAbiCoder.decode(
       assetTypeAbis.collectionId,
       assetId.collectionId
     );
 
-    const [tokenId, itemNumber] = defaultAbiCoder.decode(
+    const [publisherAddress, itemNumber] = defaultAbiCoder.decode(
       assetTypeAbis.itemId,
-      assetId.collectionId
+      assetId.itemId
     );
 
     return {
       assetType: this.assetType,
       chainId: chainId.toNumber(),
-      contractAddress,
-      tokenId,
-      itemNumber,
+      contractAddress: contractAddress.toLowerCase(),
+      tokenId: tokenId.toString(),
+      publisherAddress: publisherAddress.toLowerCase(),
+      itemNumber: itemNumber.toString(),
     };
   }
 
   encodeAssetId(assetId: Erc1155AssetId) {
     const encodedCollectionId = defaultAbiCoder.encode(
       assetTypeAbis.collectionId,
-      [assetId.chainId, assetId.contractAddress]
+      [assetId.chainId, assetId.contractAddress, assetId.tokenId]
     );
     const encodedItemId = defaultAbiCoder.encode(assetTypeAbis.itemId, [
-      assetId.tokenId,
+      assetId.publisherAddress,
       assetId.itemNumber,
     ]);
 
@@ -102,7 +121,14 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
   async verifyAssetOwnership({
     decodedAssetId,
     publisher,
-  }: GsrPlacement): Promise<boolean> {
+  }: GsrPlacement<Erc1155AssetId>): Promise<boolean> {
+    // For 1155, each assetId is unique for a given publisher.
+    if (
+      decodedAssetId.publisherAddress.toLowerCase() !== publisher.toLowerCase()
+    ) {
+      return false;
+    }
+
     const provider =
       this.customProviders[decodedAssetId.chainId] ||
       getChainProvider(decodedAssetId.chainId, this.providerKeys);
@@ -114,13 +140,14 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier {
     );
 
     // Get the owner, returning '' if the asset does not exist.
-    const owner = await contract
-      .ownerOf(decodedAssetId.tokenId)
+    const balance = contract
+      .balanceOf(publisher, decodedAssetId.tokenId)
       .catch((error: any) => {
         console.error(error);
-        return "";
+        return 0;
       });
 
-    return publisher.toLowerCase() === owner.toLowerCase();
+    // Ensure the owner has enough assets to own numbered placement.
+    return BigNumber.from(balance).gte(decodedAssetId.itemNumber);
   }
 }

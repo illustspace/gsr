@@ -11,6 +11,8 @@ import "hardhat-deploy";
 import "hardhat-deploy-ethers";
 import "solidity-coverage";
 
+import "./tasks/testToken";
+
 import * as dotenv from "dotenv";
 
 dotenv.config();
