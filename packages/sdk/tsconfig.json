@@ -3,10 +3,7 @@
   "include": ["./src"],
   "compilerOptions": {
     "types": ["node", "jest"],
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "target": "es5",
-    "noEmit": false,
     "module": "ESNext",
     "outDir": "lib/esm",
     "rootDir": "src",

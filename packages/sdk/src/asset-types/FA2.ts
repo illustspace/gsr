@@ -37,7 +37,7 @@ export class Fa2Verifier extends BaseAssetTypeVerifier<Fa2AssetId> {
   assetType = "FA2" as const;
   schema = schema;
 
-  constructor(private providerKeys: ProviderKeys) {
+  constructor(_providerKeys: ProviderKeys) {
     super();
   }
 
