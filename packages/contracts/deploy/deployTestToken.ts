@@ -3,7 +3,7 @@
 
 import { ethers, network } from "hardhat";
 // eslint-disable-next-line func-names
-module.exports = async function () {
+async function deploy() {
   // This is just a convenience check
   if (network.name === "hardhat") {
     console.warn(
@@ -33,6 +33,7 @@ module.exports = async function () {
   console.log("deployed!");
 
   console.log("TestToken contract deployed to:", testToken.address);
-};
+}
 
-module.exports.tags = ["testToken"];
+export default deploy;
+deploy.tags = ["testToken"];

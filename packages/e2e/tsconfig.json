@@ -2,7 +2,7 @@
   "extends": "../../tsconfig.json",
   "include": ["src"],
   "files": ["./src/artifacts/contracts/test/Erc721.sol/TestToken.json"],
-  "references": [{ "path": "../sdk" }, { "path": "../indexer" }],
+  "references": [{ "path": "../indexer" }],
   "compilerOptions": {
     "types": ["node", "jest"],
     "target": "es2018",

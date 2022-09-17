@@ -2,7 +2,6 @@
   "extends": "../../tsconfig.json",
   "include": ["./scripts", "./tasks", "./deploy", "./test"],
   "files": ["./hardhat.config.ts"],
-  "references": [{ "path": "../sdk" }],
   "compilerOptions": {
     "noUnusedLocals": false,
     "noUnusedParameters": false,
@@ -10,7 +9,7 @@
     "module": "commonjs",
     "isolatedModules": false,
     "emitDeclarationOnly": true,
-    "outDir": "../../tmp/gsr/contracts",
+    "outDir": "dist",
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]

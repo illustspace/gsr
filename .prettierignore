@@ -21,4 +21,4 @@ packages/e2e/src/artifacts
 
 .vercel
 .next
-tmp
+dist

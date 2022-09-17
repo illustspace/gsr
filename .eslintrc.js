@@ -93,6 +93,8 @@ module.exports = {
     // Override for UniversalLink
     "jsx-a11y/anchor-is-valid": "off",
 
+    "react/function-component-definition": "off",
+
     // TODO: Remove these
     "spaced-comment": "off",
     "no-alert": "off",

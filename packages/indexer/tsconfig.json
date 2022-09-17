@@ -1,11 +1,10 @@
 {
   "extends": "../../tsconfig.json",
-  "references": [{ "path": "../sdk" }],
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "dom.iterable", "esnext"],
     "jsx": "preserve",
-    "outDir": "../../tmp/gsr/indexer",
+    "outDir": "dist",
     "emitDeclarationOnly": true,
     "noEmit": false,
     "baseUrl": ".",
