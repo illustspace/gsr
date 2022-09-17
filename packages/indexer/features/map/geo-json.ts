@@ -13,7 +13,12 @@ export const emptyGeoJson: GeoJsonFeaturesCollection = {
 };
 
 export const placementsToGeoJson = (
-  placements: Placement[] | null
+  placements:
+    | Pick<
+        Placement,
+        "id" | "assetId" | "geohashBits" | "geohashBitPrecision"
+      >[]
+    | null
 ): GeoJsonFeaturesCollection => {
   if (!placements) {
     return emptyGeoJson;

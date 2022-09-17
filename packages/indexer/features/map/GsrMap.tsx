@@ -7,14 +7,16 @@ import {
 } from "@geospatialregistry/sdk";
 
 import { gsrIndexer } from "../gsr/gsr-indexer";
-import { emptyGeoJson } from "./geo-json";
 import { GeoJsonMap } from "./GeoJsonMap";
 import { AssetView } from "../asset-types/view/AssetView";
 import { CenteredSpinner } from "../utils/CenteredSpinner";
 
-export const GsrMap: FunctionComponent = () => {
-  const [features] = useGsrMap();
+export interface GsrMapProps {
+  features: GeoJsonFeaturesCollection;
+}
 
+/** Show a map of GSR placements */
+export const GsrMap: FunctionComponent<GsrMapProps> = ({ features }) => {
   const [popupId, setPopupId] = useState<string | null>(null);
 
   return (
@@ -31,24 +33,6 @@ export const GsrMap: FunctionComponent = () => {
       ;
     </Box>
   );
-};
-
-const useGsrMap = (): [
-  geojson: GeoJsonFeaturesCollection,
-  isLoaded: boolean
-] => {
-  const [geojson, setFeatures] =
-    useState<GeoJsonFeaturesCollection>(emptyGeoJson);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    gsrIndexer.geoJson().then((features) => {
-      setIsLoaded(true);
-      setFeatures(features);
-    });
-  }, []);
-
-  return [geojson, isLoaded];
 };
 
 const PlacementPopup: FunctionComponent<{ placementId: number }> = ({

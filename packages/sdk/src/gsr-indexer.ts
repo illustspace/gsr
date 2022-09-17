@@ -150,6 +150,16 @@ export class GsrIndexer {
     return placements.map(deserializeGsrPlacement);
   }
 
+  /** Get a placement history for an asset. */
+  async getPlacementHistoryGeoJson(assetId: string) {
+    const response = await this.axios.get<PlacementGeoJsonResponse>(
+      `/placements/asset/${assetId}/history/geojson`,
+      {}
+    );
+
+    return response.data;
+  }
+
   /** Search for placements by a partial DecodedAssetId */
   async query(
     query: Partial<DecodedAssetId>

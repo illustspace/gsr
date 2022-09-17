@@ -19,12 +19,14 @@ import { getPlacementByAssetId } from "~/api/fetchPlacements";
 import { fetchCatchResponse } from "~/api/api-fetcher-responses";
 import {
   deserializeGsrPlacement,
+  GeoJsonFeaturesCollection,
   SerializedGsrPlacement,
   ValidatedGsrPlacement,
 } from "~/../sdk/lib/cjs";
 import { AssetView } from "~/features/asset-types/view/AssetView";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { CenteredSpinner } from "~/features/utils/CenteredSpinner";
+import { GsrMap } from "~/features/map/GsrMap";
 
 interface AssetIdPageProps {
   serializedPlacement: SerializedGsrPlacement | null;
@@ -33,6 +35,7 @@ interface AssetIdPageProps {
 
 const AssetIdPage: NextPage<AssetIdPageProps> = ({ serializedPlacement }) => {
   const history = usePlacementHistory(serializedPlacement?.assetId);
+  const historyFeatures = useHistoryMap(serializedPlacement?.assetId);
 
   if (!serializedPlacement) {
     return (
@@ -131,6 +134,10 @@ const AssetIdPage: NextPage<AssetIdPageProps> = ({ serializedPlacement }) => {
         Placement History
       </Heading>
 
+      {historyFeatures && historyFeatures.data.features.length > 0 && (
+        <GsrMap features={historyFeatures} />
+      )}
+
       {!history && (
         <Box height="100px">
           <CenteredSpinner />
@@ -226,4 +233,21 @@ const usePlacementHistory = (assetId?: string) => {
   }, [assetId]);
 
   return placements;
+};
+
+const useHistoryMap = (assetId?: string) => {
+  const [geojson, setFeatures] = useState<GeoJsonFeaturesCollection | null>();
+
+  useEffect(() => {
+    if (!assetId) {
+      setFeatures(null);
+      return;
+    }
+
+    gsrIndexer.getPlacementHistoryGeoJson(assetId).then((features) => {
+      setFeatures(features);
+    });
+  }, [assetId]);
+
+  return geojson;
 };

@@ -124,6 +124,32 @@ export const getPlacementHistoryByAssetId = async (
   return fetchSuccessResponse(validatedPlacements);
 };
 
+/** Get all placements for an asset */
+export const getPlacementHistoryGeoJsonByAssetId = async (
+  assetId: string,
+  placedByOwner: boolean
+): Promise<FetchStatusWrapper<GeoJsonFeaturesCollection>> => {
+  const placements = await prisma.placement.findMany({
+    select: {
+      id: true,
+      assetId: true,
+      geohashBits: true,
+      geohashBitPrecision: true,
+    },
+    where: {
+      assetId,
+      placedByOwner,
+    },
+    orderBy: {
+      placedAt: "desc",
+    },
+  });
+
+  const geojson = placementsToGeoJson(placements);
+
+  return fetchSuccessResponse(geojson);
+};
+
 export const getPlacementByAssetId = async (
   assetId: string,
   publisher?: string
@@ -155,6 +181,12 @@ export const fetchPlacementsAsGeoJson = async (
   const decodedAssetId = query.assetType ? gsr.parseAssetId(query, true) : null;
 
   const placements = await prisma.placement.findMany({
+    select: {
+      id: true,
+      assetId: true,
+      geohashBits: true,
+      geohashBitPrecision: true,
+    },
     // Get assets that match the query.
     where: {
       placedByOwner: true,
