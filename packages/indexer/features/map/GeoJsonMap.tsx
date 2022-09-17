@@ -149,9 +149,8 @@ export const GeoJsonMap: FunctionComponent<BaseMapProps> = ({
       "icon-allow-overlap": allowIconOverlap,
     },
     paint: {
-      "icon-color": ["get", "color"],
+      "icon-color": "white",
     },
-    filter: ["==", "icon", "map-pin"],
   };
   const heatMapStyle: LayerProps = {
     id: "art-heat",

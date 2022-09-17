@@ -9,8 +9,9 @@ import {
 } from "@chakra-ui/react";
 import React, { FunctionComponent } from "react";
 import { useForm } from "react-hook-form";
-import { SelfPublishedAssetId } from "~/../sdk/lib/cjs";
-import { getProvider } from "../providers/getProvider";
+import { SelfPublishedAssetId } from "@geospatialregistry/sdk";
+
+import { getProvider } from "~/features/providers/getProvider";
 
 export interface SelfPublishedAssetProps {
   onChange: (assetId: SelfPublishedAssetId) => void;

@@ -12,5 +12,6 @@ module.exports = {
       "error",
       path.resolve(__dirname, "pages"),
     ],
+    "react/no-unknown-property": "off",
   },
 };

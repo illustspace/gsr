@@ -40,8 +40,6 @@ model Placement {
   // If true, validated as placed by owner.
   placedByOwner Boolean @default(false)
 
-  linkedAccount String?
-
   // Record when the record was created in the DB
   createdAt DateTime @default(now())
 }

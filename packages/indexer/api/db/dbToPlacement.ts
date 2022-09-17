@@ -30,7 +30,6 @@ export const dbToPlacement = (placement: Placement): SerializedGsrPlacement => {
       end: placement.timeRangeEnd,
     },
     tx: placement.tx,
-    linkedAccount: placement.linkedAccount || undefined,
   };
 
   return serializeGsrPlacement(validatedPlacement);
@@ -57,6 +56,5 @@ export const placementToDb = (
     timeRangeStart: placement.timeRange.start,
     timeRangeEnd: placement.timeRange.end,
     tx: placement.tx,
-    linkedAccount: placement.linkedAccount || null,
   };
 };

@@ -1,6 +1,6 @@
-import { keccak256 } from "@ethersproject/keccak256";
-import { toUtf8Bytes, toUtf8String } from "@ethersproject/strings";
-import { defaultAbiCoder } from "@ethersproject/abi";
+// import { keccak256 } from "@ethersproject/keccak256";
+// import { toUtf8Bytes } from "@ethersproject/strings";
+// import { defaultAbiCoder } from "@ethersproject/abi";
 import { Asserts, number, object, string } from "yup";
 
 import { ProviderKeys } from "~/provider";
@@ -30,7 +30,7 @@ const schema = object({
 /** Decoded AssetId for an EVM ERC 1155 1:1 NFT */
 export type Fa2AssetId = Asserts<typeof schema>;
 
-const tezosService = keccak256(toUtf8Bytes("TEZOS"));
+// const tezosService = keccak256(toUtf8Bytes("TEZOS"));
 
 export class Fa2Verifier extends BaseAssetTypeVerifier<Fa2AssetId> {
   single = false;
@@ -59,20 +59,20 @@ export class Fa2Verifier extends BaseAssetTypeVerifier<Fa2AssetId> {
   }
 
   async verifyAssetOwnership(
-    placement: GsrPlacement<Fa2AssetId>
+    _placement: GsrPlacement<Fa2AssetId>
   ): Promise<boolean> {
-    if (!placement.linkedAccount) return false;
+    // if (!placement.linkedAccount) return false;
 
-    const [linkedService, linkedAccount] = defaultAbiCoder.decode(
-      ["bytes32", "bytes"],
-      placement.linkedAccount
-    );
+    // const [linkedService, linkedAccount] = defaultAbiCoder.decode(
+    //   ["bytes32", "bytes"],
+    //   placement.linkedAccount
+    // );
 
-    if (linkedService !== tezosService) return false;
+    // if (linkedService !== tezosService) return false;
 
-    const tezosAddress = toUtf8String(linkedAccount);
-    // eslint-disable-next-line no-console
-    console.log(tezosAddress);
+    // const tezosAddress = toUtf8String(linkedAccount);
+    // // eslint-disable-next-line no-console
+    // console.log(tezosAddress);
 
     // TODO: get the proof from the ALR and verify the signature against the tezosAddress
 

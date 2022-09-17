@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import {
@@ -6,19 +5,21 @@ import {
   SinglePlacementResponse,
 } from "@geospatialregistry/sdk";
 
-import { fetchPlacementByQuery } from "~/api/fetchPlacements";
+import { getPlacementByPlacementId } from "~/api/fetchPlacements";
 import { fetchCatchResponse } from "~/api/api-fetcher-responses";
 
 /**
- * Fetch the latest placement by decodedAssetId
+ * Fetch the latest placement by assetId
  */
-export default async function placementsSingle(
+export default async function placementByPlacementId(
   req: NextApiRequest,
   res: NextApiResponse<ApiResponseType<SinglePlacementResponse>>
 ) {
-  const { statusCode, body } = await fetchPlacementByQuery(req.query).catch(
-    fetchCatchResponse
-  );
+  const placementId = req.query.placementId as string;
+
+  const { statusCode, body } = await getPlacementByPlacementId(
+    Number(placementId)
+  ).catch(fetchCatchResponse);
 
   res.status(statusCode).send(body);
 }

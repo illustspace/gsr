@@ -24,8 +24,21 @@ const indexersByChainId: Record<number, string> = {
   1337: "http://localhost:3000/api",
 };
 
+const explorerByChainId: Record<number, string> = {
+  137: "https://gsr.network",
+  80001: "https://testnet.gsr.network",
+  1337: "http://localhost:3000",
+};
+
+const blockExplorerByChainId: Record<number, string> = {
+  137: "https://polygonscan.io",
+  80001: "https://mumbai.polygonscan.com",
+  1337: "https://example.com",
+};
+
 export interface GsrIndexerOpts {
   customIndexerUrl?: string;
+  customExplorerUrl?: string;
 }
 
 export class GsrIndexerError extends Error {
@@ -39,13 +52,17 @@ export class GsrIndexerError extends Error {
 export class GsrIndexer {
   private axios;
 
+  private indexerUrl?: string;
+  private explorerUrl?: string;
+
   constructor(
     public chainId: number,
-    { customIndexerUrl }: GsrIndexerOpts = {}
+    { customIndexerUrl, customExplorerUrl }: GsrIndexerOpts = {}
   ) {
-    const indexerUrl = customIndexerUrl || indexersByChainId[chainId];
+    this.indexerUrl = customIndexerUrl || indexersByChainId[chainId];
+    this.explorerUrl = customExplorerUrl || explorerByChainId[chainId];
     this.axios = axios.create({
-      baseURL: indexerUrl,
+      baseURL: this.indexerUrl,
     });
   }
 
@@ -53,12 +70,11 @@ export class GsrIndexer {
     decodedAssetId: DecodedAssetId
   ): Promise<ValidatedGsrPlacement> {
     try {
-      const response = await this.axios.get<SinglePlacementResponse>(
-        "/placements/single",
-        {
-          params: decodedAssetId,
-        }
-      );
+      const response = await this.axios.get<
+        ApiResponseSuccess<SinglePlacementResponse>
+      >("/placements/single", {
+        params: decodedAssetId,
+      });
 
       const placement = this.getResponse(response);
 
@@ -75,15 +91,74 @@ export class GsrIndexer {
     }
   }
 
+  async placeOfAssetId(assetId: string): Promise<ValidatedGsrPlacement> {
+    try {
+      const response = await this.axios.get<
+        ApiResponseSuccess<SinglePlacementResponse>
+      >(`/placements/asset/${assetId}`);
+
+      const placement = this.getResponse(response);
+
+      return deserializeGsrPlacement(placement);
+    } catch (e) {
+      const error = e as AxiosError;
+
+      const data = error.response?.data || ({} as any);
+
+      throw new GsrIndexerError(
+        data.message || "Something went wrong",
+        data.code || "UNKNOWN_ERROR"
+      );
+    }
+  }
+
+  /**
+   * Find a Placement by placement ID
+   * This can find old or invalid placements
+   */
+  async placeOfByPlacementId(
+    placementId: number
+  ): Promise<ValidatedGsrPlacement> {
+    try {
+      const response = await this.axios.get<
+        ApiResponseSuccess<SinglePlacementResponse>
+      >(`/placements/id/${placementId}`);
+
+      const placement = this.getResponse(response);
+
+      return deserializeGsrPlacement(placement);
+    } catch (e) {
+      const error = e as AxiosError;
+
+      const data = error.response?.data || ({} as any);
+
+      throw new GsrIndexerError(
+        data.message || "Something went wrong",
+        data.code || "UNKNOWN_ERROR"
+      );
+    }
+  }
+
+  /** Get a placement history for an asset. */
+  async getPlacementHistory(assetId: string) {
+    const response = await this.axios.get<
+      ApiResponseSuccess<PlacementQueryResponse>
+    >(`/placements/asset/${assetId}/history`, {});
+
+    const placements = this.getResponse(response);
+
+    return placements.map(deserializeGsrPlacement);
+  }
+
+  /** Search for placements by a partial DecodedAssetId */
   async query(
     query: Partial<DecodedAssetId>
   ): Promise<ValidatedGsrPlacement[]> {
-    const response = await this.axios.get<PlacementQueryResponse>(
-      "/placements",
-      {
-        params: query,
-      }
-    );
+    const response = await this.axios.get<
+      ApiResponseSuccess<PlacementQueryResponse>
+    >("/placements", {
+      params: query,
+    });
 
     const placements = this.getResponse(response);
 
@@ -100,20 +175,23 @@ export class GsrIndexer {
       }
     );
 
-    return this.getResponse(response);
+    return response.data;
   }
 
   async stats() {
-    const response = await this.axios.get<GsrStatsResponse>("/stats");
+    const response = await this.axios.get<ApiResponseSuccess<GsrStatsResponse>>(
+      "/stats"
+    );
 
     return this.getResponse(response);
   }
 
   /** Request a sync from the indexer. Should be done after a placement tx has finished. */
   async sync() {
-    const response = await this.axios.post<IndexerSyncResponse>(
-      "/indexer/sync"
-    );
+    const response = await this.axios.post<
+      ApiResponseSuccess<IndexerSyncResponse>
+    >("/indexer/sync");
+
     return this.getResponse(response);
   }
 
@@ -121,20 +199,31 @@ export class GsrIndexer {
   async executeMetaTransaction(
     metaTransaction: MetaTransaction
   ): Promise<string> {
-    const response = await this.axios.post<MetaTransactionExecuteResponse>(
-      "/meta-transactions/execute",
-      metaTransaction
-    );
+    const response = await this.axios.post<
+      ApiResponseSuccess<MetaTransactionExecuteResponse>
+    >("/meta-transactions/execute", metaTransaction);
 
     const { tx } = this.getResponse(response);
 
     return tx;
   }
 
+  /** Routes to the explorer */
+  explorer = {
+    home: () => this.explorerUrl,
+    asset: (assetId: string) => `${this.explorerUrl}/assets/${assetId}`,
+  };
+
+  /** A block explorer URL for the placement transaction. */
+  public blockExplorerUrlForPlacement(placement: ValidatedGsrPlacement) {
+    const host = blockExplorerByChainId[this.chainId];
+    return `${host}/tx/${placement.tx}`;
+  }
+
   /** Fetch the response success payload from the response. */
   private getResponse<T extends ApiResponseSuccess<any>>(
     response: AxiosResponse<T>
-  ): T["response"] {
-    return response.data.response;
+  ): T["data"] {
+    return response.data.data;
   }
 }

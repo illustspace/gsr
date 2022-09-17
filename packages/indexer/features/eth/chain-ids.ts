@@ -9,3 +9,12 @@ export const chainIds = {
     mumbai: 80001,
   },
 };
+
+export const chainIdToName: Record<number, string> = {
+  1: "Ethereum",
+  3: "Ropsten",
+  4: "Rinkeby",
+  137: "Polygon",
+  80001: "Polygon Mumbai",
+  1337: "Devnet",
+};

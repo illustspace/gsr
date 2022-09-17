@@ -126,15 +126,20 @@ export class GsrContract {
   }
 
   /** Fetch GSR events since a specified block number. */
-  async fetchEvents(sinceBlockNumber: number) {
+  async fetchEvents(fromBlockNumber: number) {
     const blockNumber = await this.gsrProvider.getBlockNumber();
+
+    // Don't try to fetch when the since block is the current block
+    if (fromBlockNumber >= blockNumber) {
+      return { blockNumber, events: [] };
+    }
 
     const placementEvent = this.contract.filters.GsrPlacement();
 
     // If requesting historical data, start fetching that as well as starting the listener.
     const encodedEvents = await this.contract.queryFilter(
       placementEvent,
-      sinceBlockNumber || blockNumber
+      fromBlockNumber || blockNumber
     );
 
     const events = encodedEvents.map((event) => {
@@ -381,7 +386,6 @@ export class GsrContract {
     return decodeGsrPlacementEvent(event, this.verifier);
   }
 
-  /** Sync the indexer after a transaction. */
   async syncAfterTx(tx: ContractTransaction) {
     try {
       await tx.wait();

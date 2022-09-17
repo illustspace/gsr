@@ -1,7 +1,13 @@
-import { GsrStats } from "@geospatialregistry/sdk";
+import { GsrStatsResponse } from "@geospatialregistry/sdk";
 import { prisma } from "~/api/db";
+import {
+  FetchStatusWrapper,
+  fetchSuccessResponse,
+} from "./api-fetcher-responses";
 
-export const getStats = async (): Promise<GsrStats> => {
+export const fetchStats = async (): Promise<
+  FetchStatusWrapper<GsrStatsResponse>
+> => {
   const [totalOwnedPlacements, totalUnownedPlacements, totalPublishers] =
     await prisma.$transaction([
       // All asset IDs with at least one good placement.
@@ -32,9 +38,9 @@ export const getStats = async (): Promise<GsrStats> => {
       }),
     ]);
 
-  return {
+  return fetchSuccessResponse({
     totalOwnedPlacements: totalOwnedPlacements.length,
     totalUnownedPlacements: totalUnownedPlacements.length,
     totalPublishers: totalPublishers.length,
-  };
+  });
 };

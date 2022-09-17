@@ -1,36 +1,42 @@
-import { Container } from "@chakra-ui/react";
 import type { NextPage, GetServerSideProps } from "next";
-import { GsrStats } from "@geospatialregistry/sdk";
+import { GsrStatsResponse } from "@geospatialregistry/sdk";
 
-import { AssetSearch } from "~/features/asset-types/AssetSearch";
+import { AssetSearch } from "~/features/asset-types/search/AssetSearch";
 import { GsrStatsBlock } from "~/features/dashboard/GsrStatsBlock";
 import { GsrMap } from "~/features/map/GsrMap";
-import { TopNav } from "~/features/nav/TopNav";
-import { getStats } from "~/api/stats";
+import { fetchStats } from "~/api/stats";
+import { Layout } from "~/features/layout/Layout";
+import { fetchCatchResponse } from "~/api/api-fetcher-responses";
 
 interface HomeProps {
-  stats: GsrStats | null;
+  stats: GsrStatsResponse | null;
 }
 const Home: NextPage<HomeProps> = ({ stats }) => {
   return (
-    <Container maxWidth="900px">
-      <TopNav />
-
+    <Layout title="">
       <GsrStatsBlock stats={stats} />
 
       <GsrMap />
 
       <AssetSearch />
-    </Container>
+    </Layout>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const stats = await getStats().catch(() => null);
+  const { body } = await fetchStats().catch(fetchCatchResponse);
 
-  return {
-    props: { stats },
-  };
+  if (body.status === "success") {
+    return {
+      props: { stats: body.data },
+    };
+  } else {
+    return {
+      props: {
+        stats: null,
+      },
+    };
+  }
 };
 
 export default Home;

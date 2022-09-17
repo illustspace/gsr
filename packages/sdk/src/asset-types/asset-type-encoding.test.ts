@@ -9,6 +9,7 @@ import { EncodedAssetId } from "./AssetTypeVerifierMethods";
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { Erc1155Verifier } from "./ERC1155";
 import { Erc721Verifier } from "./ERC721";
+import { MessageVerifier } from "./Message";
 import { SelfPublishedVerifier } from "./SelfPublished";
 
 interface TestCase<T extends DecodedAssetId> {
@@ -77,6 +78,24 @@ const testCases: TestCase<DecodedAssetId>[] = [
     verifier: new SelfPublishedVerifier({}),
     assetId:
       "0x6ba43fbd5da0c9fc9bca252ec8bb06c2fdbf238d7903dc0856ef44f8a15283b4",
+  },
+  {
+    decodedAssetId: {
+      assetType: "MESSAGE",
+      message: "hello world",
+      publisherAddress: "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    },
+    encodedAssetId: {
+      assetType:
+        "0xe5351a41593fa1c504c2ec563e4e5e3f7260970a7630623957e582e72fa971db",
+      collectionId:
+        "0x0000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000000b68656c6c6f20776f726c64000000000000000000000000000000000000000000",
+      itemId:
+        "0x000000000000000000000000a0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+    },
+    verifier: new MessageVerifier({}),
+    assetId:
+      "0xc0e9bb85cde0a17faec56d71248381cc0c60b90a1fe7393265e9a181f5234849",
   },
 ];
 
