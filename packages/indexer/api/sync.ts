@@ -1,4 +1,4 @@
-import { IndexerSyncResponse } from "~/../sdk/lib/cjs";
+import { IndexerSyncResponse } from "@geospatialregistry/sdk";
 import { gsr } from "~/features/gsr/gsr-contract";
 import {
   FetchStatusWrapper,

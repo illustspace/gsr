@@ -1,5 +1,6 @@
 import React, { FunctionComponent } from "react";
-import { AssetId, AssetType } from "~/../sdk/lib/cjs";
+import { AssetId, AssetType } from "@geospatialregistry/sdk";
+
 import { Erc1155Asset } from "./Erc1155Asset";
 import { Erc721Asset } from "./Erc721Asset";
 import { MessageAssetSearch } from "./MessageAssetSearch";

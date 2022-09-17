@@ -2,7 +2,8 @@ import {
   GeoJsonFeaturesCollection,
   PlacementQueryResponse,
   SinglePlacementResponse,
-} from "~/../sdk/lib/cjs";
+} from "@geospatialregistry/sdk";
+
 import { gsr } from "~/features/gsr/gsr-contract";
 import { placementsToGeoJson } from "~/features/map/geo-json";
 import {

@@ -13,16 +13,16 @@ import {
 } from "@chakra-ui/react";
 import { decode_int } from "ngeohash";
 import NextLink from "next/link";
-
-import { Layout } from "~/features/layout/Layout";
-import { getPlacementByAssetId } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
 import {
   deserializeGsrPlacement,
   GeoJsonFeaturesCollection,
   SerializedGsrPlacement,
   ValidatedGsrPlacement,
-} from "~/../sdk/lib/cjs";
+} from "@geospatialregistry/sdk";
+
+import { Layout } from "~/features/layout/Layout";
+import { getPlacementByAssetId } from "~/api/fetchPlacements";
+import { fetchCatchResponse } from "~/api/api-fetcher-responses";
 import { AssetView } from "~/features/asset-types/view/AssetView";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { CenteredSpinner } from "~/features/utils/CenteredSpinner";
