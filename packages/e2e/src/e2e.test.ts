@@ -39,10 +39,6 @@ describe("e2e", () => {
     return block.timestamp;
   };
 
-  afterAll(async () => {
-    await resetDb();
-  });
-
   beforeAll(async () => {
     await resetDb();
 
@@ -70,7 +66,10 @@ describe("e2e", () => {
 
   describe("ERC721 Assets", () => {
     it("places and indexes", async () => {
-      await erc721.connect(signer).mint(signer.address, BigNumber.from(1));
+      const mintTx = await erc721
+        .connect(signer)
+        .mint(signer.address, BigNumber.from(1));
+      await mintTx.wait();
 
       const decodedAssetId: Erc721AssetId = {
         assetType: "ERC721",
@@ -136,17 +135,15 @@ describe("e2e", () => {
 
       expect(await gsrIndexer.sync()).toEqual({
         blockNumber: receipt.blockNumber,
-        events: 1,
-      });
-
-      expect(await gsrIndexer.sync()).toEqual({
-        blockNumber: receipt.blockNumber,
-        events: 1,
+        events: 0,
       });
     });
 
     it("places and indexes with metaTransaction", async () => {
-      await erc721.connect(signer).mint(signer.address, BigNumber.from(2));
+      const mintTx = await erc721
+        .connect(signer)
+        .mint(signer.address, BigNumber.from(2));
+      await mintTx.wait();
 
       const decodedAssetId: Erc721AssetId = {
         assetType: "ERC721",
@@ -217,14 +214,10 @@ describe("e2e", () => {
         tx: tx.hash,
       });
 
+      // Nothing more to sync
       expect(await gsrIndexer.sync()).toEqual({
         blockNumber: receipt.blockNumber,
-        events: 1,
-      });
-
-      expect(await gsrIndexer.sync()).toEqual({
-        blockNumber: receipt.blockNumber,
-        events: 1,
+        events: 0,
       });
     });
   });
@@ -289,14 +282,10 @@ describe("e2e", () => {
         tx: tx.hash,
       });
 
+      // Nothing more to sync
       expect(await gsrIndexer.sync()).toEqual({
         blockNumber: receipt.blockNumber,
-        events: 1,
-      });
-
-      expect(await gsrIndexer.sync()).toEqual({
-        blockNumber: receipt.blockNumber,
-        events: 1,
+        events: 0,
       });
     });
   });

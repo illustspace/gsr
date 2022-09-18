@@ -10,9 +10,9 @@ import { placementToDb } from "./db/dbToPlacement";
 export const syncIndexer = async (): Promise<
   FetchStatusWrapper<IndexerSyncResponse>
 > => {
-  const nextBlockNumber = await getNextBlockNumberToProcess();
+  const lastBlockNumber = await getLastBlockNumberProcessed();
 
-  const { blockNumber, events } = await gsr.fetchEvents(nextBlockNumber);
+  const { blockNumber, events } = await gsr.fetchEvents(lastBlockNumber);
 
   // Verify placements.
   const placements = await Promise.all(
@@ -42,7 +42,7 @@ export const syncIndexer = async (): Promise<
   });
 };
 
-const getNextBlockNumberToProcess = async () => {
+const getLastBlockNumberProcessed = async () => {
   const serviceState = await prisma.serviceState.findUnique({
     where: { id: 0 },
   });
@@ -50,5 +50,5 @@ const getNextBlockNumberToProcess = async () => {
   if (!serviceState?.lastBlockNumber) return 0;
 
   // Add one since the last processed block.
-  return serviceState.lastBlockNumber + 1;
+  return serviceState.lastBlockNumber;
 };
