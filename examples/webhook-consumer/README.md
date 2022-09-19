@@ -4,6 +4,18 @@ An example TypeScript Node.js server that receives webhooks from the GSR Indexer
 
 ## Usage
 
+Run the server on port 3002 from the root of the monorepo:
+
 ```bash
-yarn start
+yarn workspace webhook-consumer start
 ```
+
+## API
+
+`GET /placements/:assetId`
+
+Returns the most recent placement for the given AssetId
+
+`POST /webhooks/gsr`
+
+Accepts and verifies placement webhooks from the GSR Indexer
