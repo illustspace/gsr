@@ -5,8 +5,8 @@ import {
   PlacementQueryResponse,
 } from "@geospatialregistry/sdk";
 
-import { getPlacementHistoryByAssetId } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
+import { getPlacementHistoryByAssetId } from "../../../../../../api/services/placements.service";
+import { fetchCatchResponse } from "../../../../../../api/services/responses/api-fetcher-responses";
 
 /**
  * Fetch the placement history of an asset.

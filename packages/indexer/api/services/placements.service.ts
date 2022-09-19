@@ -11,9 +11,10 @@ import {
   FetchStatusWrapper,
   fetchSuccessResponse,
 } from "./responses/api-fetcher-responses";
-import { prisma } from "./db";
-import { dbToPlacement } from "./db/dbToPlacement";
+import { prisma } from "../db";
+import { dbToPlacement } from "../db/dbToPlacement";
 
+/** Fetch a single placement with a DecodedAssetId */
 export const fetchPlacementByQuery = async (
   decodedAssetIdQuery: any,
   publisher?: string
@@ -51,6 +52,7 @@ export const fetchPlacementByQuery = async (
   return fetchSuccessResponse(validatedPlacement);
 };
 
+/** Fetch a placements with partial DecodedAssetId */
 export const fetchPlacementsByQuery = async (
   query: any
 ): Promise<FetchStatusWrapper<PlacementQueryResponse>> => {
@@ -84,6 +86,7 @@ export const fetchPlacementsByQuery = async (
   return fetchSuccessResponse(validatedPlacements);
 };
 
+/** Fetch a single placement with a placement DB id */
 export const getPlacementByPlacementId = async (
   placementId: number
 ): Promise<FetchStatusWrapper<SinglePlacementResponse>> => {
@@ -125,7 +128,7 @@ export const getPlacementHistoryByAssetId = async (
   return fetchSuccessResponse(validatedPlacements);
 };
 
-/** Get all placements for an asset */
+/** Get all placements for an asset as GeoJSON */
 export const getPlacementHistoryGeoJsonByAssetId = async (
   assetId: string,
   placedByOwner: boolean
@@ -151,6 +154,7 @@ export const getPlacementHistoryGeoJsonByAssetId = async (
   return fetchSuccessResponse(geojson);
 };
 
+/** Fetch a single placement by hashed AssetId */
 export const getPlacementByAssetId = async (
   assetId: string,
   publisher?: string
@@ -176,6 +180,7 @@ export const getPlacementByAssetId = async (
   return fetchSuccessResponse(validatedPlacement);
 };
 
+/** Filter placements with a partial DecodedAssetId and return them as GeoJSON */
 export const fetchPlacementsAsGeoJson = async (
   query: any
 ): Promise<FetchStatusWrapper<GeoJsonFeaturesCollection>> => {

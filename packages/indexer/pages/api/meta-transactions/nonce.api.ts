@@ -6,7 +6,7 @@ import {
 } from "@geospatialregistry/sdk";
 
 import { updateMetaTransactionNonce } from "~/api/meta-transactions";
-import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
+import { fetchCatchResponse } from "../../../api/services/responses/api-fetcher-responses";
 
 /** Update the metaTransaction hot wallet's nonce */
 export default async function metaTransactionNonce(

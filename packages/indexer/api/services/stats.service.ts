@@ -5,6 +5,7 @@ import {
   fetchSuccessResponse,
 } from "./responses/api-fetcher-responses";
 
+/** Get overall GSR stats */
 export const fetchStats = async (): Promise<
   FetchStatusWrapper<GsrStatsResponse>
 > => {

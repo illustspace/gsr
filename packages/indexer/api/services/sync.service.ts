@@ -4,10 +4,11 @@ import {
   FetchStatusWrapper,
   fetchSuccessResponse,
 } from "./responses/api-fetcher-responses";
-import { prisma } from "./db";
-import { placementToDb } from "./db/dbToPlacement";
-import { sendWebhooks } from "./webhooks/send-webhooks";
+import { prisma } from "../db";
+import { placementToDb } from "../db/dbToPlacement";
+import { sendWebhooks } from "./webhooks/send-webhooks.service";
 
+/** Sync new placements from the GSR smart contract */
 export const syncIndexer = async (): Promise<
   FetchStatusWrapper<IndexerSyncResponse>
 > => {

@@ -5,8 +5,8 @@ import {
   SinglePlacementResponse,
 } from "@geospatialregistry/sdk";
 
-import { fetchPlacementByQuery } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
+import { fetchPlacementByQuery } from "../../../api/services/placements.service";
+import { fetchCatchResponse } from "../../../api/services/responses/api-fetcher-responses";
 
 /**
  * Fetch the latest placement by decodedAssetId

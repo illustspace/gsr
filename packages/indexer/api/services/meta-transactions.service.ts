@@ -12,8 +12,9 @@ import {
   FetchStatusWrapper,
   fetchSuccessResponse,
 } from "./responses/api-fetcher-responses";
-import { prisma } from "./db";
+import { prisma } from "~/api/db";
 
+/** Execute a metaTransaction from the stored private key. */
 export const executeMetaTransaction = async (
   metaTransaction: MetaTransaction
 ): Promise<FetchStatusWrapper<MetaTransactionExecuteResponse>> => {
@@ -43,6 +44,7 @@ export const executeMetaTransaction = async (
   return fetchSuccessResponse({ tx });
 };
 
+/** Update the cached metaTransaction private key nonce. */
 export const updateMetaTransactionNonce = async (): Promise<
   FetchStatusWrapper<MetaTransactionNonceResponse>
 > => {

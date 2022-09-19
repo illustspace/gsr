@@ -3,10 +3,13 @@ import type { NextApiRequest } from "next";
 
 import { IndexerSyncResponse } from "@geospatialregistry/sdk";
 
-import { apiFailure, NextApiResponseType } from "~/api/responses/api-responses";
+import {
+  apiFailure,
+  NextApiResponseType,
+} from "../../../api/services/responses/api-responses";
 import { getApiEnv } from "~/features/config/apiEnv";
 import { syncIndexer } from "~/api/sync";
-import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
+import { fetchCatchResponse } from "../../../api/services/responses/api-fetcher-responses";
 
 /** Last time the update function was run. Used to stop DDOS requests. */
 let lastUpdatedTimestamp = 0;

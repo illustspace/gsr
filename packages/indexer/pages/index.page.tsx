@@ -10,7 +10,7 @@ import { GsrStatsBlock } from "~/features/dashboard/GsrStatsBlock";
 import { GsrMap } from "~/features/map/GsrMap";
 import { fetchStats } from "~/api/stats";
 import { Layout } from "~/features/layout/Layout";
-import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
+import { fetchCatchResponse } from "../api/services/responses/api-fetcher-responses";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { emptyGeoJson } from "~/features/map/geo-json";
 

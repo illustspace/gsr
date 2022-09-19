@@ -6,9 +6,9 @@ import {
   MetaTransactionExecuteResponse,
 } from "@geospatialregistry/sdk";
 
-import { apiFailure } from "~/api/responses/api-responses";
+import { apiFailure } from "../../../api/services/responses/api-responses";
 import { executeMetaTransaction } from "~/api/meta-transactions";
-import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
+import { fetchCatchResponse } from "../../../api/services/responses/api-fetcher-responses";
 
 export default async function metaTransactionExecute(
   req: NextApiRequest,

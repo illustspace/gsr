@@ -7,8 +7,9 @@ import {
 
 import { getApiEnv } from "~/features/config/apiEnv";
 import { gsr } from "~/features/gsr/gsr-contract";
+import { prisma } from "~/api/db";
+
 import { signWebhookMessage } from "./sign-webook";
-import { prisma } from "../db";
 
 /** Send webhooks to all registered endpoints. */
 export const sendWebhooks = async (placements: ValidatedGsrPlacement[]) => {
