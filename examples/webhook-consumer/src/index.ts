@@ -1,6 +1,7 @@
 // express server
 import express from "express";
 import bodyParser from "body-parser";
+import morgan from "morgan";
 import {
   GsrContract,
   serializeGsrPlacement,
@@ -9,6 +10,9 @@ import {
 
 const app = express();
 const port = 3002;
+
+// Logging
+app.use(morgan("tiny"));
 
 // create application/json parser
 const rawJsonParser = bodyParser.raw({ type: "application/json" });
@@ -40,8 +44,6 @@ app.get("/placements/:assetId", async (req, res) => {
 });
 
 app.post("/gsr/webhook", rawJsonParser, async (req, res) => {
-  // console.log("bb", body);
-  // console.log("bb", body.toString());
   const body = req.body.toString();
   const signature = req.headers["gsr-signature"] as string;
 
@@ -57,13 +59,14 @@ app.post("/gsr/webhook", rawJsonParser, async (req, res) => {
     newPlacements.forEach(updatePlacement);
   } catch (error) {
     console.error("Invalid webhook", error);
+    res.status(400).send("Invalid webhook");
   }
 
   res.status(201).send("ok");
 });
 
 // eslint-disable-next-line no-console
-app.listen(port, () => console.log(`Example app listening on port ${port}!`));
+app.listen(port, () => console.log(`Example app listening on port ${port}`));
 
 /** Update the in-memory placement DB with a new placement. */
 function updatePlacement(newPlacement: ValidatedGsrPlacement) {

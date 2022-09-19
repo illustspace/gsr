@@ -3680,7 +3680,7 @@ __metadata:
     "@ethersproject/abi": 5.4.1
     "@ethersproject/bignumber": 5.4.1
     "@ethersproject/providers": 5.4.5
-    "@geospatialregistry/sdk": 0.0.0
+    "@geospatialregistry/sdk": ^0.0.0
     "@manifoldxyz/creator-core-solidity": ^1.0.4
     "@manifoldxyz/libraries-solidity": ^1.0.2
     "@nomiclabs/hardhat-ethers": ^2.0.5
@@ -3698,7 +3698,7 @@ __metadata:
     "@types/lodash": ^4.14.171
     "@types/mocha": ^8.2.2
     "@types/ngeohash": ^0.6.4
-    "@types/node": ^15.0.2
+    "@types/node": 18.7.14
     chai: ^4.3.4
     dotenv: ^9.0.2
     ethereum-waffle: ^3.4.0
@@ -3794,7 +3794,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@geospatialregistry/sdk@0.0.0, @geospatialregistry/sdk@^0.0.0, @geospatialregistry/sdk@workspace:packages/sdk":
+"@geospatialregistry/sdk@^0.0.0, @geospatialregistry/sdk@workspace:packages/sdk":
   version: 0.0.0-use.local
   resolution: "@geospatialregistry/sdk@workspace:packages/sdk"
   dependencies:
@@ -5515,7 +5515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/body-parser@npm:*":
+"@types/body-parser@npm:*, @types/body-parser@npm:^1.19.2":
   version: 1.19.2
   resolution: "@types/body-parser@npm:1.19.2"
   dependencies:
@@ -5582,7 +5582,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:4.17.14":
+"@types/express@npm:^4.17.14":
   version: 4.17.14
   resolution: "@types/express@npm:4.17.14"
   dependencies:
@@ -5791,6 +5791,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/morgan@npm:^1.9.3":
+  version: 1.9.3
+  resolution: "@types/morgan@npm:1.9.3"
+  dependencies:
+    "@types/node": "*"
+  checksum: 0b9bc8641ce03f7176f617523b8da300e5d47225b1667396749950ac7fdfa1f990447d490648fbaff050c2b0ef5fa60c3f2f00c6b76efec06fe5148de5020813
+  languageName: node
+  linkType: hard
+
 "@types/ngeohash@npm:^0.6.4":
   version: 0.6.4
   resolution: "@types/ngeohash@npm:0.6.4"
@@ -5833,13 +5842,6 @@ __metadata:
   version: 12.20.55
   resolution: "@types/node@npm:12.20.55"
   checksum: e4f86785f4092706e0d3b0edff8dca5a13b45627e4b36700acd8dfe6ad53db71928c8dee914d4276c7fd3b6ccd829aa919811c9eb708a2c8e4c6eb3701178c37
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^15.0.2":
-  version: 15.14.9
-  resolution: "@types/node@npm:15.14.9"
-  checksum: 49f7f0522a3af4b8389aee660e88426490cd54b86356672a1fedb49919a8797c00d090ec2dcc4a5df34edc2099d57fc2203d796c4e7fbd382f2022ccd789eee7
   languageName: node
   linkType: hard
 
@@ -8181,6 +8183,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"basic-auth@npm:~2.0.1":
+  version: 2.0.1
+  resolution: "basic-auth@npm:2.0.1"
+  dependencies:
+    safe-buffer: 5.1.2
+  checksum: 3419b805d5dfc518f3a05dcf42aa53aa9ce820e50b6df5097f9e186322e1bc733c36722b624802cd37e791035aa73b828ed814d8362333d42d7f5cd04d7a5e48
+  languageName: node
+  linkType: hard
+
 "bcrypt-pbkdf@npm:^1.0.0":
   version: 1.0.2
   resolution: "bcrypt-pbkdf@npm:1.0.2"
@@ -9944,7 +9955,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"depd@npm:2.0.0":
+"depd@npm:2.0.0, depd@npm:~2.0.0":
   version: 2.0.0
   resolution: "depd@npm:2.0.0"
   checksum: abbe19c768c97ee2eed6282d8ce3031126662252c58d711f646921c9623f9052e3e1906443066beec1095832f534e57c523b7333f8e7e0d93051ab6baef5ab3a
@@ -17061,6 +17072,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"morgan@npm:^1.10.0":
+  version: 1.10.0
+  resolution: "morgan@npm:1.10.0"
+  dependencies:
+    basic-auth: ~2.0.1
+    debug: 2.6.9
+    depd: ~2.0.0
+    on-finished: ~2.3.0
+    on-headers: ~1.0.2
+  checksum: fb41e226ab5a1abf7e8909e486b387076534716d60207e361acfb5df78b84d703a7b7ea58f3046a9fd0b83d3c94bfabde32323341a1f1b26ce50680abd2ea5dd
+  languageName: node
+  linkType: hard
+
 "mri@npm:1.2.0":
   version: 1.2.0
   resolution: "mri@npm:1.2.0"
@@ -17794,6 +17818,22 @@ __metadata:
   dependencies:
     ee-first: 1.1.1
   checksum: d20929a25e7f0bb62f937a425b5edeb4e4cde0540d77ba146ec9357f00b0d497cdb3b9b05b9c8e46222407d1548d08166bff69cc56dfa55ba0e4469228920ff0
+  languageName: node
+  linkType: hard
+
+"on-finished@npm:~2.3.0":
+  version: 2.3.0
+  resolution: "on-finished@npm:2.3.0"
+  dependencies:
+    ee-first: 1.1.1
+  checksum: 1db595bd963b0124d6fa261d18320422407b8f01dc65863840f3ddaaf7bcad5b28ff6847286703ca53f4ec19595bd67a2f1253db79fc4094911ec6aa8df1671b
+  languageName: node
+  linkType: hard
+
+"on-headers@npm:~1.0.2":
+  version: 1.0.2
+  resolution: "on-headers@npm:1.0.2"
+  checksum: 2bf13467215d1e540a62a75021e8b318a6cfc5d4fc53af8e8f84ad98dbcea02d506c6d24180cd62e1d769c44721ba542f3154effc1f7579a8288c9f7873ed8e5
   languageName: node
   linkType: hard
 
@@ -19970,17 +20010,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"safe-buffer@npm:5.1.2, safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
+  version: 5.1.2
+  resolution: "safe-buffer@npm:5.1.2"
+  checksum: f2f1f7943ca44a594893a852894055cf619c1fbcb611237fc39e461ae751187e7baf4dc391a72125e0ac4fb2d8c5c0b3c71529622e6a58f46b960211e704903c
+  languageName: node
+  linkType: hard
+
 "safe-buffer@npm:5.2.1, safe-buffer@npm:^5.0.1, safe-buffer@npm:^5.1.0, safe-buffer@npm:^5.1.1, safe-buffer@npm:^5.1.2, safe-buffer@npm:^5.2.0, safe-buffer@npm:^5.2.1, safe-buffer@npm:~5.2.0":
   version: 5.2.1
   resolution: "safe-buffer@npm:5.2.1"
   checksum: b99c4b41fdd67a6aaf280fcd05e9ffb0813654894223afb78a31f14a19ad220bba8aba1cb14eddce1fcfb037155fe6de4e861784eb434f7d11ed58d1e70dd491
-  languageName: node
-  linkType: hard
-
-"safe-buffer@npm:~5.1.0, safe-buffer@npm:~5.1.1":
-  version: 5.1.2
-  resolution: "safe-buffer@npm:5.1.2"
-  checksum: f2f1f7943ca44a594893a852894055cf619c1fbcb611237fc39e461ae751187e7baf4dc391a72125e0ac4fb2d8c5c0b3c71529622e6a58f46b960211e704903c
   languageName: node
   linkType: hard
 
@@ -23398,13 +23438,16 @@ __metadata:
   resolution: "webhook-consumer@workspace:examples/webhook-consumer"
   dependencies:
     "@geospatialregistry/sdk": ^0.0.0
-    "@types/express": 4.17.14
+    "@types/body-parser": ^1.19.2
+    "@types/express": ^4.17.14
+    "@types/morgan": ^1.9.3
     "@types/node": 18.7.14
     body-parser: ^1.20.0
     express: ^4.18.1
+    morgan: ^1.10.0
     ts-node: ^10.8.2
     ts-node-dev: ^2.0.0
-    typescript: 4.8.2
+    typescript: ^4.7.4
   languageName: unknown
   linkType: soft
 

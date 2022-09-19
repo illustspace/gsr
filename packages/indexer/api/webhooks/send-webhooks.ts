@@ -1,6 +1,9 @@
 import axios from "axios";
 import { Wallet } from "@ethersproject/wallet";
-import { SerializedGsrPlacement } from "@geospatialregistry/sdk";
+import {
+  serializeGsrPlacement,
+  ValidatedGsrPlacement,
+} from "@geospatialregistry/sdk";
 
 import { getApiEnv } from "~/features/config/apiEnv";
 import { gsr } from "~/features/gsr/gsr-contract";
@@ -8,7 +11,7 @@ import { signWebhookMessage } from "./sign-webook";
 import { prisma } from "../db";
 
 /** Send webhooks to all registered endpoints. */
-export const sendWebhooks = async (placements: SerializedGsrPlacement[]) => {
+export const sendWebhooks = async (placements: ValidatedGsrPlacement[]) => {
   // Get all active webhooks.
   const webhooks = await prisma.webhook.findMany({
     where: {
@@ -16,10 +19,12 @@ export const sendWebhooks = async (placements: SerializedGsrPlacement[]) => {
     },
   });
 
+  const serializedPlacements = placements.map(serializeGsrPlacement);
+
   // Send webhooks to all active webhooks.
   const results = await Promise.allSettled(
     webhooks.map(async (webhook) => {
-      return sendWebhook(webhook.endpoint, placements);
+      return sendWebhook(webhook.endpoint, serializedPlacements);
     })
   );
 
@@ -52,6 +57,7 @@ const sendWebhook = async (endpoint: string, placements: unknown) => {
     headers: {
       // Pass the signature as a header.
       "gsr-signature": signature,
+      "content-type": "application/json",
     },
   });
 };

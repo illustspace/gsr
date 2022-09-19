@@ -15,7 +15,7 @@ import {
   gsr,
   chainId,
   gsrIndexer,
-  getTimestampOfReceipt,
+  getTimestampDateOfReceipt,
   erc721,
   signer,
 } from "./lib/shared";
@@ -54,7 +54,7 @@ describe("e2e", () => {
       );
 
       const receipt = await tx.wait();
-      const timestamp = await getTimestampOfReceipt(receipt);
+      const timestamp = await getTimestampDateOfReceipt(receipt);
       // Wait for the sync to finish.
       await sync;
 
@@ -62,7 +62,7 @@ describe("e2e", () => {
       expect(await gsr.placeOf(decodedAssetId, signer.address)).toEqual({
         bitPrecision: 5,
         geohash: BigNumber.from(0b11111),
-        startTime: new Date(timestamp * 1000),
+        startTime: timestamp,
       });
 
       // Test placement made it to the indexer
@@ -77,7 +77,7 @@ describe("e2e", () => {
           geohash: 0b11111,
           bitPrecision: 5,
         },
-        placedAt: new Date(timestamp * 1000),
+        placedAt: timestamp,
         placedByOwner: true,
         published: true,
         publisher: signer.address.toLowerCase(),
@@ -134,7 +134,7 @@ describe("e2e", () => {
       const { tx, sync } = await gsr.syncAfterTransactionHash(txHash);
 
       const receipt = await tx.wait();
-      const timestamp = await getTimestampOfReceipt(receipt);
+      const timestamp = await getTimestampDateOfReceipt(receipt);
       // Wait for the sync to finish.
       await sync;
 
@@ -142,7 +142,7 @@ describe("e2e", () => {
       expect(await gsr.placeOf(decodedAssetId, signer.address)).toEqual({
         bitPrecision: 5,
         geohash: BigNumber.from(0b11111),
-        startTime: new Date(timestamp * 1000),
+        startTime: timestamp,
       });
 
       // Test placement made it to the indexer, and that it reads as placed by signer1
@@ -157,7 +157,7 @@ describe("e2e", () => {
           geohash: 0b11111,
           bitPrecision: 5,
         },
-        placedAt: new Date(timestamp * 1000),
+        placedAt: timestamp,
         placedByOwner: true,
         published: true,
         // Signer1, even though signer2 submitted the TX
@@ -249,7 +249,7 @@ describe("e2e", () => {
       });
 
       const receipt = await tx.wait();
-      const timestamp = await getTimestampOfReceipt(receipt);
+      const timestamp = await getTimestampDateOfReceipt(receipt);
       // Wait for the sync to finish.
       await sync;
 
@@ -257,7 +257,7 @@ describe("e2e", () => {
       expect(await gsr.placeOf(decodedAssetId, signer.address)).toEqual({
         bitPrecision: 5,
         geohash: BigNumber.from(0b11111),
-        startTime: new Date(timestamp * 1000),
+        startTime: timestamp,
       });
 
       // Test placement made it to the indexer
@@ -269,7 +269,7 @@ describe("e2e", () => {
           geohash: 0b11111,
           bitPrecision: 5,
         },
-        placedAt: new Date(timestamp * 1000),
+        placedAt: timestamp,
         placedByOwner: true,
         published: true,
         publisher: signer.address.toLowerCase(),
@@ -317,7 +317,7 @@ describe("e2e", () => {
       );
 
       const receipt = await tx.wait();
-      const timestamp = await getTimestampOfReceipt(receipt);
+      const timestamp = await getTimestampDateOfReceipt(receipt);
       // Wait for the sync to finish.
       await sync;
 
@@ -325,7 +325,7 @@ describe("e2e", () => {
       expect(await gsr.placeOf(decodedAssetId, signer.address)).toEqual({
         bitPrecision: 5,
         geohash: BigNumber.from(0b11111),
-        startTime: new Date(timestamp * 1000),
+        startTime: timestamp,
       });
 
       // Test placement made it to the indexer
@@ -337,7 +337,7 @@ describe("e2e", () => {
           geohash: 0b11111,
           bitPrecision: 5,
         },
-        placedAt: new Date(timestamp * 1000),
+        placedAt: timestamp,
         placedByOwner: true,
         published: true,
         publisher: signer.address.toLowerCase(),

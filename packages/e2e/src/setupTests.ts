@@ -5,7 +5,7 @@ import { prisma } from "../../indexer/api/db";
 process.env.DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/gsr";
 
 beforeAll(async () => {
-  resetDb();
+  await resetDb();
 
   // Sync the indexer's nonce with the blockchain
   await axios.post("http://localhost:3001/api/meta-transactions/nonce");

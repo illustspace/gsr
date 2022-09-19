@@ -30,8 +30,10 @@ export const signer = new Wallet(testPrivateKey, provider);
 
 export const erc721 = new Contract(tokenAddress, testTokenAbi, gsr.gsrProvider);
 
-export const getTimestampOfReceipt = async (receipt: ContractReceipt) => {
+export const getTimestampDateOfReceipt = async (
+  receipt: ContractReceipt
+): Promise<Date> => {
   const { blockHash } = receipt;
   const block = await gsr.gsrProvider.getBlock(blockHash);
-  return block.timestamp;
+  return new Date(block.timestamp * 1000);
 };

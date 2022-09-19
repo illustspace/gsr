@@ -6,6 +6,7 @@ import {
 } from "./responses/api-fetcher-responses";
 import { prisma } from "./db";
 import { placementToDb } from "./db/dbToPlacement";
+import { sendWebhooks } from "./webhooks/send-webhooks";
 
 export const syncIndexer = async (): Promise<
   FetchStatusWrapper<IndexerSyncResponse>
@@ -20,6 +21,11 @@ export const syncIndexer = async (): Promise<
       return gsr.verifyPlacement(placement);
     })
   );
+
+  const ownedPlacements = placements.filter(
+    (placement) => placement.placedByOwner
+  );
+  sendWebhooks(ownedPlacements);
 
   await prisma.$transaction([
     // Save the processed block
