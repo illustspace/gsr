@@ -6,7 +6,8 @@
   "license": "UNLICENSED",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "examples/*"
   ],
   "scripts": {
     "ws": "./bin/ws.sh",

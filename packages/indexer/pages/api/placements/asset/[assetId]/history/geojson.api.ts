@@ -7,7 +7,7 @@ import {
 } from "@geospatialregistry/sdk";
 
 import { getPlacementHistoryGeoJsonByAssetId } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
 
 /**
  * Fetch the placement history of an asset.

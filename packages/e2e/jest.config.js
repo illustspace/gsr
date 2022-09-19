@@ -26,5 +26,5 @@ module.exports = {
     ],
   },
   transformIgnorePatterns: ["/node_modules/(?!lodash-es/.*)"],
-  // setupFilesAfterEnv: ["<rootDir>/setupTests.ts"],
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
 };

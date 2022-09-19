@@ -22,7 +22,7 @@ import {
 
 import { Layout } from "~/features/layout/Layout";
 import { getPlacementByAssetId } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
 import { AssetView } from "~/features/asset-types/view/AssetView";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { CenteredSpinner } from "~/features/utils/CenteredSpinner";

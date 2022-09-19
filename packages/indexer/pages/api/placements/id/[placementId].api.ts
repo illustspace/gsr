@@ -6,7 +6,7 @@ import {
 } from "@geospatialregistry/sdk";
 
 import { getPlacementByPlacementId } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
 
 /**
  * Fetch the latest placement by assetId

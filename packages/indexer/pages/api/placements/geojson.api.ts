@@ -7,7 +7,7 @@ import {
 } from "@geospatialregistry/sdk";
 
 import { fetchPlacementsAsGeoJson } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
 
 export default async function placementGeoJson(
   req: NextApiRequest,

@@ -3,7 +3,7 @@ import { prisma } from "~/api/db";
 import {
   FetchStatusWrapper,
   fetchSuccessResponse,
-} from "./api-fetcher-responses";
+} from "./responses/api-fetcher-responses";
 
 export const fetchStats = async (): Promise<
   FetchStatusWrapper<GsrStatsResponse>

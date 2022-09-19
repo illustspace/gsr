@@ -1,4 +1,3 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import {
@@ -7,7 +6,7 @@ import {
 } from "@geospatialregistry/sdk";
 
 import { fetchPlacementByQuery } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
 
 /**
  * Fetch the latest placement by decodedAssetId

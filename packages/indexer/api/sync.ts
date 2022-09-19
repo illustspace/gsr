@@ -3,7 +3,7 @@ import { gsr } from "~/features/gsr/gsr-contract";
 import {
   FetchStatusWrapper,
   fetchSuccessResponse,
-} from "./api-fetcher-responses";
+} from "./responses/api-fetcher-responses";
 import { prisma } from "./db";
 import { placementToDb } from "./db/dbToPlacement";
 

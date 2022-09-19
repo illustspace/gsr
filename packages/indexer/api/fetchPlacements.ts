@@ -10,7 +10,7 @@ import {
   fetchFailResponse,
   FetchStatusWrapper,
   fetchSuccessResponse,
-} from "./api-fetcher-responses";
+} from "./responses/api-fetcher-responses";
 import { prisma } from "./db";
 import { dbToPlacement } from "./db/dbToPlacement";
 

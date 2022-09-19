@@ -3,8 +3,8 @@ import type { NextApiRequest } from "next";
 import { GsrStatsResponse } from "@geospatialregistry/sdk";
 
 import { fetchStats } from "~/api/stats";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
-import { NextApiResponseType } from "~/api/api-responses";
+import { fetchCatchResponse } from "~/api/responses/api-fetcher-responses";
+import { NextApiResponseType } from "~/api/responses/api-responses";
 
 /**
  * Fetch stats about the GSR.
