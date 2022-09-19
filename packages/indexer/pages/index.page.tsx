@@ -8,11 +8,12 @@ import { useState, useEffect } from "react";
 import { AssetSearch } from "~/features/asset-types/search/AssetSearch";
 import { GsrStatsBlock } from "~/features/dashboard/GsrStatsBlock";
 import { GsrMap } from "~/features/map/GsrMap";
-import { fetchStats } from "~/api/stats";
+import { fetchStats } from "~/api/services/stats.service";
 import { Layout } from "~/features/layout/Layout";
-import { fetchCatchResponse } from "../api/services/responses/api-fetcher-responses";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { emptyGeoJson } from "~/features/map/geo-json";
+
+import { fetchCatchResponse } from "../api/services/responses/service-response";
 
 interface HomeProps {
   stats: GsrStatsResponse | null;

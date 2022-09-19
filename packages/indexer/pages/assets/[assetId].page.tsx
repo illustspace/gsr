@@ -21,8 +21,8 @@ import {
 } from "@geospatialregistry/sdk";
 
 import { Layout } from "~/features/layout/Layout";
-import { getPlacementByAssetId } from "../../api/services/placements.service";
-import { fetchCatchResponse } from "../../api/services/responses/api-fetcher-responses";
+import { getPlacementByAssetId } from "~/api/services/placements.service";
+import { fetchCatchResponse } from "~/api/services/responses/service-response";
 import { AssetView } from "~/features/asset-types/view/AssetView";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { CenteredSpinner } from "~/features/utils/CenteredSpinner";

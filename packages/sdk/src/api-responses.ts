@@ -6,13 +6,13 @@
 import { GeoJsonFeaturesCollection } from "./geo-json";
 import { SerializedGsrPlacement } from "./placement-event";
 
-/** A success response */
+/** A success response (200-level) */
 export interface ApiResponseSuccess<T> {
   status: "success";
   data: T;
 }
 
-/** A failure response */
+/** A failure response (400-level) */
 export interface ApiResponseFail<T = undefined> {
   status: "fail";
   message: string;
@@ -20,6 +20,7 @@ export interface ApiResponseFail<T = undefined> {
   data: T;
 }
 
+/** An error response (500-level) */
 export interface ApiResponseError {
   status: "error";
   message: string;
