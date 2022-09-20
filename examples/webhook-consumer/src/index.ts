@@ -14,7 +14,10 @@ const port = 3002;
 // Logging
 app.use(morgan("tiny"));
 
-// create application/json parser
+/**
+ * Parser for the raw application/json webhook.
+ * Use the raw data so we can verify the signature.
+ */
 const rawJsonParser = bodyParser.raw({ type: "application/json" });
 
 const placements: {
@@ -43,6 +46,7 @@ app.get("/placements/:assetId", async (req, res) => {
   res.status(200).send(serializeGsrPlacement(placement));
 });
 
+/** Accepts webhooks from the GSR Indexer */
 app.post("/gsr/webhook", rawJsonParser, async (req, res) => {
   const body = req.body.toString();
   const signature = req.headers["gsr-signature"] as string;
