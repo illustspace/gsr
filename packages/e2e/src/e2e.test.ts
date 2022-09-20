@@ -12,6 +12,8 @@ import {
   Erc721AssetId,
   SelfPublishedAssetId,
   SelfPublishedVerifier,
+  MessageAssetId,
+  MessageVerifier,
 } from "@geospatialregistry/sdk";
 
 import { getDefaultProvider, Provider } from "@ethersproject/providers";
@@ -237,7 +239,7 @@ describe("e2e", () => {
       });
 
       const receipt = await tx.wait();
-      const timestamp = await getTimestampDateOfReceipt(receipt);
+      const timestamp = await getTimestampOfReceipt(receipt);
       // Wait for the sync to finish.
       await sync;
 
@@ -245,7 +247,7 @@ describe("e2e", () => {
       expect(await gsr.placeOf(decodedAssetId, signer.address)).toEqual({
         bitPrecision: 5,
         geohash: BigNumber.from(0b11111),
-        startTime: timestamp,
+        startTime: new Date(timestamp * 1000),
       });
 
       // Test placement made it to the indexer
@@ -257,7 +259,7 @@ describe("e2e", () => {
           geohash: 0b11111,
           bitPrecision: 5,
         },
-        placedAt: timestamp,
+        placedAt: new Date(timestamp * 1000),
         placedByOwner: true,
         published: true,
         publisher: signer.address.toLowerCase(),
