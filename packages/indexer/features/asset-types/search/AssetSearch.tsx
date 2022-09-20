@@ -39,6 +39,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
     assetType: "MESSAGE",
     message: "",
     publisherAddress: "",
+    placementNumber: 1,
   });
 
   const handleSearch = async () => {
