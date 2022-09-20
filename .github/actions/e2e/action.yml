@@ -21,8 +21,12 @@ runs:
       run: yarn ws indexer e2e:serve &
       shell: bash
 
-    - name: Wait for indexer to start &
-      run: yarn wait-on http://localhost:3001
+    - name: Serve test webhook-consumer
+      run: yarn workspace webhook-consumer serve &
+      shell: bash
+
+    - name: Wait for servers to start
+      run: yarn wait-on http://localhost:3001 && yarn wait-on http://localhost:3002
       shell: bash
 
     # Run e2e test once services are started
