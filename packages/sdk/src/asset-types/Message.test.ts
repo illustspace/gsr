@@ -9,6 +9,7 @@ const decodedAssetId: MessageAssetId = {
   assetType: "MESSAGE",
   publisherAddress: publisher,
   message: "hello",
+  placementNumber: 1,
 };
 
 describe("MessageVerifier", () => {

@@ -91,14 +91,14 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier<Erc1155AssetId> {
       assetId.itemId
     );
 
-    return {
+    return schema.validateSync({
       assetType: this.assetType,
-      chainId: chainId.toNumber(),
-      contractAddress: contractAddress.toLowerCase(),
-      tokenId: tokenId.toString(),
-      publisherAddress: publisherAddress.toLowerCase(),
-      itemNumber: itemNumber.toString(),
-    };
+      chainId,
+      contractAddress,
+      tokenId,
+      publisherAddress,
+      itemNumber,
+    });
   }
 
   encodeAssetId(assetId: Erc1155AssetId) {

@@ -66,6 +66,15 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
           {errors.publisherAddress?.message as string}
         </FormErrorMessage>
       </FormControl>
+
+      <FormControl isInvalid={!!errors.placementNumber} isRequired>
+        <FormLabel>Placement Number</FormLabel>
+        <Input {...register("placementNumber", { required: true })} />
+
+        <FormErrorMessage>
+          {errors.placementNumber?.message as string}
+        </FormErrorMessage>
+      </FormControl>
     </Box>
   );
 };

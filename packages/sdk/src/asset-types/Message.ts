@@ -1,24 +1,32 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
-import { object, string, Asserts } from "yup";
+import { object, string, Asserts, number } from "yup";
 
 import { ProviderKeys } from "~/provider";
 
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
 import { GsrPlacement } from "~/placement-event";
+import { transformBigNumberToInteger } from "./schema";
 
 const schema = object({
   assetType: string().oneOf(["MESSAGE"]).required(),
   publisherAddress: string().lowercase().required(),
   message: string().required(),
+  placementNumber: number()
+    .transform(transformBigNumberToInteger)
+    .integer()
+    .positive()
+    .required(),
 });
 
-/** Decoded AssetId for an EVM ERC 721 1:1 NFT */
+/** Decoded AssetId for a text-based Message */
 export type MessageAssetId = Asserts<typeof schema>;
 
 const assetTypeAbis = {
+  // message
   collectionId: ["string"],
-  itemId: ["address"],
+  // publisherAddress, placementNumber
+  itemId: ["address", "uint256"],
 };
 
 export class MessageVerifier extends BaseAssetTypeVerifier<MessageAssetId> {
@@ -35,16 +43,17 @@ export class MessageVerifier extends BaseAssetTypeVerifier<MessageAssetId> {
       assetTypeAbis.collectionId,
       assetId.collectionId
     );
-    const [publisherAddress] = defaultAbiCoder.decode(
+    const [publisherAddress, placementNumber] = defaultAbiCoder.decode(
       assetTypeAbis.itemId,
       assetId.itemId
     );
 
-    return {
+    return schema.validateSync({
       assetType: this.assetType,
-      publisherAddress: publisherAddress.toLowerCase(),
+      publisherAddress,
       message,
-    };
+      placementNumber,
+    });
   }
 
   encodeAssetId(assetId: MessageAssetId): EncodedAssetId {
@@ -54,6 +63,7 @@ export class MessageVerifier extends BaseAssetTypeVerifier<MessageAssetId> {
     );
     const encodedItemId = defaultAbiCoder.encode(assetTypeAbis.itemId, [
       assetId.publisherAddress,
+      assetId.placementNumber,
     ]);
 
     return {

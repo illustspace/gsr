@@ -54,7 +54,7 @@ export const updateMetaTransactionNonce = async (): Promise<
   // Get the tx count for the hot wallet,
   // and set the nonce to count - 1 to be ready for the next increment
   const lastNonce = (await signer.getTransactionCount()) - 1;
-  const address = signer.address;
+  const address = signer.address.toLowerCase();
 
   await prisma.walletNonces.upsert({
     select: { nonce: true },

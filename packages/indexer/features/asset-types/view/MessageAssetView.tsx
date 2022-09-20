@@ -24,6 +24,10 @@ export const MessageAssetView: FunctionComponent<MessageAssetViewProps> = ({
         <Th>Publisher</Th>
         <Td>{decodedAssetId.publisherAddress}</Td>
       </Tr>
+      <Tr>
+        <Th>Placement Number</Th>
+        <Td>{decodedAssetId.placementNumber}</Td>
+      </Tr>
     </>
   );
 };
