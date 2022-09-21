@@ -5,6 +5,7 @@
   "scripts": {
     "start": "yarn db:start && next dev",
     "build": "yarn db:generate && next build",
+    "build:vercel": "yarn db:generate --data-proxy && next build",
     "serve": "next start",
     "lint": "next lint",
     "db:start": "docker-compose up -d db",
