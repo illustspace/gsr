@@ -9,14 +9,15 @@ import {
 import { getApiEnv } from "~/features/config/apiEnv";
 import { gsr } from "~/features/gsr/gsr-contract";
 import {
-  FetchStatusWrapper,
+  GsrIndexerServiceWrapper,
   fetchSuccessResponse,
-} from "./api-fetcher-responses";
-import { prisma } from "./db";
+} from "./responses/service-response";
+import { prisma } from "~/api/db";
 
+/** Execute a metaTransaction from the stored private key. */
 export const executeMetaTransaction = async (
   metaTransaction: MetaTransaction
-): Promise<FetchStatusWrapper<MetaTransactionExecuteResponse>> => {
+): Promise<GsrIndexerServiceWrapper<MetaTransactionExecuteResponse>> => {
   const validatedMetaTransaction =
     metaTransactionSchema.validateSync(metaTransaction);
 
@@ -43,8 +44,9 @@ export const executeMetaTransaction = async (
   return fetchSuccessResponse({ tx });
 };
 
+/** Update the cached metaTransaction private key nonce. */
 export const updateMetaTransactionNonce = async (): Promise<
-  FetchStatusWrapper<MetaTransactionNonceResponse>
+  GsrIndexerServiceWrapper<MetaTransactionNonceResponse>
 > => {
   const signer = new Wallet(
     getApiEnv("metaTransactionRelayPrivateKey"),

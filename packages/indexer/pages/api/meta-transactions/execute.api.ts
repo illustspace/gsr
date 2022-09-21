@@ -1,26 +1,17 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next";
+import { MetaTransactionExecuteResponse } from "@geospatialregistry/sdk";
 
-import {
-  ApiResponseType,
-  MetaTransactionExecuteResponse,
-} from "@geospatialregistry/sdk";
+import { apiFailure } from "~/api/services/responses/api-responses";
+import { executeMetaTransaction } from "~/api/services/meta-transactions.service";
+import { wrapServiceEndpoint } from "~/api/services/responses/service-response";
 
-import { apiFailure } from "~/api/api-responses";
-import { executeMetaTransaction } from "~/api/meta-transactions";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+export default wrapServiceEndpoint<MetaTransactionExecuteResponse>(
+  async (req, res) => {
+    if (req.method !== "POST") {
+      res.status(405).send(apiFailure("Must be a POST", "METHOD_NOT_ALLOWED"));
+    }
 
-export default async function metaTransactionExecute(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiResponseType<MetaTransactionExecuteResponse>>
-) {
-  if (req.method !== "POST") {
-    res.status(405).send(apiFailure("Must be a POST", "METHOD_NOT_ALLOWED"));
+    const { statusCode, body } = await executeMetaTransaction(req.body);
+
+    res.status(statusCode).send(body);
   }
-
-  const { statusCode, body } = await executeMetaTransaction(req.body).catch(
-    fetchCatchResponse
-  );
-
-  res.status(statusCode).send(body);
-}
+);

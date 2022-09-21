@@ -1,25 +1,19 @@
-import type { NextApiRequest, NextApiResponse } from "next";
+import { SinglePlacementResponse } from "@geospatialregistry/sdk";
 
-import {
-  ApiResponseType,
-  SinglePlacementResponse,
-} from "@geospatialregistry/sdk";
-
-import { getPlacementByPlacementId } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { getPlacementByPlacementId } from "~/api/services/placements.service";
+import { wrapServiceEndpoint } from "~/api/services/responses/service-response";
 
 /**
  * Fetch the latest placement by assetId
  */
-export default async function placementByPlacementId(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiResponseType<SinglePlacementResponse>>
-) {
-  const placementId = req.query.placementId as string;
+export default wrapServiceEndpoint<SinglePlacementResponse>(
+  async (req, res) => {
+    const placementId = req.query.placementId as string;
 
-  const { statusCode, body } = await getPlacementByPlacementId(
-    Number(placementId)
-  ).catch(fetchCatchResponse);
+    const { statusCode, body } = await getPlacementByPlacementId(
+      Number(placementId)
+    );
 
-  res.status(statusCode).send(body);
-}
+    res.status(statusCode).send(body);
+  }
+);

@@ -1,14 +1,16 @@
 import { IndexerSyncResponse } from "@geospatialregistry/sdk";
 import { gsr } from "~/features/gsr/gsr-contract";
 import {
-  FetchStatusWrapper,
+  GsrIndexerServiceWrapper,
   fetchSuccessResponse,
-} from "./api-fetcher-responses";
-import { prisma } from "./db";
-import { placementToDb } from "./db/dbToPlacement";
+} from "./responses/service-response";
+import { prisma } from "../db";
+import { placementToDb } from "../db/dbToPlacement";
+import { sendWebhooks } from "./webhooks/send-webhooks.service";
 
+/** Sync new placements from the GSR smart contract */
 export const syncIndexer = async (): Promise<
-  FetchStatusWrapper<IndexerSyncResponse>
+  GsrIndexerServiceWrapper<IndexerSyncResponse>
 > => {
   const lastBlockNumber = await getLastBlockNumberProcessed();
 
@@ -20,6 +22,11 @@ export const syncIndexer = async (): Promise<
       return gsr.verifyPlacement(placement);
     })
   );
+
+  const ownedPlacements = placements.filter(
+    (placement) => placement.placedByOwner
+  );
+  sendWebhooks(ownedPlacements);
 
   await prisma.$transaction([
     // Save the processed block

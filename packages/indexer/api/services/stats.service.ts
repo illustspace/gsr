@@ -1,12 +1,13 @@
 import { GsrStatsResponse } from "@geospatialregistry/sdk";
 import { prisma } from "~/api/db";
 import {
-  FetchStatusWrapper,
+  GsrIndexerServiceWrapper,
   fetchSuccessResponse,
-} from "./api-fetcher-responses";
+} from "./responses/service-response";
 
+/** Get overall GSR stats */
 export const fetchStats = async (): Promise<
-  FetchStatusWrapper<GsrStatsResponse>
+  GsrIndexerServiceWrapper<GsrStatsResponse>
 > => {
   const [totalOwnedPlacements, totalUnownedPlacements, totalPublishers] =
     await prisma.$transaction([

@@ -8,16 +8,17 @@ import { gsr } from "~/features/gsr/gsr-contract";
 import { placementsToGeoJson } from "~/features/map/geo-json";
 import {
   fetchFailResponse,
-  FetchStatusWrapper,
+  GsrIndexerServiceWrapper,
   fetchSuccessResponse,
-} from "./api-fetcher-responses";
-import { prisma } from "./db";
-import { dbToPlacement } from "./db/dbToPlacement";
+} from "./responses/service-response";
+import { prisma } from "../db";
+import { dbToPlacement } from "../db/dbToPlacement";
 
+/** Fetch a single placement with a DecodedAssetId */
 export const fetchPlacementByQuery = async (
   decodedAssetIdQuery: any,
   publisher?: string
-): Promise<FetchStatusWrapper<SinglePlacementResponse>> => {
+): Promise<GsrIndexerServiceWrapper<SinglePlacementResponse>> => {
   const query = gsr.parseAssetId(decodedAssetIdQuery);
 
   const placement = await prisma.placement.findFirst({
@@ -51,9 +52,10 @@ export const fetchPlacementByQuery = async (
   return fetchSuccessResponse(validatedPlacement);
 };
 
+/** Fetch a placements with partial DecodedAssetId */
 export const fetchPlacementsByQuery = async (
   query: any
-): Promise<FetchStatusWrapper<PlacementQueryResponse>> => {
+): Promise<GsrIndexerServiceWrapper<PlacementQueryResponse>> => {
   const decodedAssetId = gsr.parseAssetId(query, true);
 
   const placements = await prisma.placement.findMany({
@@ -84,9 +86,10 @@ export const fetchPlacementsByQuery = async (
   return fetchSuccessResponse(validatedPlacements);
 };
 
+/** Fetch a single placement with a placement DB id */
 export const getPlacementByPlacementId = async (
   placementId: number
-): Promise<FetchStatusWrapper<SinglePlacementResponse>> => {
+): Promise<GsrIndexerServiceWrapper<SinglePlacementResponse>> => {
   const placement = await prisma.placement.findUnique({
     where: {
       id: placementId,
@@ -110,7 +113,7 @@ export const getPlacementByPlacementId = async (
 export const getPlacementHistoryByAssetId = async (
   assetId: string,
   placedByOwner: boolean
-): Promise<FetchStatusWrapper<PlacementQueryResponse>> => {
+): Promise<GsrIndexerServiceWrapper<PlacementQueryResponse>> => {
   const placements = await prisma.placement.findMany({
     where: {
       assetId,
@@ -125,11 +128,11 @@ export const getPlacementHistoryByAssetId = async (
   return fetchSuccessResponse(validatedPlacements);
 };
 
-/** Get all placements for an asset */
+/** Get all placements for an asset as GeoJSON */
 export const getPlacementHistoryGeoJsonByAssetId = async (
   assetId: string,
   placedByOwner: boolean
-): Promise<FetchStatusWrapper<GeoJsonFeaturesCollection>> => {
+): Promise<GsrIndexerServiceWrapper<GeoJsonFeaturesCollection>> => {
   const placements = await prisma.placement.findMany({
     select: {
       id: true,
@@ -151,10 +154,11 @@ export const getPlacementHistoryGeoJsonByAssetId = async (
   return fetchSuccessResponse(geojson);
 };
 
+/** Fetch a single placement by hashed AssetId */
 export const getPlacementByAssetId = async (
   assetId: string,
   publisher?: string
-): Promise<FetchStatusWrapper<SinglePlacementResponse>> => {
+): Promise<GsrIndexerServiceWrapper<SinglePlacementResponse>> => {
   const placement = await prisma.placement.findFirst({
     where: {
       // Filter by valid placements, unless a publisher is specified.
@@ -176,9 +180,10 @@ export const getPlacementByAssetId = async (
   return fetchSuccessResponse(validatedPlacement);
 };
 
+/** Filter placements with a partial DecodedAssetId and return them as GeoJSON */
 export const fetchPlacementsAsGeoJson = async (
   query: any
-): Promise<FetchStatusWrapper<GeoJsonFeaturesCollection>> => {
+): Promise<GsrIndexerServiceWrapper<GeoJsonFeaturesCollection>> => {
   const decodedAssetId = query.assetType ? gsr.parseAssetId(query, true) : null;
 
   const placements = await prisma.placement.findMany({

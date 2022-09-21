@@ -64,6 +64,13 @@ model SelfServeAsset {
 
 // Holds nonces for hot wallets
 model WalletNonces {
-  address String @db.VarChar(255) @id
+  address String @id @db.VarChar(255)
   nonce   Int    @default(0)
+}
+
+model Webhook {
+  id        Int      @id @default(autoincrement())
+  endpoint  String   @default("")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
 }

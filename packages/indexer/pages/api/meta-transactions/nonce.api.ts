@@ -5,17 +5,14 @@ import {
   MetaTransactionNonceResponse,
 } from "@geospatialregistry/sdk";
 
-import { updateMetaTransactionNonce } from "~/api/meta-transactions";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { updateMetaTransactionNonce } from "~/api/services/meta-transactions.service";
 
 /** Update the metaTransaction hot wallet's nonce */
 export default async function metaTransactionNonce(
   _req: NextApiRequest,
   res: NextApiResponse<ApiResponseType<MetaTransactionNonceResponse>>
 ) {
-  const { statusCode, body } = await updateMetaTransactionNonce().catch(
-    fetchCatchResponse
-  );
+  const { statusCode, body } = await updateMetaTransactionNonce();
 
   res.status(statusCode).json(body);
 }

@@ -1,5 +1,6 @@
 import type { Signer } from "@ethersproject/abstract-signer";
 import type { Provider } from "@ethersproject/providers";
+import { verifyMessage } from "@ethersproject/wallet";
 import type {
   ContractTransaction,
   PayableOverrides,
@@ -20,6 +21,7 @@ import {
 } from "./asset-types/AssetTypeVerifier";
 import {
   decodeGsrPlacementEvent,
+  deserializeGsrPlacement,
   GsrPlacement,
   ValidatedGsrPlacement,
 } from "./placement-event";
@@ -384,6 +386,32 @@ export class GsrContract {
   /** Decode a Placement event into useful data. */
   decodePlacementEvent(event: GsrPlacementEvent): GsrPlacement {
     return decodeGsrPlacementEvent(event, this.verifier);
+  }
+
+  /** Get the hashed assetId for an asset. */
+  getAssetId(decodedAssetId: DecodedAssetId): string {
+    return this.verifier.hashAssetId(decodedAssetId);
+  }
+
+  /** Verify that a webhook request came from the indexer */
+  verifyPlacementWebhookMessage(
+    body: string,
+    signature: string,
+    expectedEndpoint: string
+  ): ValidatedGsrPlacement[] {
+    const { payload, endpoint } = JSON.parse(body);
+
+    if (endpoint !== expectedEndpoint) {
+      throw new Error("Endpoint mismatch");
+    }
+
+    const signer = verifyMessage(body, signature);
+
+    if (signer.toLowerCase() !== this.indexer.address.toLowerCase()) {
+      throw new Error("Invalid signature");
+    }
+
+    return payload.map(deserializeGsrPlacement);
   }
 
   async syncAfterTx(tx: ContractTransaction) {

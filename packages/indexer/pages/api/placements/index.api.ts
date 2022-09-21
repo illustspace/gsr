@@ -1,21 +1,11 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next";
+import { PlacementQueryResponse } from "@geospatialregistry/sdk";
 
-import {
-  ApiResponseType,
-  PlacementQueryResponse,
-} from "@geospatialregistry/sdk";
+import { fetchPlacementsByQuery } from "~/api/services/placements.service";
+import { wrapServiceEndpoint } from "~/api/services/responses/service-response";
 
-import { fetchPlacementsByQuery } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
-
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ApiResponseType<PlacementQueryResponse>>
-) {
-  const { statusCode, body } = await fetchPlacementsByQuery(req.query).catch(
-    fetchCatchResponse
-  );
+/** Fetch a list of placements that match a partial DecodedAssetId */
+export default wrapServiceEndpoint<PlacementQueryResponse>(async (req, res) => {
+  const { statusCode, body } = await fetchPlacementsByQuery(req.query);
 
   res.status(statusCode).send(body);
-}
+});

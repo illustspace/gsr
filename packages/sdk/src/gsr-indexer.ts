@@ -24,6 +24,12 @@ const indexersByChainId: Record<number, string> = {
   1337: "http://localhost:3000/api",
 };
 
+const indexerAddressByChainId: Record<number, string> = {
+  137: "",
+  80001: "",
+  1337: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
+};
+
 const explorerByChainId: Record<number, string> = {
   137: "https://gsr.network",
   80001: "https://testnet.gsr.network",
@@ -39,6 +45,7 @@ const blockExplorerByChainId: Record<number, string> = {
 export interface GsrIndexerOpts {
   customIndexerUrl?: string;
   customExplorerUrl?: string;
+  customIndexerAddress?: string;
 }
 
 export class GsrIndexerError extends Error {
@@ -51,16 +58,18 @@ export class GsrIndexerError extends Error {
 /** Supports calls to the Indexer APIs, without needing direct smart contract access. */
 export class GsrIndexer {
   private axios;
+  /** The public address of the indexer service, to be used to sign webhook messages. */
+  public address: string;
 
   private indexerUrl?: string;
   private explorerUrl?: string;
 
-  constructor(
-    public chainId: number,
-    { customIndexerUrl, customExplorerUrl }: GsrIndexerOpts = {}
-  ) {
-    this.indexerUrl = customIndexerUrl || indexersByChainId[chainId];
-    this.explorerUrl = customExplorerUrl || explorerByChainId[chainId];
+  constructor(public chainId: number, opts: GsrIndexerOpts = {}) {
+    this.indexerUrl = opts.customIndexerUrl || indexersByChainId[chainId];
+    this.explorerUrl = opts.customExplorerUrl || explorerByChainId[chainId];
+    this.address =
+      opts.customIndexerAddress || indexerAddressByChainId[chainId];
+
     this.axios = axios.create({
       baseURL: this.indexerUrl,
     });

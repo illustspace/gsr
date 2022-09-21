@@ -6,10 +6,13 @@ import {
 } from "@geospatialregistry/sdk";
 import { NextApiResponse } from "next";
 
-/** @file helpers for generating typed API responses */
+/**
+ * @file helpers for Indexer API responses
+ */
 
 export type NextApiResponseType<T> = NextApiResponse<ApiResponseType<T>>;
 
+/** Return an API success response */
 export function apiSuccess<T>(data: T): ApiResponseSuccess<T> {
   return {
     status: "success",
@@ -17,6 +20,7 @@ export function apiSuccess<T>(data: T): ApiResponseSuccess<T> {
   };
 }
 
+/** Return an API failure response */
 export function apiFailure(
   message: string,
   code: string,
@@ -30,6 +34,7 @@ export function apiFailure(
   };
 }
 
+/** Return an API error response */
 export function apiError(message: string, code: string): ApiResponseError {
   return {
     status: "error",

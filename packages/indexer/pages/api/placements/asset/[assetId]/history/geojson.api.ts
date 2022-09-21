@@ -6,12 +6,10 @@ import {
   PlacementGeoJsonResponse,
 } from "@geospatialregistry/sdk";
 
-import { getPlacementHistoryGeoJsonByAssetId } from "~/api/fetchPlacements";
-import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { getPlacementHistoryGeoJsonByAssetId } from "~/api/services/placements.service";
+import { fetchCatchResponse } from "~/api/services/responses/service-response";
 
-/**
- * Fetch the placement history of an asset.
- */
+/** Fetch the placement history of an asset as GeoJSON. */
 export default async function placementHistory(
   req: NextApiRequest,
   res: NextApiResponse<
