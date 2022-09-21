@@ -663,23 +663,4 @@ describe("GeoSpatialRegistry", () => {
       });
     });
   });
-
-  describe("pausing", () => {
-    it("cannot place when paused", async () => {
-      await gsr.connect(admin).pause();
-
-      await expect(
-        gsr.connect(nftOwner).place(encodedAssetId, geohash, timeRange)
-      ).to.be.revertedWith("Pausable: paused");
-    });
-
-    it("can place after un-pausing", async () => {
-      await gsr.connect(admin).pause();
-      await gsr.connect(admin).unpause();
-
-      await expect(
-        gsr.connect(nftOwner).place(encodedAssetId, geohash, timeRange)
-      ).not.to.be.reverted;
-    });
-  });
 });

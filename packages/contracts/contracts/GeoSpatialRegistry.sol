@@ -2,22 +2,12 @@
 /// @author Illust Space
 
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.4;
-pragma abicoder v2;
-
-import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/security/Pausable.sol";
-// import "hardhat/console.sol";
+pragma solidity 0.8.4;
 
 import "./meta-transactions/ContentMixin.sol";
 import "./meta-transactions/NativeMetaTransaction.sol";
 
-contract GeoSpatialRegistry is
-    Ownable,
-    Pausable,
-    NativeMetaTransaction,
-    ContextMixin
-{
+contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
     /** Describes a placement event. */
     event GsrPlacement(
         // ===============
@@ -113,7 +103,7 @@ contract GeoSpatialRegistry is
         EncodedAssetId calldata encodedAssetId,
         Geohash calldata geohash,
         TimeRange calldata timeRange
-    ) external whenNotPaused {
+    ) external {
         _verifyGeohash(geohash);
 
         bytes32 assetId = _assetId(encodedAssetId);
@@ -141,7 +131,7 @@ contract GeoSpatialRegistry is
         Geohash calldata geohash,
         TimeRange calldata timeRange,
         string calldata sceneUri
-    ) external whenNotPaused {
+    ) external {
         _verifyGeohash(geohash);
 
         bytes32 assetId = _assetId(encodedAssetId);
@@ -168,7 +158,7 @@ contract GeoSpatialRegistry is
         EncodedAssetId calldata encodedAssetId,
         bytes32 parentAssetId,
         TimeRange calldata timeRange
-    ) external whenNotPaused {
+    ) external {
         /// @dev Find the parent's placement.
         Placement storage parentPlacement = _findValidPlacement(
             parentAssetId,
@@ -196,10 +186,7 @@ contract GeoSpatialRegistry is
     }
 
     /** Remove an asset from the GSR */
-    function removePlacement(EncodedAssetId calldata encodedAssetId)
-        external
-        whenNotPaused
-    {
+    function removePlacement(EncodedAssetId calldata encodedAssetId) external {
         bytes32 assetId = _assetId(encodedAssetId);
 
         Placement storage placement = placements[_msgSender()][assetId];
@@ -214,7 +201,7 @@ contract GeoSpatialRegistry is
     function updateSceneUri(
         EncodedAssetId calldata encodedAssetId,
         string memory sceneUri
-    ) external whenNotPaused {
+    ) external {
         bytes32 assetId = _assetId(encodedAssetId);
 
         Placement storage placement = _findValidPlacement(
@@ -323,16 +310,6 @@ contract GeoSpatialRegistry is
         return placement.parentAssetId == parentAssetId;
     }
 
-    /** Pause all activity. */
-    function pause() external onlyOwner {
-        _pause();
-    }
-
-    /** Unpause all activity. */
-    function unpause() external onlyOwner {
-        _unpause();
-    }
-
     /** Look up a placement, and verify that it is valid. */
     /// @param assetId the external asset id of the piece to find the placement of
     /// @param publisher the address of the publisher of the piece
@@ -420,7 +397,7 @@ contract GeoSpatialRegistry is
     }
 
     /** This is used instead of msg.sender as transactions won't be sent by the original token owner, but by OpenSea. */
-    function _msgSender() internal view override returns (address sender) {
+    function _msgSender() internal view returns (address sender) {
         return ContextMixin.msgSender();
     }
 
