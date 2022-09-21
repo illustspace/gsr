@@ -45,6 +45,7 @@ export default async function handler(
 
     res.status(200).json(apiSuccess(validatedPlacements));
   } catch (error) {
-    res.status(500).send(apiServerFailure(error));
+    const { statusCode, body } = apiServerFailure(error);
+    res.status(statusCode).send(body);
   }
 }

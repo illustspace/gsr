@@ -3,16 +3,10 @@
   "include": ["./src"],
   "compilerOptions": {
     "types": ["node", "jest"],
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "target": "es5",
-    "noEmit": false,
-    // Emit types
-    "declaration": true,
-    // Emit type source maps for "Go to source definition"
-    "declarationMap": true,
     "module": "ESNext",
     "outDir": "lib/esm",
+    "rootDir": "src",
     "baseUrl": "src",
     "paths": {
       "~/*": ["./*"]

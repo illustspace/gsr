@@ -7,9 +7,8 @@ import { prisma } from "~/api/db";
 import { apiFailure, apiServerFailure, apiSuccess } from "~/api/api-responses";
 import { placementToDb } from "~/api/db/dbToPlacement";
 import { gsr } from "~/features/gsr/gsr-contract";
+import { getApiEnv } from "~/features/config/apiEnv";
 
-/** How long to wait between sync requests. */
-const RATE_LIMIT_MS = Number(process.env.SYNC_RATE_LIMIT_MS);
 /** Last time the update function was run. Used to stop DDOS requests. */
 let lastUpdatedTimestamp = 0;
 
@@ -19,7 +18,7 @@ export default async function sync(
   res: NextApiResponse<ApiResponseType<IndexerSyncResponse>>
 ) {
   const now = Date.now();
-  if (lastUpdatedTimestamp > now - RATE_LIMIT_MS) {
+  if (lastUpdatedTimestamp > now - getApiEnv("syncRateLimitMs")) {
     res
       .status(429)
       .json(
@@ -67,7 +66,8 @@ export default async function sync(
       })
     );
   } catch (error) {
-    res.status(500).send(apiServerFailure(error));
+    const { statusCode, body } = apiServerFailure(error);
+    res.status(statusCode).send(body);
   }
 }
 

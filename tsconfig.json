@@ -1,5 +1,21 @@
 {
+  "references": [
+    { "path": "packages/contracts" },
+    { "path": "packages/e2e" },
+    { "path": "packages/indexer" },
+    { "path": "packages/sdk" }
+  ],
   "compilerOptions": {
+    //
+    "disableReferencedProjectLoad": true,
+    // Cached builds
+    "incremental": true,
+    // Emit types
+    "declaration": true,
+    // Emit type source maps for "Go to source definition"
+    "declarationMap": true,
+    // Composite projects allow for references
+    "composite": true,
     "target": "ESNext",
     "module": "esnext",
     "moduleResolution": "Node",
@@ -14,7 +30,6 @@
     "noUnusedParameters": true,
     "noImplicitReturns": true,
     "allowJs": true,
-    "noEmit": true,
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true
   },

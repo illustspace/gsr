@@ -1,13 +1,13 @@
 {
   "extends": "../../tsconfig.json",
-  "include": ["./src"],
+  "include": ["src"],
+  "files": ["./src/artifacts/contracts/test/Erc721.sol/TestToken.json"],
+  "references": [{ "path": "../sdk" }, { "path": "../indexer" }],
   "compilerOptions": {
     "types": ["node", "jest"],
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
     "target": "es2018",
-    "declaration": true,
     "outDir": "dist",
+    "rootDir": "src",
     "baseUrl": "src",
     "paths": {
       "~/*": ["./*"]

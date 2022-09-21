@@ -12,7 +12,6 @@ import {
   transformBigNumberToDecimalString,
   transformBigNumberToInteger,
 } from "./schema";
-// import { number, object, ObjectSchema, string } from "yup";
 
 /** Validation schema for ERC721 */
 const schema = object({

@@ -3,6 +3,7 @@ import { Contract, ContractReceipt } from "@ethersproject/contracts";
 import { Wallet } from "@ethersproject/wallet";
 import { keccak256 } from "@ethersproject/keccak256";
 import { toUtf8Bytes } from "@ethersproject/strings";
+import axios from "axios";
 
 import {
   GsrContract,
@@ -14,7 +15,7 @@ import {
 } from "@geospatialregistry/sdk";
 
 import { getDefaultProvider, Provider } from "@ethersproject/providers";
-import { abi as testTokenAbi } from "../../contracts/artifacts/contracts/test/Erc721.sol/TestToken.json";
+import { abi as testTokenAbi } from "./artifacts/contracts/test/Erc721.sol/TestToken.json";
 import { prisma } from "../../indexer/api/db";
 
 process.env.DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/gsr";
@@ -38,12 +39,12 @@ describe("e2e", () => {
     return block.timestamp;
   };
 
-  afterAll(() => {
-    resetDb();
+  afterAll(async () => {
+    await resetDb();
   });
 
-  beforeAll(() => {
-    resetDb();
+  beforeAll(async () => {
+    await resetDb();
 
     gsrIndexer = new GsrIndexer(1337, {
       customIndexerUrl: "http://localhost:3001/api",
@@ -62,18 +63,15 @@ describe("e2e", () => {
     signer = new Wallet(testPrivateKey, provider);
 
     erc721 = new Contract(tokenAddress, testTokenAbi, gsr.gsrProvider);
+
+    // Sync the nonce with the blockchain
+    await axios.post("http://localhost:3001/api/meta-transactions/nonce");
   });
 
   describe("ERC721 Assets", () => {
-    beforeEach(async () => {
-      await erc721.connect(signer).mint(signer.address, BigNumber.from(1));
-    });
-
-    afterEach(async () => {
-      await erc721.connect(signer).burn(BigNumber.from(1));
-    });
-
     it("places and indexes", async () => {
+      await erc721.connect(signer).mint(signer.address, BigNumber.from(1));
+
       const decodedAssetId: Erc721AssetId = {
         assetType: "ERC721",
         chainId,
@@ -126,6 +124,89 @@ describe("e2e", () => {
         placedAt: new Date(timestamp * 1000),
         placedByOwner: true,
         published: true,
+        publisher: signer.address.toLowerCase(),
+        sceneUri: "https://example.com/scene.json",
+        timeRange: {
+          start: null,
+          end: new Date(timeRangeEnd * 1000),
+        },
+        parentAssetId: null,
+        tx: tx.hash,
+      });
+
+      expect(await gsrIndexer.sync()).toEqual({
+        blockNumber: receipt.blockNumber,
+        events: 1,
+      });
+
+      expect(await gsrIndexer.sync()).toEqual({
+        blockNumber: receipt.blockNumber,
+        events: 1,
+      });
+    });
+
+    it("places and indexes with metaTransaction", async () => {
+      await erc721.connect(signer).mint(signer.address, BigNumber.from(2));
+
+      const decodedAssetId: Erc721AssetId = {
+        assetType: "ERC721",
+        chainId,
+        contractAddress: erc721.address,
+        tokenId: "2",
+      };
+
+      const timeRangeEnd = Math.floor(new Date().getTime() / 1000) + 10_000;
+
+      // Sign a metaTransaction with signer1
+      const metaTx = await gsr.placeWithMetaTransaction(
+        signer,
+        decodedAssetId,
+        {
+          geohash: 0b11111,
+          bitPrecision: 5,
+        },
+        {
+          sceneUri: "https://example.com/scene.json",
+          timeRange: {
+            start: 0,
+            end: timeRangeEnd,
+          },
+        }
+      );
+
+      // Submit the metaTx with signer2
+      const txHash = await gsrIndexer.executeMetaTransaction(metaTx);
+
+      const { tx, sync } = await gsr.syncAfterTransactionHash(txHash);
+
+      const receipt = await tx.wait();
+      const timestamp = await getTimestampOfReceipt(receipt);
+      // Wait for the sync to finish.
+      await sync;
+
+      // Test contract.placeOf
+      expect(await gsr.placeOf(decodedAssetId, signer.address)).toEqual({
+        bitPrecision: 5,
+        geohash: BigNumber.from(0b11111),
+        startTime: new Date(timestamp * 1000),
+      });
+
+      // Test placement made it to the indexer, and that it reads as placed by signer1
+      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual({
+        assetId: new Erc721Verifier({}).hashAssetId(decodedAssetId),
+        blockNumber: receipt.blockNumber,
+        decodedAssetId: {
+          ...decodedAssetId,
+          contractAddress: decodedAssetId.contractAddress.toLowerCase(),
+        },
+        location: {
+          geohash: 0b11111,
+          bitPrecision: 5,
+        },
+        placedAt: new Date(timestamp * 1000),
+        placedByOwner: true,
+        published: true,
+        // Signer1, even though signer2 submitted the TX
         publisher: signer.address.toLowerCase(),
         sceneUri: "https://example.com/scene.json",
         timeRange: {

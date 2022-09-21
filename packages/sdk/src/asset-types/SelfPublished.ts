@@ -28,7 +28,7 @@ export class SelfPublishedVerifier extends BaseAssetTypeVerifier<SelfPublishedAs
   assetType = "SELF_PUBLISHED" as const;
   schema = schema;
 
-  constructor(private providerKeys: ProviderKeys) {
+  constructor(_providerKeys: ProviderKeys) {
     super();
   }
 

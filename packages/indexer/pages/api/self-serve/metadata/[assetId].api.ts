@@ -44,6 +44,7 @@ export default async function selfServeMetadata(
 
     res.status(200).send(metadata);
   } catch (error) {
-    res.status(500).send(apiServerFailure(error));
+    const { statusCode, body } = apiServerFailure(error);
+    res.status(statusCode).send(body);
   }
 }

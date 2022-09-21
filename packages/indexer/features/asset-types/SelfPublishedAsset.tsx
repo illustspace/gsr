@@ -36,6 +36,8 @@ export const SelfPublishedAsset: FunctionComponent<SelfPublishedAssetProps> = ({
     const provider = await getProvider();
 
     setValue("publisherAddress", await provider.getSigner().getAddress());
+
+    onChange(getValues());
   };
 
   return (

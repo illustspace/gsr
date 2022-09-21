@@ -1,6 +1,10 @@
-import type { ContractTransaction, Signer } from "ethers";
-import { Provider } from "@ethersproject/providers";
-import { BigNumber } from "@ethersproject/bignumber";
+import type { Signer } from "@ethersproject/abstract-signer";
+import type { Provider } from "@ethersproject/providers";
+import type {
+  ContractTransaction,
+  PayableOverrides,
+} from "@ethersproject/contracts";
+import type { BigNumber } from "@ethersproject/bignumber";
 
 import { GsrAddress } from "./addresses";
 import {
@@ -20,6 +24,11 @@ import {
   ValidatedGsrPlacement,
 } from "./placement-event";
 import { GsrIndexer } from "./gsr-indexer";
+import {
+  getTransactionData,
+  MetaTransaction,
+  TypedSigner,
+} from "./metaTransactions";
 
 /** Return value from placeOf */
 export interface PlaceOf {
@@ -31,6 +40,11 @@ export interface PlaceOf {
 export interface TimeRange {
   start: number;
   end: number;
+}
+
+export interface ContractCallResponse {
+  tx: ContractTransaction;
+  sync: Promise<void>;
 }
 
 export interface GsrContractOpts {
@@ -99,7 +113,9 @@ export class GsrContract {
     });
   }
 
+  /** Parse and validate a DecodedAssetID */
   parseAssetId(decodedAssetId: any, partial?: false): DecodedAssetId;
+  /** Parse and validate a partial DecodedAssetID */
   parseAssetId(decodedAssetId: any, partial: true): Partial<DecodedAssetId>;
   parseAssetId(decodedAssetId: any, partial?: boolean) {
     if (partial) {
@@ -174,6 +190,36 @@ export class GsrContract {
     return this.contract.isWithin(boundingGeohash, assetId, publisher);
   }
 
+  /** Relay a signed metaTransaction to the GSR Smart Contract */
+  async executeMetaTransaction(
+    signer: Signer,
+    metaTransaction: MetaTransaction,
+    /** Pass in overrides like Nonce */
+    overrides?: PayableOverrides
+  ): Promise<string> {
+    const tx = await this.contract
+      .connect(signer)
+      .executeMetaTransaction(
+        metaTransaction.address,
+        metaTransaction.functionSignature,
+        metaTransaction.r,
+        metaTransaction.s,
+        metaTransaction.v,
+        overrides
+      );
+
+    return tx.hash;
+  }
+
+  /** Await a transaction, then do an Indexer sync. Useful for metaTransactions */
+  async syncAfterTransactionHash(
+    txHash: string
+  ): Promise<ContractCallResponse> {
+    const tx = await this.gsrProvider.getTransaction(txHash);
+    const sync = this.syncAfterTx(tx);
+    return { tx, sync };
+  }
+
   /** Place an asset on the GSR with a transaction. */
   async place(
     signer: Signer,
@@ -187,7 +233,7 @@ export class GsrContract {
       sceneUri?: string;
       /** If true don't resolve the promise until the placement is minted and synced.  */
     } = {}
-  ) {
+  ): Promise<ContractCallResponse> {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
     const tx = sceneUri
@@ -203,13 +249,43 @@ export class GsrContract {
     return { tx, sync };
   }
 
+  /** Place an asset on the GSR with a metaTransaction. */
+  async placeWithMetaTransaction(
+    signer: TypedSigner,
+    decodedAssetId: DecodedAssetId,
+    geohash: GeohashBits,
+    {
+      timeRange = { start: 0, end: 0 },
+      sceneUri,
+    }: {
+      timeRange?: TimeRange;
+      sceneUri?: string;
+      /** If true don't resolve the promise until the placement is minted and synced.  */
+    } = {}
+  ): Promise<MetaTransaction> {
+    const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
+
+    return sceneUri
+      ? getTransactionData(this.contract, signer, "placeWithScene", [
+          encodedAssetId,
+          geohash,
+          timeRange,
+          sceneUri,
+        ])
+      : getTransactionData(this.contract, signer, "place", [
+          encodedAssetId,
+          geohash,
+          timeRange,
+        ]);
+  }
+
   /** Place an asset inside another asset in the GSR */
   async placeInside(
     signer: Signer,
     decodedAssetId: DecodedAssetId,
     decodedTargetAssetId: DecodedAssetId,
     timeRange = { start: 0, end: 0 }
-  ) {
+  ): Promise<ContractCallResponse> {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
     const hashedTargetAssetId = this.verifier.hashAssetId(decodedTargetAssetId);
@@ -223,8 +299,29 @@ export class GsrContract {
     return { tx, sync };
   }
 
-  /** Clear an asset's placement */
-  async removePlacement(signer: Signer, decodedAssetId: DecodedAssetId) {
+  /** Place an asset inside another asset in the GSR with a metaTransaction */
+  async placeInsideWithMetaTransaction(
+    signer: TypedSigner,
+    decodedAssetId: DecodedAssetId,
+    decodedTargetAssetId: DecodedAssetId,
+    timeRange = { start: 0, end: 0 }
+  ): Promise<MetaTransaction> {
+    const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
+
+    const hashedTargetAssetId = this.verifier.hashAssetId(decodedTargetAssetId);
+
+    return getTransactionData(this.contract, signer, "placeInside", [
+      encodedAssetId,
+      hashedTargetAssetId,
+      timeRange,
+    ]);
+  }
+
+  /** Clear an asset's placement with a transaction */
+  async removePlacement(
+    signer: Signer,
+    decodedAssetId: DecodedAssetId
+  ): Promise<ContractCallResponse> {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
     const tx = await this.contract
@@ -236,12 +333,24 @@ export class GsrContract {
     return { tx, sync };
   }
 
-  /** Update the scene metadata for a placement without moving the item */
+  /** Clear an asset's placement with a metaTransaction */
+  async removePlacementWithMetaTransaction(
+    signer: TypedSigner,
+    decodedAssetId: DecodedAssetId
+  ): Promise<MetaTransaction> {
+    const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
+
+    return getTransactionData(this.contract, signer, "removePlacement", [
+      encodedAssetId,
+    ]);
+  }
+
+  /** Update the scene metadata for a placement without moving the item with a transaction */
   async updateSceneUri(
     signer: Signer,
     decodedAssetId: DecodedAssetId,
     sceneUri: string
-  ) {
+  ): Promise<ContractCallResponse> {
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
     const tx = await this.contract
@@ -253,12 +362,27 @@ export class GsrContract {
     return { tx, sync };
   }
 
+  /** Update the scene metadata for a placement without moving the item with a metaTransaction */
+  async updateSceneUriWithMetaTransaction(
+    signer: TypedSigner,
+    decodedAssetId: DecodedAssetId,
+    sceneUri: string
+  ): Promise<MetaTransaction> {
+    const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
+
+    return getTransactionData(this.contract, signer, "updateSceneUri", [
+      encodedAssetId,
+      sceneUri,
+    ]);
+  }
+
   /** Decode a Placement event into useful data. */
   decodePlacementEvent(event: GsrPlacementEvent): GsrPlacement {
     return decodeGsrPlacementEvent(event, this.verifier);
   }
 
-  private async syncAfterTx(tx: ContractTransaction) {
+  /** Sync the indexer after a transaction. */
+  async syncAfterTx(tx: ContractTransaction) {
     try {
       await tx.wait();
       await this.indexer.sync();

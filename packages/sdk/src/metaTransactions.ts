@@ -1,13 +1,18 @@
-import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
-import type { Contract } from "ethers";
+import type { Contract } from "@ethersproject/contracts";
+import type { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
+import { object, string, Asserts, number } from "yup";
+
+/** Validator schema for a metaTransaction */
+export const metaTransactionSchema = object({
+  r: string().required(),
+  s: string().required(),
+  v: number().required(),
+  functionSignature: string().required(),
+  address: string().lowercase().required(),
+});
 
 /** MetaTransaction data for a function call */
-export interface MetaTransaction {
-  r: string;
-  s: string;
-  v: number;
-  functionSignature: string;
-}
+export type MetaTransaction = Asserts<typeof metaTransactionSchema>;
 
 const metaTransactionType = [
   {
@@ -24,15 +29,22 @@ const metaTransactionType = [
   },
 ];
 
+/** A Signer that can sign typed data */
+export type TypedSigner = Signer & TypedDataSigner;
+
 // Based on https://github.com/ProjectOpenSea/meta-transactions/blob/main/test/erc721-test.js
 export const getTransactionData = async <T extends Contract, F extends keyof T>(
   contract: T,
-  user: SignerWithAddress,
+  signer: TypedSigner,
   functionName: F,
   params: T[F] extends (...args: any[]) => any ? Parameters<T[F]> : never
 ): Promise<MetaTransaction> => {
+  if (!signer.provider) {
+    throw new Error("Signer must have a provider");
+  }
+  const address = await signer.getAddress();
   const name = await contract.name();
-  const nonce = await contract.getNonce(user.address);
+  const nonce = await contract.getNonce(address);
   const version = "1";
   const chainId = await contract.getChainId();
   const salt = chainId.toHexString().substring(2).padStart(64, "0");
@@ -51,7 +63,7 @@ export const getTransactionData = async <T extends Contract, F extends keyof T>(
 
   const message = {
     nonce: nonce.toNumber(),
-    from: user.address,
+    from: address,
     functionSignature,
   };
 
@@ -61,7 +73,7 @@ export const getTransactionData = async <T extends Contract, F extends keyof T>(
   };
 
   // eslint-disable-next-line no-underscore-dangle
-  const signature = await user._signTypedData(domainData, types, message);
+  const signature = await signer._signTypedData(domainData, types, message);
 
   const r = signature.slice(0, 66);
   const s = "0x".concat(signature.slice(66, 130));
@@ -74,5 +86,6 @@ export const getTransactionData = async <T extends Contract, F extends keyof T>(
     s,
     v,
     functionSignature,
+    address,
   };
 };

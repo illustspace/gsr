@@ -60,6 +60,7 @@ module.exports = {
           "**/*.stories.{ts,tsx}",
           "**/migrate-db/**/*.{ts,tsx}",
           "**/setupTests.ts",
+          "**/hardhat.config.ts",
           "**/rollup.config.js",
         ],
       },

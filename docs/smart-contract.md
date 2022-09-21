@@ -35,3 +35,11 @@ To do this:
 1. Data consumers may then choose to display the scene as "verified", as the owner of the second asset has allowed their asset to be used.
 1. Query functions like `placeOf` and `isWithin` for the second asset will return the location of the primary asset.
 1. `isInsideAsset` also exists to check if an asset is currently inside of another specific asset.
+
+## Meta-transactions
+
+To allow marketplaces to allow gasless GSR placements for their NFTs, the GSR also supports signed meta-transactions. The meta-transaction implementation is based on [OpenSea's sample metatransaction contracts](https://github.com/ProjectOpenSea/meta-transactions/blob/main/contracts/ERC721MetaTransactionMaticSample.sol).
+
+A user may, instead of directly sending a transaction like `place()` to the GSR contract, instead construct an object of the function they want to call and the arguments they want to send, then sign that message (along with some other information like a nonce and the GSR's address). Then any address may choose to submit that meta-transaction signature on behalf of the original signer, and the GSR will process it as if the original signer had submitted the transaction.
+
+For an example of setting up a meta-transaction, see the `accepts metaTransactions` test in `packages/contracts/test/GeoSpatialRegistry.test.ts`

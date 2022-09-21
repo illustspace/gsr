@@ -16,7 +16,7 @@ npx lint-staged
 pids=()
 
 # For each package:
-for package in contracts sdk; do
+for package in contracts sdk indexer e2e; do
   # Check if the package has any staged changes.
   if ! git diff --exit-code --staged packages/$package 1> /dev/null; then
     # Run tsc for that package in a thread.

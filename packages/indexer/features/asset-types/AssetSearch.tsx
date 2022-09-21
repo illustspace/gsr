@@ -90,6 +90,36 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
     }
   };
 
+  const handlePlaceWithMetaTx = async () => {
+    const provider = await getProvider();
+
+    if (!gsr || !provider || !newLocation) return;
+
+    setSuccessMessage("");
+
+    try {
+      const metaTx = await gsr.placeWithMetaTransaction(
+        provider.getSigner(),
+        assetId,
+        newLocation,
+        {
+          timeRange: { start: 0, end: 0 },
+        }
+      );
+
+      const txHash = await gsrIndexer.executeMetaTransaction(metaTx);
+
+      const { sync } = await gsr.syncAfterTransactionHash(txHash);
+      await sync;
+
+      setSuccessMessage("Asset placed");
+    } catch (e) {
+      const error = e as Error;
+
+      console.error(error);
+    }
+  };
+
   return (
     <VStack>
       <FormControl isRequired>
@@ -137,6 +167,9 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
 
       <Button onClick={handleSearch}>Search</Button>
       <Button onClick={handlePlace}>Place</Button>
+      <Button onClick={handlePlaceWithMetaTx}>
+        Place With MetaTransaction
+      </Button>
     </VStack>
   );
 };
