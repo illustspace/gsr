@@ -1,18 +1,16 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
-import {
-  ApiResponseType,
-  MetaTransactionNonceResponse,
-} from "@geospatialregistry/sdk";
+import { MetaTransactionNonceResponse } from "@geospatialregistry/sdk";
 
 import { updateMetaTransactionNonce } from "~/api/services/meta-transactions.service";
+import { wrapServiceEndpoint } from "~/api/services/responses/service-response";
 
-/** Update the metaTransaction hot wallet's nonce */
-export default async function metaTransactionNonce(
-  _req: NextApiRequest,
-  res: NextApiResponse<ApiResponseType<MetaTransactionNonceResponse>>
-) {
-  const { statusCode, body } = await updateMetaTransactionNonce();
+/**
+ * Update the metaTransaction hot wallet's nonce
+ * @route /api/meta-transactions/nonce
+ */
+export default wrapServiceEndpoint<MetaTransactionNonceResponse>(
+  async (_req, res) => {
+    const { statusCode, body } = await updateMetaTransactionNonce();
 
-  res.status(statusCode).json(body);
-}
+    res.status(statusCode).json(body);
+  }
+);

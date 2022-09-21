@@ -33,6 +33,12 @@ const gsr = new GsrContract(
   }
 );
 
+/** Health check */
+app.head("/health", (_req, res) => {
+  res.status(200).send("ok");
+});
+
+/** Get a placement by assetId */
 app.get("/placements/:assetId", async (req, res) => {
   const assetId = req.params.assetId as string;
 

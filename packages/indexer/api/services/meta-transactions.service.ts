@@ -26,11 +26,13 @@ export const executeMetaTransaction = async (
     gsr.gsrProvider
   );
 
+  const address = signer.address.toLowerCase();
+
   const { nonce } = await prisma.walletNonces.upsert({
     select: { nonce: true },
-    create: { address: signer.address, nonce: 0 },
+    create: { address, nonce: 0 },
     update: { nonce: { increment: 1 } },
-    where: { address: signer.address },
+    where: { address },
   });
 
   const tx = await gsr.executeMetaTransaction(
@@ -59,7 +61,6 @@ export const updateMetaTransactionNonce = async (): Promise<
   const address = signer.address.toLowerCase();
 
   await prisma.walletNonces.upsert({
-    select: { nonce: true },
     create: { address, nonce: lastNonce },
     update: { nonce: lastNonce },
     where: { address },

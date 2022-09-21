@@ -4,6 +4,10 @@ import { apiFailure } from "~/api/services/responses/api-responses";
 import { executeMetaTransaction } from "~/api/services/meta-transactions.service";
 import { wrapServiceEndpoint } from "~/api/services/responses/service-response";
 
+/**
+ * Relay a metaTransaction to the GSR
+ * @route /api/meta-transactions/execute
+ */
 export default wrapServiceEndpoint<MetaTransactionExecuteResponse>(
   async (req, res) => {
     if (req.method !== "POST") {

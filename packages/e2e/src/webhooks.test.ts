@@ -22,6 +22,7 @@ describe("webhooks", () => {
       assetType: "MESSAGE",
       message: "hi",
       publisherAddress: signer.address.toLowerCase(),
+      placementNumber: 1,
     };
 
     const { tx, sync } = await gsr.place(signer, decodedAssetId, {
