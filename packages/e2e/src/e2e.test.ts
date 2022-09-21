@@ -194,61 +194,6 @@ describe("e2e", () => {
       });
 
       const receipt = await tx.wait();
-      const timestamp = await getTimestampOfReceipt(receipt);
-      // Wait for the sync to finish.
-      await sync;
-
-      // Test contract.placeOf
-      expect(await gsr.placeOf(decodedAssetId, signer.address)).toEqual({
-        bitPrecision: 5,
-        geohash: BigNumber.from(0b11111),
-        startTime: new Date(timestamp * 1000),
-      });
-
-      // Test placement made it to the indexer
-      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual({
-        assetId: new MessageVerifier({}).hashAssetId(decodedAssetId),
-        blockNumber: receipt.blockNumber,
-        decodedAssetId,
-        location: {
-          geohash: 0b11111,
-          bitPrecision: 5,
-        },
-        placedAt: new Date(timestamp * 1000),
-        placedByOwner: true,
-        published: true,
-        publisher: signer.address.toLowerCase(),
-        sceneUri: null,
-        timeRange: {
-          start: null,
-          end: null,
-        },
-        parentAssetId: null,
-        tx: tx.hash,
-      });
-
-      // Nothing more to sync
-      expect(await gsrIndexer.sync()).toEqual({
-        blockNumber: receipt.blockNumber,
-        events: 0,
-      });
-    });
-  });
-
-  describe("Message Assets", () => {
-    it("places and indexes", async () => {
-      const decodedAssetId: MessageAssetId = {
-        assetType: "MESSAGE",
-        message: "hi",
-        publisherAddress: signer.address.toLowerCase(),
-      };
-
-      const { tx, sync } = await gsr.place(signer, decodedAssetId, {
-        geohash: 0b11111,
-        bitPrecision: 5,
-      });
-
-      const receipt = await tx.wait();
       const timestamp = await getTimestampDateOfReceipt(receipt);
       // Wait for the sync to finish.
       await sync;
