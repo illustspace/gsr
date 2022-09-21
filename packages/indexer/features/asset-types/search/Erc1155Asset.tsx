@@ -10,7 +10,7 @@ import {
 } from "@chakra-ui/react";
 import React, { FunctionComponent } from "react";
 import { useForm } from "react-hook-form";
-import { Erc1155AssetId } from "~/../sdk/lib/cjs";
+import { Erc1155AssetId } from "@geospatialregistry/sdk";
 
 export interface Erc1155AssetProps {
   onChange: (assetId: Erc1155AssetId) => void;

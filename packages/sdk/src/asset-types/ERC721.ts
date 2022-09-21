@@ -87,12 +87,12 @@ export class Erc721Verifier extends BaseAssetTypeVerifier<Erc721AssetId> {
       assetId.itemId
     );
 
-    return {
+    return schema.validateSync({
       assetType: this.assetType,
-      chainId: chainId.toNumber(),
-      contractAddress: contractAddress.toLowerCase(),
-      tokenId: tokenId.toString(),
-    };
+      chainId,
+      contractAddress,
+      tokenId,
+    });
   }
 
   encodeAssetId(assetId: Erc721AssetId): EncodedAssetId {

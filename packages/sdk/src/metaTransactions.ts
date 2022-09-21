@@ -6,7 +6,7 @@ import { object, string, Asserts, number } from "yup";
 export const metaTransactionSchema = object({
   r: string().required(),
   s: string().required(),
-  v: number().required(),
+  v: number().integer().required(),
   functionSignature: string().required(),
   address: string().lowercase().required(),
 });

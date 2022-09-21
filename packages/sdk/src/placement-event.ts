@@ -21,8 +21,6 @@ export interface GsrPlacement<AssetId extends DecodedAssetId = DecodedAssetId> {
   };
   blockNumber: number;
   tx: string;
-  // TODO: add this to the GSR
-  linkedAccount?: string;
 }
 
 /** A GsrPlacement that has gone through ownership validation. */

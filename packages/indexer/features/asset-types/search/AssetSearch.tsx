@@ -7,7 +7,7 @@ import {
   VStack,
   Text,
 } from "@chakra-ui/react";
-
+import NextLink from "next/link";
 import {
   AssetId,
   bitsToGeohash,
@@ -21,7 +21,7 @@ import { PlacementMap } from "~/features/map/PlacementMap";
 import { gsr } from "~/features/gsr/gsr-contract";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { AssetTypeEntry } from "./AssetTypeEntry";
-import { getProvider } from "../providers/getProvider";
+import { getProvider } from "../../providers/getProvider";
 
 export type AssetSearchProps = Record<never, never>;
 
@@ -34,12 +34,12 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
 
   const [newLocation, setNewLocation] = useState<GeohashBits | null>(null);
 
-  const [assetType, setAssetType] = useState<AssetType>("ERC721");
+  const [assetType, setAssetType] = useState<AssetType>("MESSAGE");
   const [assetId, setAssetId] = useState<AssetId>({
-    assetType: "ERC721",
-    chainId: 1337,
-    contractAddress: "0x06dC8418d1c016302093a3DF39a2584821Cb2939",
-    tokenId: "1",
+    assetType: "MESSAGE",
+    message: "",
+    publisherAddress: "",
+    placementNumber: 1,
   });
 
   const handleSearch = async () => {
@@ -130,6 +130,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
           onChange={(event) => setAssetType(event.target.value as AssetType)}
           isRequired
         >
+          <option value="MESSAGE">Message</option>
           <option value="ERC721">ERC721</option>
           <option value="ERC1155">ERC1155</option>
           <option value="SELF_PUBLISHED">Self Published</option>
@@ -162,6 +163,12 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
             placement.location.geohash,
             placement.location.bitPrecision / 5
           )}
+          <NextLink
+            href={gsrIndexer.explorer.asset(placement.assetId)}
+            passHref
+          >
+            <Button as="a">View</Button>
+          </NextLink>
         </Text>
       )}
 

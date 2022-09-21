@@ -1,71 +1,65 @@
 /**
  * @file types for Indexer API responses
+ * Response types based on https://github.com/omniti-labs/jsend
  */
 
 import { GeoJsonFeaturesCollection } from "./geo-json";
 import { SerializedGsrPlacement } from "./placement-event";
-import { GsrSceneMetadata } from "./scene-metadata";
 
 /** A success response */
 export interface ApiResponseSuccess<T> {
-  success: true;
-  response: T;
+  status: "success";
+  data: T;
 }
 
 /** A failure response */
+export interface ApiResponseFail<T = undefined> {
+  status: "fail";
+  message: string;
+  code: string;
+  data: T;
+}
+
 export interface ApiResponseError {
-  success: false;
+  status: "error";
   message: string;
   code: string;
 }
 
 /** Add error codes to a response type */
-export type ApiResponseType<Success extends ApiResponseSuccess<any>> =
-  | Success
+export type ApiResponseType<Success, Failure = undefined> =
+  | ApiResponseSuccess<Success>
+  | ApiResponseFail<Failure>
   | ApiResponseError;
 
 /** /api/indexer/sync */
-export type IndexerSyncResponse = ApiResponseSuccess<{
+export interface IndexerSyncResponse {
   blockNumber: number;
   events: number;
-}>;
+}
 
 /** /api/placements */
-export type PlacementQueryResponse = ApiResponseSuccess<
-  SerializedGsrPlacement[]
->;
+export type PlacementQueryResponse = SerializedGsrPlacement[];
 
 /** /api/placements/single */
-export type SinglePlacementResponse =
-  ApiResponseSuccess<SerializedGsrPlacement>;
+export type SinglePlacementResponse = SerializedGsrPlacement;
 
 /** /api/placements/geojson */
-export type PlacementGeoJsonResponse =
-  ApiResponseSuccess<GeoJsonFeaturesCollection>;
+export type PlacementGeoJsonResponse = GeoJsonFeaturesCollection;
 
-/** /api/self-serve/create */
-export type SelfServeCreateResponse = ApiResponseSuccess<{
-  assetId: string;
-  sceneUri: string;
-}>;
-
-/** /api/placements/geojson */
-export type SelfServeMetadataResponse = ApiResponseSuccess<GsrSceneMetadata>;
-
-/** Statistics about the GSR */
-export interface GsrStats {
+/** /api/stats */
+export interface GsrStatsResponse {
   totalOwnedPlacements: number;
   totalUnownedPlacements: number;
   totalPublishers: number;
 }
 
-/** /api/stats */
-export type GsrStatsResponse = ApiResponseSuccess<GsrStats>;
-
 /** /api/meta-transactions/execute */
-export type MetaTransactionExecuteResponse = ApiResponseSuccess<{ tx: string }>;
+export interface MetaTransactionExecuteResponse {
+  tx: string;
+}
 
 /** /api/meta-transactions/nonce */
-export type MetaTransactionNonceResponse = ApiResponseSuccess<{
+export interface MetaTransactionNonceResponse {
   nonce: number;
-}>;
+}

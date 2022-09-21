@@ -6,7 +6,7 @@ runs:
       shell: bash
 
     - name: Deploy test DB schema
-      run: yarn ws indexer e2e:db:deploy &
+      run: yarn ws indexer e2e:db:deploy
       shell: bash
 
     - name: Wait for blockchain to start
@@ -21,7 +21,7 @@ runs:
       run: yarn ws indexer e2e:serve &
       shell: bash
 
-    - name: Wait for indexer to start
+    - name: Wait for indexer to start &
       run: yarn wait-on http://localhost:3001
       shell: bash
 

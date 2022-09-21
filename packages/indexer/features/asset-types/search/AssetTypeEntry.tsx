@@ -1,7 +1,9 @@
 import React, { FunctionComponent } from "react";
-import { AssetId, AssetType } from "~/../sdk/lib/cjs";
+import { AssetId, AssetType } from "@geospatialregistry/sdk";
+
 import { Erc1155Asset } from "./Erc1155Asset";
 import { Erc721Asset } from "./Erc721Asset";
+import { MessageAssetSearch } from "./MessageAssetSearch";
 import { SelfPublishedAsset } from "./SelfPublishedAsset";
 
 export interface AssetTypeEntryProps {
@@ -20,6 +22,8 @@ export const AssetTypeEntry: FunctionComponent<AssetTypeEntryProps> = ({
     return <Erc1155Asset onChange={onChange} />;
   } else if (assetType === "SELF_PUBLISHED") {
     return <SelfPublishedAsset onChange={onChange} />;
+  } else if (assetType === "MESSAGE") {
+    return <MessageAssetSearch onChange={onChange} />;
   } else {
     return null;
   }

@@ -1,41 +1,39 @@
 import {
   ApiResponseError,
+  ApiResponseFail,
   ApiResponseSuccess,
-  ValidationError,
+  ApiResponseType,
 } from "@geospatialregistry/sdk";
+import { NextApiResponse } from "next";
 
 /** @file helpers for generating typed API responses */
 
-export function apiSuccess<T>(response: T): ApiResponseSuccess<T> {
+export type NextApiResponseType<T> = NextApiResponse<ApiResponseType<T>>;
+
+export function apiSuccess<T>(data: T): ApiResponseSuccess<T> {
   return {
-    success: true,
-    response,
+    status: "success",
+    data,
   };
 }
 
-export function apiFailure(message: string, code: string): ApiResponseError {
+export function apiFailure(
+  message: string,
+  code: string,
+  data: any = null
+): ApiResponseFail<any> {
   return {
-    success: false,
+    status: "fail",
+    message,
+    code,
+    data,
+  };
+}
+
+export function apiError(message: string, code: string): ApiResponseError {
+  return {
+    status: "error",
     message,
     code,
   };
-}
-
-export function apiServerFailure(error: any): {
-  statusCode: number;
-  body: ApiResponseError;
-} {
-  if (error instanceof ValidationError) {
-    // TODO: Pass the error fields
-    return {
-      statusCode: 400,
-      body: apiFailure(error.message, "VALIDATION_ERROR"),
-    };
-  } else {
-    console.trace("server error", error);
-    return {
-      statusCode: 500,
-      body: apiFailure(error.message, "INTERNAL_SERVER_ERROR"),
-    };
-  }
 }

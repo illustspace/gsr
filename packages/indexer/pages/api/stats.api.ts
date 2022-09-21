@@ -1,21 +1,20 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import type { NextApiRequest, NextApiResponse } from "next";
+import type { NextApiRequest } from "next";
 
-import { ApiResponseType, GsrStatsResponse } from "@geospatialregistry/sdk";
+import { GsrStatsResponse } from "@geospatialregistry/sdk";
 
-import { apiServerFailure, apiSuccess } from "~/api/api-responses";
-import { getStats } from "~/api/stats";
+import { fetchStats } from "~/api/stats";
+import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { NextApiResponseType } from "~/api/api-responses";
 
-export default async function handler(
+/**
+ * Fetch stats about the GSR.
+ * @route /api/stats
+ */
+export default async function getStats(
   _req: NextApiRequest,
-  res: NextApiResponse<ApiResponseType<GsrStatsResponse>>
+  res: NextApiResponseType<GsrStatsResponse>
 ) {
-  try {
-    const stats = await getStats();
+  const { statusCode, body } = await fetchStats().catch(fetchCatchResponse);
 
-    res.status(200).json(apiSuccess(stats));
-  } catch (error) {
-    const { statusCode, body } = apiServerFailure(error);
-    res.status(statusCode).send(body);
-  }
+  res.status(statusCode).json(body);
 }

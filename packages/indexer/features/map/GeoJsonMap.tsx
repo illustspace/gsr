@@ -32,6 +32,9 @@ import { InitialViewState } from "./InitialViewState";
 import { getEnv } from "../config/env";
 import { Optional } from "../utils/optional";
 
+import "mapbox-gl/dist/mapbox-gl.css";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+
 interface PopupInfo {
   /** An index from the features collection. */
   id: string;
@@ -149,9 +152,8 @@ export const GeoJsonMap: FunctionComponent<BaseMapProps> = ({
       "icon-allow-overlap": allowIconOverlap,
     },
     paint: {
-      "icon-color": ["get", "color"],
+      "icon-color": "white",
     },
-    filter: ["==", "icon", "map-pin"],
   };
   const heatMapStyle: LayerProps = {
     id: "art-heat",

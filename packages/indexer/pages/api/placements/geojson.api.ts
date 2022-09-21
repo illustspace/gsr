@@ -1,45 +1,27 @@
-// Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import {
-  ApiResponseType,
+  ApiResponseError,
+  ApiResponseFail,
   PlacementGeoJsonResponse,
 } from "@geospatialregistry/sdk";
 
-import { prisma } from "~/api/db";
-import { apiServerFailure, apiSuccess } from "~/api/api-responses";
-import { placementsToGeoJson } from "~/features/map/geo-json";
+import { fetchPlacementsAsGeoJson } from "~/api/fetchPlacements";
+import { fetchCatchResponse } from "~/api/api-fetcher-responses";
 
-export default async function handler(
+export default async function placementGeoJson(
   req: NextApiRequest,
-  res: NextApiResponse<ApiResponseType<PlacementGeoJsonResponse>>
+  res: NextApiResponse<
+    PlacementGeoJsonResponse | ApiResponseFail | ApiResponseError
+  >
 ) {
-  const query = {
-    assetType: req.query.assetType,
-    chainId: req.query.chainId ? Number(req.query.chainId) : undefined,
-    contractAddress: req.query.contractAddress,
-    tokenId: req.query.tokenId,
-  };
+  const { statusCode, body } = await fetchPlacementsAsGeoJson(req.query).catch(
+    fetchCatchResponse
+  );
 
-  try {
-    const placements = await prisma.placement.findMany({
-      // Get assets that match the query.
-      where: {
-        placedByOwner: true,
-        decodedAssetId: { equals: query },
-      },
-      // Only return return the latest placement for the asset.
-      distinct: ["assetId"],
-      orderBy: {
-        placedAt: "desc",
-      },
-    });
-
-    const geojson = placementsToGeoJson(placements);
-
-    res.status(200).json(apiSuccess(geojson));
-  } catch (error) {
-    const { statusCode, body } = apiServerFailure(error);
+  if (body.status === "success") {
+    res.status(statusCode).send(body.data);
+  } else {
     res.status(statusCode).send(body);
   }
 }

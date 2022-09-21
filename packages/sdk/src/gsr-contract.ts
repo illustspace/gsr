@@ -125,23 +125,28 @@ export class GsrContract {
     }
   }
 
-  /** Fetch GSR events since a specified block number. */
-  async fetchEvents(sinceBlockNumber: number) {
-    const blockNumber = await this.gsrProvider.getBlockNumber();
+  /** Fetch GSR events since the that block number processed. */
+  async fetchEvents(lastBlockNumber: number) {
+    const currentBlockNumber = await this.gsrProvider.getBlockNumber();
+
+    // Don't try to fetch when the since block is the current block
+    if (lastBlockNumber >= currentBlockNumber) {
+      return { blockNumber: currentBlockNumber, events: [] };
+    }
 
     const placementEvent = this.contract.filters.GsrPlacement();
 
     // If requesting historical data, start fetching that as well as starting the listener.
     const encodedEvents = await this.contract.queryFilter(
       placementEvent,
-      sinceBlockNumber || blockNumber
+      lastBlockNumber ? lastBlockNumber + 1 : currentBlockNumber
     );
 
     const events = encodedEvents.map((event) => {
       return this.decodePlacementEvent(event);
     });
 
-    return { blockNumber, events };
+    return { blockNumber: currentBlockNumber, events };
   }
 
   /** Verify if a placement was done by the owner.  */
@@ -381,7 +386,6 @@ export class GsrContract {
     return decodeGsrPlacementEvent(event, this.verifier);
   }
 
-  /** Sync the indexer after a transaction. */
   async syncAfterTx(tx: ContractTransaction) {
     try {
       await tx.wait();

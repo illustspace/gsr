@@ -1,5 +1,4 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
-import { BigNumber } from "@ethersproject/bignumber";
 import { object, string, Asserts } from "yup";
 
 import { ProviderKeys } from "~/provider";
@@ -42,11 +41,11 @@ export class SelfPublishedVerifier extends BaseAssetTypeVerifier<SelfPublishedAs
       assetId.itemId
     );
 
-    return {
+    return schema.validateSync({
       assetType: this.assetType,
-      publisherAddress: publisherAddress.toLowerCase(),
-      assetHash: BigNumber.from(assetHash).toHexString(),
-    };
+      publisherAddress,
+      assetHash,
+    });
   }
 
   encodeAssetId(assetId: SelfPublishedAssetId): EncodedAssetId {

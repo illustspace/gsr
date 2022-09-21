@@ -1,36 +1,68 @@
-import { Container } from "@chakra-ui/react";
 import type { NextPage, GetServerSideProps } from "next";
-import { GsrStats } from "@geospatialregistry/sdk";
+import {
+  GeoJsonFeaturesCollection,
+  GsrStatsResponse,
+} from "@geospatialregistry/sdk";
+import { useState, useEffect } from "react";
 
-import { AssetSearch } from "~/features/asset-types/AssetSearch";
+import { AssetSearch } from "~/features/asset-types/search/AssetSearch";
 import { GsrStatsBlock } from "~/features/dashboard/GsrStatsBlock";
 import { GsrMap } from "~/features/map/GsrMap";
-import { TopNav } from "~/features/nav/TopNav";
-import { getStats } from "~/api/stats";
+import { fetchStats } from "~/api/stats";
+import { Layout } from "~/features/layout/Layout";
+import { fetchCatchResponse } from "~/api/api-fetcher-responses";
+import { gsrIndexer } from "~/features/gsr/gsr-indexer";
+import { emptyGeoJson } from "~/features/map/geo-json";
 
 interface HomeProps {
-  stats: GsrStats | null;
+  stats: GsrStatsResponse | null;
 }
 const Home: NextPage<HomeProps> = ({ stats }) => {
-  return (
-    <Container maxWidth="900px">
-      <TopNav />
+  const [features] = useGsrMap();
 
+  return (
+    <Layout title="">
       <GsrStatsBlock stats={stats} />
 
-      <GsrMap />
+      <GsrMap features={features} />
 
       <AssetSearch />
-    </Container>
+    </Layout>
   );
 };
 
 export const getServerSideProps: GetServerSideProps = async () => {
-  const stats = await getStats().catch(() => null);
+  const { body } = await fetchStats().catch(fetchCatchResponse);
 
-  return {
-    props: { stats },
-  };
+  if (body.status === "success") {
+    return {
+      props: { stats: body.data },
+    };
+  } else {
+    return {
+      props: {
+        stats: null,
+      },
+    };
+  }
 };
 
 export default Home;
+
+const useGsrMap = (): [
+  geojson: GeoJsonFeaturesCollection,
+  isLoaded: boolean
+] => {
+  const [geojson, setFeatures] =
+    useState<GeoJsonFeaturesCollection>(emptyGeoJson);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  useEffect(() => {
+    gsrIndexer.geoJson().then((features) => {
+      setIsLoaded(true);
+      setFeatures(features);
+    });
+  }, []);
+
+  return [geojson, isLoaded];
+};

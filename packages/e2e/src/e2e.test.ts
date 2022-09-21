@@ -12,6 +12,8 @@ import {
   Erc721AssetId,
   SelfPublishedAssetId,
   SelfPublishedVerifier,
+  MessageAssetId,
+  MessageVerifier,
 } from "@geospatialregistry/sdk";
 
 import { getDefaultProvider, Provider } from "@ethersproject/providers";
@@ -38,10 +40,6 @@ describe("e2e", () => {
     const block = await gsr.gsrProvider.getBlock(blockHash);
     return block.timestamp;
   };
-
-  afterAll(async () => {
-    await resetDb();
-  });
 
   beforeAll(async () => {
     await resetDb();
@@ -70,7 +68,10 @@ describe("e2e", () => {
 
   describe("ERC721 Assets", () => {
     it("places and indexes", async () => {
-      await erc721.connect(signer).mint(signer.address, BigNumber.from(1));
+      const mintTx = await erc721
+        .connect(signer)
+        .mint(signer.address, BigNumber.from(1));
+      await mintTx.wait();
 
       const decodedAssetId: Erc721AssetId = {
         assetType: "ERC721",
@@ -136,17 +137,15 @@ describe("e2e", () => {
 
       expect(await gsrIndexer.sync()).toEqual({
         blockNumber: receipt.blockNumber,
-        events: 1,
-      });
-
-      expect(await gsrIndexer.sync()).toEqual({
-        blockNumber: receipt.blockNumber,
-        events: 1,
+        events: 0,
       });
     });
 
     it("places and indexes with metaTransaction", async () => {
-      await erc721.connect(signer).mint(signer.address, BigNumber.from(2));
+      const mintTx = await erc721
+        .connect(signer)
+        .mint(signer.address, BigNumber.from(2));
+      await mintTx.wait();
 
       const decodedAssetId: Erc721AssetId = {
         assetType: "ERC721",
@@ -217,14 +216,66 @@ describe("e2e", () => {
         tx: tx.hash,
       });
 
+      // Nothing more to sync
       expect(await gsrIndexer.sync()).toEqual({
         blockNumber: receipt.blockNumber,
-        events: 1,
+        events: 0,
+      });
+    });
+  });
+
+  describe("Message Assets", () => {
+    it("places and indexes", async () => {
+      const decodedAssetId: MessageAssetId = {
+        assetType: "MESSAGE",
+        message: "hi",
+        publisherAddress: signer.address.toLowerCase(),
+        placementNumber: 1,
+      };
+
+      const { tx, sync } = await gsr.place(signer, decodedAssetId, {
+        geohash: 0b11111,
+        bitPrecision: 5,
       });
 
+      const receipt = await tx.wait();
+      const timestamp = await getTimestampOfReceipt(receipt);
+      // Wait for the sync to finish.
+      await sync;
+
+      // Test contract.placeOf
+      expect(await gsr.placeOf(decodedAssetId, signer.address)).toEqual({
+        bitPrecision: 5,
+        geohash: BigNumber.from(0b11111),
+        startTime: new Date(timestamp * 1000),
+      });
+
+      // Test placement made it to the indexer
+      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual({
+        assetId: new MessageVerifier({}).hashAssetId(decodedAssetId),
+        blockNumber: receipt.blockNumber,
+        decodedAssetId,
+        location: {
+          geohash: 0b11111,
+          bitPrecision: 5,
+        },
+        placedAt: new Date(timestamp * 1000),
+        placedByOwner: true,
+        published: true,
+        publisher: signer.address.toLowerCase(),
+        sceneUri: null,
+        timeRange: {
+          start: null,
+          end: null,
+        },
+        parentAssetId: null,
+        tx: tx.hash,
+      });
+
+      // Nothing more to sync
       expect(await gsrIndexer.sync()).toEqual({
         blockNumber: receipt.blockNumber,
-        events: 1,
+        events: 0,
       });
     });
   });
@@ -289,14 +340,10 @@ describe("e2e", () => {
         tx: tx.hash,
       });
 
+      // Nothing more to sync
       expect(await gsrIndexer.sync()).toEqual({
         blockNumber: receipt.blockNumber,
-        events: 1,
-      });
-
-      expect(await gsrIndexer.sync()).toEqual({
-        blockNumber: receipt.blockNumber,
-        events: 1,
+        events: 0,
       });
     });
   });
