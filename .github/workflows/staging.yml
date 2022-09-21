@@ -2,7 +2,7 @@ name: Deploy to staging from develop
 "on":
   push:
     branches:
-      - development
+      - develop
 env:
   DATABASE_URL: "postgresql://postgres:postgres@localhost:5433/gsr?schema=public"
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
