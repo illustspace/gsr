@@ -4,6 +4,7 @@ import { Erc721AssetView } from "./Erc721AssetView";
 import { Erc1155AssetView } from "./Erc1155AssetView";
 import { MessageAssetView } from "./MessageAssetView";
 import { SelfPublishedAssetView } from "./SelfPublishedAssetView";
+import { Fa2AssetView } from "./Fa2AssetView";
 
 export interface AssetViewProps {
   decodedAssetId: DecodedAssetId;
@@ -22,6 +23,9 @@ export const AssetView: FunctionComponent<AssetViewProps> = ({
     }
     case "SELF_PUBLISHED": {
       return <SelfPublishedAssetView decodedAssetId={decodedAssetId} />;
+    }
+    case "FA2": {
+      return <Fa2AssetView decodedAssetId={decodedAssetId} />;
     }
     case "MESSAGE": {
       return <MessageAssetView decodedAssetId={decodedAssetId} />;

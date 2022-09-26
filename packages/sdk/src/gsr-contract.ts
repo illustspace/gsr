@@ -130,6 +130,8 @@ export class GsrContract {
   /** Fetch GSR events since the that block number processed. */
   async fetchEvents(lastBlockNumber: number) {
     const currentBlockNumber = await this.gsrProvider.getBlockNumber();
+    console.log("lastBlockNumber", lastBlockNumber);
+    console.log("currentBlockNumber", currentBlockNumber);
 
     // Don't try to fetch when the since block is the current block
     if (lastBlockNumber >= currentBlockNumber) {

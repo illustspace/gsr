@@ -21,6 +21,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@taquito/signer": "^14.0.0",
+    "@taquito/taquito": "^14.0.0",
     "@types/geojson": "^7946.0.10",
     "@types/lodash": "^4.14.184",
     "@types/ngeohash": "^0.6.4",

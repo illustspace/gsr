@@ -20,6 +20,8 @@ import {
   EncodedAssetId,
   Erc721Verifier,
   getTransactionData,
+  Fa2Verifier,
+  Fa2AssetId,
 } from "@geospatialregistry/sdk";
 
 const tokenId = BigNumber.from(1);
@@ -208,7 +210,6 @@ describe("GeoSpatialRegistry", () => {
             event,
             verifier
           ) as GsrPlacement<Erc721AssetId>;
-
           expect(
             await verifier.verifyAssetOwnership(placement).catch(() => false)
           ).to.eq(false);
@@ -688,6 +689,47 @@ describe("GeoSpatialRegistry", () => {
       const placement = await gsr.placeOf(assetId, nftOwner.address);
 
       expect(placement.geohash).to.eq(location);
+    });
+  });
+
+  describe("when a Tezos FA2 token is places", () => {
+    it("places an FA2 asset 1of1", async () => {
+      const fa2Verifier = new Fa2Verifier();
+
+      const decodedAssetId: Fa2AssetId = {
+        assetType: "FA2",
+        chainId: "jakartanet",
+        contractAddress: "KT1Fk4pZAXDgLwzahLnrZwTRgKWd5Nc4RoTX",
+        tokenId: "2",
+        publisherAddress: "tz1dXG9VJxQAphGEZLKiqUbLQwt2HxTARfaM",
+        itemNumber: "1",
+      };
+
+      const fa2EncodedAssetId = fa2Verifier.encodeAssetId(decodedAssetId);
+
+      const tx = await gsr
+        .connect(user)
+        .place(
+          fa2EncodedAssetId,
+          { geohash: location, bitPrecision: locationBitPrecision },
+          timeRange
+        );
+
+      // Get the relevant log.
+      const receipt = await tx.wait();
+
+      const logs = receipt.logs.map((log) => {
+        return gsr.interface.parseLog(log);
+      });
+      const event = logs[0] as any as GsrPlacementEvent;
+      const placement = await gsr.placeOf(event.args.assetId, user.address);
+      expect(placement.geohash).to.eq(location);
+      expect(
+        await fa2Verifier.verifyAssetOwnership({
+          decodedAssetId,
+          publisher: user.address,
+        } as GsrPlacement<Fa2AssetId>)
+      ).to.be.true;
     });
   });
 });
