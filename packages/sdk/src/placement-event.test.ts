@@ -15,7 +15,8 @@ describe("placement-event", () => {
 
     const contractPlacementEvent = {
       transactionHash: "0x123",
-      blockNumber: 5,
+      blockHash: "0x123",
+      logIndex: 0,
       args: {
         assetId:
           "0x2f08d2a12ba7681d94915bad05b421a5ae23244ad36c7d4a71086a50e2748475",
@@ -65,7 +66,8 @@ describe("placement-event", () => {
         start: null,
         end: null,
       },
-      blockNumber: 5,
+      blockHash: "0x123",
+      blockLogIndex: 0,
       tx: "0x123",
     };
 

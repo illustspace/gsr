@@ -126,7 +126,7 @@ export class GsrIndexer {
    * This can find old or invalid placements
    */
   async placeOfByPlacementId(
-    placementId: number
+    placementId: string
   ): Promise<ValidatedGsrPlacement> {
     try {
       const response = await this.axios.get<

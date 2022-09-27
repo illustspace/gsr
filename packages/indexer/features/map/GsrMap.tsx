@@ -27,7 +27,7 @@ export const GsrMap: FunctionComponent<GsrMapProps> = ({ features }) => {
         popupId={popupId}
         onPopup={setPopupId}
         renderPopup={(placementId) => {
-          return <PlacementPopup placementId={Number(placementId)} />;
+          return <PlacementPopup placementId={placementId} />;
         }}
       />
       ;
@@ -35,7 +35,7 @@ export const GsrMap: FunctionComponent<GsrMapProps> = ({ features }) => {
   );
 };
 
-const PlacementPopup: FunctionComponent<{ placementId: number }> = ({
+const PlacementPopup: FunctionComponent<{ placementId: string }> = ({
   placementId,
 }) => {
   const placement = usePlacement(placementId);
@@ -53,7 +53,7 @@ const PlacementPopup: FunctionComponent<{ placementId: number }> = ({
   );
 };
 
-const usePlacement = (placementId: number) => {
+const usePlacement = (placementId: string) => {
   const [placement, setPlacement] = useState<ValidatedGsrPlacement | null>(
     null
   );

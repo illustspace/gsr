@@ -19,7 +19,10 @@ export interface GsrPlacement<AssetId extends DecodedAssetId = DecodedAssetId> {
     start: Date | null;
     end: Date | null;
   };
-  blockNumber: number;
+  blockHash: string;
+  /** The index of the placement event within the block. Used with blockNumber to uniquely identify a placement */
+  blockLogIndex: number;
+  /** The transaction hash */
   tx: string;
 }
 
@@ -70,8 +73,9 @@ export function decodeGsrPlacementEvent(
       end: end ? new Date(event.args.timeRange.end.toNumber() * 1000) : null,
     },
 
-    blockNumber: event.blockNumber,
+    blockHash: event.blockHash,
     tx: event.transactionHash,
+    blockLogIndex: event.logIndex,
   };
 }
 
@@ -106,3 +110,18 @@ export function deserializeGsrPlacement(
     },
   };
 }
+
+/** Extract a unique ID from a placement. */
+export const placementToId = (
+  placement: Pick<GsrPlacement, "blockHash" | "blockLogIndex">
+) => {
+  return `${placement.blockHash}_${placement.blockLogIndex}`;
+};
+
+/** Extract the pieces the unique placement ID. */
+export const placementIdToData = (
+  placementId: string
+): Pick<GsrPlacement, "blockHash" | "blockLogIndex"> => {
+  const [blockHash, blockLogIndex] = placementId.split("_");
+  return { blockHash, blockLogIndex: Number(blockLogIndex) };
+};

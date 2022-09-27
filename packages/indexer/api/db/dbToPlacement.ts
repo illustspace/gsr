@@ -13,7 +13,8 @@ export const dbToPlacement = (placement: Placement): SerializedGsrPlacement => {
   const validatedPlacement: ValidatedGsrPlacement = {
     decodedAssetId: placement.decodedAssetId as DecodedAssetId,
     assetId: placement.assetId,
-    blockNumber: placement.blockNumber,
+    blockHash: placement.blockHash,
+    blockLogIndex: placement.blockLogIndex,
     location: {
       // Handle bigints from DB. geohash ints should be within the JS number size
       geohash: Number(placement.geohashBits),
@@ -44,7 +45,8 @@ export const placementToDb = (
   return {
     assetId: placement.assetId,
     decodedAssetId: placement.decodedAssetId,
-    blockNumber: placement.blockNumber,
+    blockHash: placement.blockHash,
+    blockLogIndex: placement.blockLogIndex,
     geohashBits: BigInt(placement.location.geohash),
     geohashBitPrecision: placement.location.bitPrecision,
     parentAssetId: placement.parentAssetId,

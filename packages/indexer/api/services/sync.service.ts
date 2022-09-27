@@ -38,8 +38,19 @@ export const syncIndexer = async (): Promise<
 
     // Save all new placements.
     ...placements.map((placement) => {
-      // todo: transaction
-      return prisma.placement.create({ data: placementToDb(placement) });
+      const dbPlacement = placementToDb(placement);
+
+      // Upsert to make placement events idempotent.
+      return prisma.placement.upsert({
+        where: {
+          blockHash_blockLogIndex: {
+            blockHash: placement.blockHash,
+            blockLogIndex: placement.blockLogIndex,
+          },
+        },
+        create: dbPlacement,
+        update: dbPlacement,
+      });
     }),
   ]);
 
