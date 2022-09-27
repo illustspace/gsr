@@ -13,6 +13,8 @@ import "./meta-transactions/NativeMetaTransaction.sol";
 contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
     /// A geohash, encoded as a number and a precision.
     /// @dev this is an integer representation of a standard geohash.
+    /// @param geohash - the geohash as an integer
+    /// @param bitPrecision - the precision of the geohash.
     struct Geohash {
         uint64 geohash;
         uint8 bitPrecision;
@@ -20,39 +22,38 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
 
     /// The values that are hashed to construct an assetId.
     /// @dev these are passed to the GsrPlacement event for search and verification.
+    /// @param assetType - keccak256 hash of the asset type.
+    /// @param collectionId - encoded values that represent the collection. Could be chainId/contractAddress. this is broken out to allow for bloom filters on a collection.
+    /// @param itemId - encoded values that represent the item. Could be tokenId.
     struct EncodedAssetId {
-        /// keccak256 hash of the asset type.
         bytes32 assetType;
-        /// encoded values that represent the collection. Could be chainId/contractAddress.
-        /// @dev this is broken out to allow for bloom filters on a collection.
         bytes collectionId;
-        /// encoded values that represent the item. Could be tokenId.
         bytes itemId;
     }
 
     /// Describes the timestamps during which the placement is valid.
+    /// @param start - The placement should only be considered active after this date.
+    /// @param end - The placement not be considered active after this date. 0 for no end date.
     struct TimeRange {
-        /// The placement should only be considered active after this date.
         uint256 start;
-        /// The placement not be considered active after this date. 0 for no end date.
         uint256 end;
     }
 
     /// Record the current location of an NFT.
+    /// @param linkedPublisher - an account on another service that the publisher also controls, which owns the asset.
+    /// @param published - True if this publisher has published a placement for this piece.
+    /// @param geohash - Geohash of the placement location.
+    /// @param parentAssetId - Another asset this asset is placed inside of. If set, should override geohash.
+    /// @param sceneUri - Optional URI describing the scene to show at the NFT's location.
+    /// @param placedAt - When the asset was placed. Used for use cases like "staking" an asset at a location.
+    /// @param timeRange - When the asset is valid.
     struct Placement {
-        /// an account on another service that the publisher also controls, which owns the asset.
         bytes linkedPublisher;
-        /// True if this publisher has published a placement for this piece.
         bool published;
-        /// Geohash of the placement location.
         Geohash geohash;
-        /// Another asset this asset is placed inside of. If set, should override geohash.
         bytes32 parentAssetId;
-        /// Optional URI describing the scene to show at the NFT's location.
         string sceneUri;
-        /// When the asset was placed. Used for use cases like "staking" an asset at a location.
         uint256 placedAt;
-        /// When the asset is valid.
         TimeRange timeRange;
     }
 
@@ -64,35 +65,35 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
     mapping(address => mapping(bytes32 => Placement)) public placements;
 
     /// Describes a placement event.
+    /// @param assetId - the keccak256 hash of the encodedAssetId, used as the internal id.
+    /// @param parentAssetId - Another asset this asset is placed inside of. If set, should override geohash.
+    /// @param collectionIdHash - keccak256 hash of type of encodedAssetId.collectionId for search.
+    /// @param fullAssetId - Full assetId data for checking ownership.
+    /// @param publisher - Address that published this placement.
+    /// @param published - If false, this change removes the existing placement.
+    /// @param geohash - Geohash of the placement location.
+    /// @param sceneUri - Optional URI describing the scene to show at the NFT's location.
+    /// @param placedAt - When the asset was placed.
+    /// @param timeRange - The placement should only be considered active during this time range.
     event GsrPlacement(
         // ===============
         // Indexed fields
         // ===============
-        /// @dev the keccak256 hash of the encodedAssetId, used as the internal id.
         bytes32 indexed assetId,
-        /// @dev Another asset this asset is placed inside of. If set, should override geohash.
         bytes32 indexed parentAssetId,
-        /// @dev keccak256 hash of type of encodedAssetId.collectionId for search.
         bytes32 indexed collectionIdHash,
         // ===============
         // AssetId Details
         // ===============
-        /// @dev Full assetId data for checking ownership.
         EncodedAssetId fullAssetId,
         // ===============
         // Placement data
         // ===============
-        /// @dev Address that published this placement.
         address publisher,
-        /// @dev If false, this change removes the existing placement.
         bool published,
-        /// @dev Geohash of the placement location.
         Geohash geohash,
-        /// @dev Optional URI describing the scene to show at the NFT's location.
         string sceneUri,
-        /// @dev When the asset was placed.
         uint256 placedAt,
-        /// @dev The placement should only be considered active during this time range.
         TimeRange timeRange
     );
 
@@ -256,6 +257,7 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
     /// Get the Scene URI metadata of a published asset.
     /// @param assetId the external asset id of the piece to get the scene URI of.
     /// @param publisher the address of the publisher of the piece.
+    /// @return the URI of the scene to show at the location.
     function sceneURI(bytes32 assetId, address publisher)
         external
         view
@@ -274,6 +276,7 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
     /// @param boundingGeohash the geohash of the bounding box.
     /// @param assetId the external asset id of the piece to check.
     /// @param publisher the address of the publisher of the piece.
+    /// @return true if the asset is within the bounding box.
     function isWithin(
         Geohash calldata boundingGeohash,
         bytes32 assetId,

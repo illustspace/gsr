@@ -75,6 +75,21 @@ event GsrPlacement(bytes32 assetId, bytes32 parentAssetId, bytes32 collectionIdH
 
 Describes a placement event.
 
+#### Parameters
+
+| Name             | Type                                     | Description                                                                      |
+| ---------------- | ---------------------------------------- | -------------------------------------------------------------------------------- |
+| assetId          | bytes32                                  | - the keccak256 hash of the encodedAssetId, used as the internal id.             |
+| parentAssetId    | bytes32                                  | - Another asset this asset is placed inside of. If set, should override geohash. |
+| collectionIdHash | bytes32                                  | - keccak256 hash of type of encodedAssetId.collectionId for search.              |
+| fullAssetId      | struct GeoSpatialRegistry.EncodedAssetId | - Full assetId data for checking ownership.                                      |
+| publisher        | address                                  | - Address that published this placement.                                         |
+| published        | bool                                     | - If false, this change removes the existing placement.                          |
+| geohash          | struct GeoSpatialRegistry.Geohash        | - Geohash of the placement location.                                             |
+| sceneUri         | string                                   | - Optional URI describing the scene to show at the NFT's location.               |
+| placedAt         | uint256                                  | - When the asset was placed.                                                     |
+| timeRange        | struct GeoSpatialRegistry.TimeRange      | - The placement should only be considered active during this time range.         |
+
 ### constructor
 
 ```solidity
@@ -205,6 +220,12 @@ Get the Scene URI metadata of a published asset.
 | assetId   | bytes32 | the external asset id of the piece to get the scene URI of. |
 | publisher | address | the address of the publisher of the piece.                  |
 
+#### Return Values
+
+| Name | Type   | Description                                   |
+| ---- | ------ | --------------------------------------------- |
+| [0]  | string | the URI of the scene to show at the location. |
+
 ### isWithin
 
 ```solidity
@@ -220,6 +241,12 @@ Check if an asset is within a bounding box using a geohash prefix.
 | boundingGeohash | struct GeoSpatialRegistry.Geohash | the geohash of the bounding box.             |
 | assetId         | bytes32                           | the external asset id of the piece to check. |
 | publisher       | address                           | the address of the publisher of the piece.   |
+
+#### Return Values
+
+| Name | Type | Description                                   |
+| ---- | ---- | --------------------------------------------- |
+| [0]  | bool | true if the asset is within the bounding box. |
 
 ### isInsideAsset
 
