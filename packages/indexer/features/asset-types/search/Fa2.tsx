@@ -74,7 +74,13 @@ export const Fa2Asset: FunctionComponent<Fa2AssetProps> = ({ onChange }) => {
       </FormControl>
 
       <FormControl isInvalid={!!errors.publisherAddress} isRequired>
-        <FormLabel>Publisher</FormLabel>
+        <FormLabel>Tezos Publisher</FormLabel>
+
+        <FormHelperText>
+          The address of the Tezos wallet which holds the NFT Token you wish to
+          place. This address must be registered as an alias account with the
+          current EVM wallet to be a verified publisher.
+        </FormHelperText>
 
         <InputGroup>
           <Input

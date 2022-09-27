@@ -2,7 +2,8 @@
   "name": "@geospatialregistry/e2e",
   "description": "E2E tests for the GSR",
   "scripts": {
-    "e2e:test": "jest --run-in-band"
+    "e2e:test:devnet": "jest /src/devnet/e2e",
+    "e2e:test:testnet": "jest  /src/testnet/e2e"
   },
   "dependencies": {
     "@ethersproject/abi": "5.4.1",

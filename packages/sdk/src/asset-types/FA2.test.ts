@@ -21,7 +21,7 @@ describe("FA2", () => {
   let verifier: Fa2Verifier;
 
   beforeEach(() => {
-    verifier = new Fa2Verifier({});
+    verifier = new Fa2Verifier();
 
     jest.spyOn(contracts, "Contract").mockReturnValue({
       ownerOf: jest.fn().mockResolvedValue(publisher),
