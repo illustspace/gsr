@@ -97,19 +97,6 @@ export class Fa2Verifier extends BaseAssetTypeVerifier<Fa2AssetId> {
   }
 }
 
-function chainIdToRpc(network: string): string {
-  switch (network) {
-    case "mainnet":
-      return "https://mainnet.smartpy.io";
-    case "ghostnet":
-      return "https://ghostnet.smartpy.io";
-    case "jakartanet":
-      return "https://jakartanet.smartpy.io";
-    default:
-      throw new Error("Invalid network");
-  }
-}
-
 interface verifyBalanceProps {
   chainId: string;
   contract: string;
@@ -155,11 +142,37 @@ export async function verifyAliasAddress({
   const Tezos = new TezosToolkit(chainIdToRpc(chainId));
   // Tezos EVM Alias Wallet contract
   const Contract = await Tezos.wallet.at(
-    "KT1Gqg1UpLQ8fadjCoQqEKNX5brbM5MVfvFL"
+    chainIdToAliasAccountContract(chainId)
   );
 
   // Check if EVM Alias address is linked to publisher
   await Contract.contractViews
     .check_alias_address([publisher, evmAlias])
     .executeView({ viewCaller: publisher });
+}
+
+function chainIdToRpc(network: string): string {
+  switch (network) {
+    case "mainnet":
+      return "https://mainnet.smartpy.io";
+    case "ghostnet":
+      return "https://ghostnet.smartpy.io";
+    case "jakartanet":
+      return "https://jakartanet.smartpy.io";
+    default:
+      throw new Error("Invalid network");
+  }
+}
+
+function chainIdToAliasAccountContract(network: string): string {
+  switch (network) {
+    case "mainnet":
+      return "KT1000";
+    case "ghostnet":
+      return "KT1001";
+    case "jakartanet":
+      return "KT1Gqg1UpLQ8fadjCoQqEKNX5brbM5MVfvFL";
+    default:
+      throw new Error("Invalid network");
+  }
 }
