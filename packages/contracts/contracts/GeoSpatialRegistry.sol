@@ -7,8 +7,63 @@ pragma solidity 0.8.4;
 import "./meta-transactions/ContentMixin.sol";
 import "./meta-transactions/NativeMetaTransaction.sol";
 
+/// @title GeoSpatialRegistry
+/// @author Illust
+/// @notice A hyperstructure for registering the location and display data for a digital asset
 contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
-    /** Describes a placement event. */
+    /// A geohash, encoded as a number and a precision.
+    /// @dev this is an integer representation of a standard geohash.
+    struct Geohash {
+        uint64 geohash;
+        uint8 bitPrecision;
+    }
+
+    /// The values that are hashed to construct an assetId.
+    /// @dev these are passed to the GsrPlacement event for search and verification.
+    struct EncodedAssetId {
+        /// keccak256 hash of the asset type.
+        bytes32 assetType;
+        /// encoded values that represent the collection. Could be chainId/contractAddress.
+        /// @dev this is broken out to allow for bloom filters on a collection.
+        bytes collectionId;
+        /// encoded values that represent the item. Could be tokenId.
+        bytes itemId;
+    }
+
+    /// Describes the timestamps during which the placement is valid.
+    struct TimeRange {
+        /// The placement should only be considered active after this date.
+        uint256 start;
+        /// The placement not be considered active after this date. 0 for no end date.
+        uint256 end;
+    }
+
+    /// Record the current location of an NFT.
+    struct Placement {
+        /// an account on another service that the publisher also controls, which owns the asset.
+        bytes linkedPublisher;
+        /// True if this publisher has published a placement for this piece.
+        bool published;
+        /// Geohash of the placement location.
+        Geohash geohash;
+        /// Another asset this asset is placed inside of. If set, should override geohash.
+        bytes32 parentAssetId;
+        /// Optional URI describing the scene to show at the NFT's location.
+        string sceneUri;
+        /// When the asset was placed. Used for use cases like "staking" an asset at a location.
+        uint256 placedAt;
+        /// When the asset is valid.
+        TimeRange timeRange;
+    }
+
+    /// Contract name
+    string public name;
+
+    /// Stores asset placements for each publisher.
+    /// @dev Holds a mapping of publisherAddress => assetId => placement.
+    mapping(address => mapping(bytes32 => Placement)) public placements;
+
+    /// Describes a placement event.
     event GsrPlacement(
         // ===============
         // Indexed fields
@@ -41,65 +96,17 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         TimeRange timeRange
     );
 
-    /** A geohash, encoded as a number and a precision. */
-    struct Geohash {
-        uint64 geohash;
-        uint8 bitPrecision;
-    }
-
-    /** The values that are hashed to construct an assetId. */
-    struct EncodedAssetId {
-        /// @dev keccak256 hash of the asset type.
-        bytes32 assetType;
-        /// @dev encoded values that represent the collection. Could be chainId/contractAddress.
-        bytes collectionId;
-        /// @dev encoded values that represent the item. Could be tokenId.
-        bytes itemId;
-    }
-
-    /** Describes the timestamps during which the placement is valid. */
-    struct TimeRange {
-        /// @dev The placement should only be considered active after this date.
-        uint256 start;
-        /// @dev The placement not be considered active after this date. 0 for no end date.
-        uint256 end;
-    }
-
-    /** Record the current location of an NFT. */
-    struct Placement {
-        /// @dev an account on another service that the publisher also controls, which owns the asset.
-        bytes linkedPublisher;
-        /// @dev True if this publisher has published a placement for this piece
-        bool published;
-        /// @dev Geohash of the placement location
-        Geohash geohash;
-        /// @dev Another asset this asset is placed inside of. If set, should override geohash.
-        bytes32 parentAssetId;
-        /// @dev Optional URI describing the scene to show at the NFT's location.
-        string sceneUri;
-        /// @dev When the asset was placed
-        uint256 placedAt;
-        /// @dev When the asset is valid
-        TimeRange timeRange;
-    }
-
-    /** Contract name */
-    string public name;
-
-    /** Holds a mapping of address => assetId => placement */
-    mapping(address => mapping(bytes32 => Placement)) public placements;
-
-    /** Constructor */
+    /// Constructor
     /// @param initialName the name of the contract
     constructor(string memory initialName) {
         name = initialName;
         _initializeEIP712(initialName);
     }
 
-    /** Place a piece according to a publisher. */
-    /// @param encodedAssetId the external encoded asset id of the piece to place
-    /// @param geohash the geohash of the location to place the piece
-    /// @param timeRange the time range during which the piece is valid
+    /// Place a piece according to a publisher.
+    /// @param encodedAssetId the external encoded asset id of the piece to place.
+    /// @param geohash the geohash of the location to place the piece.
+    /// @param timeRange the time range during which the placement is valid.
     function place(
         EncodedAssetId calldata encodedAssetId,
         Geohash calldata geohash,
@@ -122,11 +129,11 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         _logPlacement(assetId, encodedAssetId, _msgSender(), placement);
     }
 
-    /** Place a piece according to a publisher, and set the scene URI, in one transaction. */
-    /// @param encodedAssetId the external encoded asset id of the piece to place
-    /// @param geohash the geohash of the location to place the piece
-    /// @param timeRange the time range during which the piece is valid
-    /// @param sceneUri the URI of the scene to show at the location
+    /// Place a piece according to a publisher, and set the scene URI, in one transaction.
+    /// @param encodedAssetId the external encoded asset id of the piece to place.
+    /// @param geohash the geohash of the location to place the piece.
+    /// @param timeRange the time range during which the placement is valid.
+    /// @param sceneUri the URI of the scene to show at the location.
     function placeWithScene(
         EncodedAssetId calldata encodedAssetId,
         Geohash calldata geohash,
@@ -151,10 +158,10 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         _logPlacement(assetId, encodedAssetId, _msgSender(), placement);
     }
 
-    /** Place an asset inside another asset, making it available for use in scenes. */
-    /// @param encodedAssetId the external encoded asset id of the piece to place
-    /// @param parentAssetId the external asset id of the piece to place inside of
-    /// @param timeRange the time range during which the piece is valid
+    /// Place an asset inside another asset, making it available for use in scenes.
+    /// @param encodedAssetId the external encoded asset id of the piece to place.
+    /// @param parentAssetId the external asset id of the piece to place inside of.
+    /// @param timeRange the time range during which the placement is valid.
     function placeInside(
         EncodedAssetId calldata encodedAssetId,
         bytes32 parentAssetId,
@@ -186,7 +193,8 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         _logPlacement(assetId, encodedAssetId, _msgSender(), placement);
     }
 
-    /** Remove an asset from the GSR */
+    /// Remove an asset from the GSR.
+    /// @param encodedAssetId the external encoded asset id of the piece remove.
     function removePlacement(EncodedAssetId calldata encodedAssetId) external {
         bytes32 assetId = _assetId(encodedAssetId);
 
@@ -196,9 +204,9 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         _logPlacement(assetId, encodedAssetId, _msgSender(), placement);
     }
 
-    /// @dev Just update a sceneUri without changing the placement.
-    /// @param encodedAssetId the external encoded asset id of the piece to place
-    /// @param sceneUri the URI of the scene to show at the location
+    /// Just update a sceneUri without changing the placement. This will not effect the placedAt time.
+    /// @param encodedAssetId the external encoded asset id of the piece to place.
+    /// @param sceneUri the URI of the scene to show at the location.
     function updateSceneUri(
         EncodedAssetId calldata encodedAssetId,
         string memory sceneUri
@@ -215,12 +223,12 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         _logPlacement(assetId, encodedAssetId, _msgSender(), placement);
     }
 
-    /** Get the current location of an asset. */
-    /// @param assetId the external asset id of the piece to get the location of the piece
-    /// @param publisher the address of the publisher of the piece
-    /// @return geohash - the location of the placement
-    /// @return bitPrecision - the precision of the geohash
-    /// @return startTime - the time this placement has been active since.
+    /// Get the current location of an asset.
+    /// @param assetId the external asset id of the piece to get the location of the piece.
+    /// @param publisher the address of the publisher of the piece.
+    /// @return geohash - the location of the placement.
+    /// @return bitPrecision - the precision of the geohash.
+    /// @return startTime - the time this placement has been active since..
     function placeOf(bytes32 assetId, address publisher)
         external
         view
@@ -245,9 +253,9 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         );
     }
 
-    /** Get the Scene URI metadata of a published asset. */
-    /// @param assetId the external asset id of the piece to get the scene URI of
-    /// @param publisher the address of the publisher of the piece
+    /// Get the Scene URI metadata of a published asset.
+    /// @param assetId the external asset id of the piece to get the scene URI of.
+    /// @param publisher the address of the publisher of the piece.
     function sceneURI(bytes32 assetId, address publisher)
         external
         view
@@ -262,10 +270,10 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         return placement.sceneUri;
     }
 
-    /** Check if an asset is within a bounding box using a geohash prefix. */
-    /// @param boundingGeohash the geohash of the bounding box
-    /// @param assetId the external asset id of the piece to check
-    /// @param publisher the address of the publisher of the piece
+    /// Check if an asset is within a bounding box using a geohash prefix.
+    /// @param boundingGeohash the geohash of the bounding box.
+    /// @param assetId the external asset id of the piece to check.
+    /// @param publisher the address of the publisher of the piece.
     function isWithin(
         Geohash calldata boundingGeohash,
         bytes32 assetId,
@@ -292,10 +300,11 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
                     boundingGeohash.bitPrecision));
     }
 
-    /** Check if an asset is currently placed within another asset. */
-    /// @param assetId the external asset id of the piece to check
-    /// @param parentAssetId the external asset id of the piece to check against
-    /// @param publisher the address of the publisher of the piece
+    /// Check if an asset is currently placed within another asset.
+    /// @param assetId the external asset id of the piece to check.
+    /// @param parentAssetId the external asset id of the piece to check against.
+    /// @param publisher the address of the publisher of the piece.
+    /// @return true if the asset is placed within the parent asset.
     function isInsideAsset(
         bytes32 assetId,
         bytes32 parentAssetId,
@@ -311,11 +320,38 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         return placement.parentAssetId == parentAssetId;
     }
 
-    /** Look up a placement, and verify that it is valid. */
-    /// @param assetId the external asset id of the piece to find the placement of
-    /// @param publisher the address of the publisher of the piece
-    /// @param followInside if true, recurse down to the parent placement
+    /// Emit a placement event for an off-chain indexer to read.
+    /// @param assetId the external asset id of the piece to emit the placement of.
+    /// @param encodedAssetId the encoded asset id of the piece to emit the placement of.
+    /// @param publisher the address of the publisher of the piece.
+    /// @param placement the placement to emit.
+    function _logPlacement(
+        bytes32 assetId,
+        EncodedAssetId calldata encodedAssetId,
+        address publisher,
+        Placement storage placement
+    ) internal {
+        emit GsrPlacement(
+            /// @dev Indexed
+            assetId,
+            placement.parentAssetId,
+            keccak256(encodedAssetId.collectionId),
+            /// @dev Asset ID
+            encodedAssetId,
+            /// @dev Placement
+            publisher,
+            placement.published,
+            placement.geohash,
+            placement.sceneUri,
+            placement.placedAt,
+            placement.timeRange
+        );
+    }
 
+    /// Look up a placement, and verify that it is valid.
+    /// @param assetId the external asset id of the piece to find the placement of.
+    /// @param publisher the address of the publisher of the piece.
+    /// @param followInside if true, recurse down to the parent placement.
     function _findValidPlacement(
         bytes32 assetId,
         address publisher,
@@ -351,39 +387,15 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         return placement;
     }
 
-    /** Emit a placement event. */
-    /// @param assetId the external asset id of the piece to emit the placement of
-    /// @param encodedAssetId the encoded asset id of the piece to emit the placement of
-    /// @param publisher the address of the publisher of the piece
-    /// @param placement the placement to emit
-    function _logPlacement(
-        bytes32 assetId,
-        EncodedAssetId calldata encodedAssetId,
-        address publisher,
-        Placement storage placement
-    ) internal {
-        emit GsrPlacement(
-            /// @dev Indexed
-            assetId,
-            placement.parentAssetId,
-            keccak256(encodedAssetId.collectionId),
-            /// @dev Asset ID
-            encodedAssetId,
-            /// @dev Placement
-            publisher,
-            placement.published,
-            placement.geohash,
-            placement.sceneUri,
-            placement.placedAt,
-            placement.timeRange
-        );
+    /// This is used instead of msg.sender to account for metaTransactions.
+    function _msgSender() internal view returns (address sender) {
+        return ContextMixin.msgSender();
     }
 
-    /** Calculate an asset ID from an encodedAssetId */
+    /// Calculate an asset ID from an encodedAssetId
     /// @param encodedAssetId the encoded asset id of the piece to calculate the asset id of
-
     function _assetId(EncodedAssetId calldata encodedAssetId)
-        private
+        internal
         pure
         returns (bytes32)
     {
@@ -397,12 +409,7 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
             );
     }
 
-    /** This is used instead of msg.sender as transactions won't be sent by the original token owner, but by OpenSea. */
-    function _msgSender() internal view returns (address sender) {
-        return ContextMixin.msgSender();
-    }
-
-    /** Verify that a geohash and precision match. */
+    /// Verify that a geohash and precision match.
     /// @param geohash the geohash to verify
     function _verifyGeohash(Geohash calldata geohash) internal pure {
         require(
@@ -417,7 +424,7 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
         );
     }
 
-    /** Return the highest of two integers. */
+    /// Return the highest of two integers.
     function _max(uint256 a, uint256 b) internal pure returns (uint256) {
         return a > b ? a : b;
     }

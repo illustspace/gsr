@@ -3681,14 +3681,11 @@ __metadata:
     "@ethersproject/bignumber": 5.4.1
     "@ethersproject/providers": 5.4.5
     "@geospatialregistry/sdk": ^0.0.0
-    "@manifoldxyz/creator-core-solidity": ^1.0.4
-    "@manifoldxyz/libraries-solidity": ^1.0.2
     "@nomiclabs/hardhat-ethers": ^2.0.5
     "@nomiclabs/hardhat-etherscan": ^3.0.1
     "@nomiclabs/hardhat-solhint": ^2.0.0
     "@nomiclabs/hardhat-waffle": ^2.0.3
     "@openzeppelin/contracts": 4.5.0
-    "@openzeppelin/contracts-upgradeable": ^4.2.0
     "@taquito/remote-signer": ^13.0.1
     "@taquito/signer": ^13.0.1
     "@taquito/utils": ^13.0.1
@@ -3717,6 +3714,7 @@ __metadata:
     solc: 0.8.4
     solhint: ^3.3.6
     solidity-coverage: ^0.7.21
+    solidity-docgen: ^0.6.0-beta.28
     ts-node: ^10.8.2
     tsconfig-paths: ^3.9.0
     typechain: ^7.0.0
@@ -4228,27 +4226,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@manifoldxyz/creator-core-solidity@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "@manifoldxyz/creator-core-solidity@npm:1.0.4"
-  dependencies:
-    "@manifoldxyz/libraries-solidity": ^1.0.2
-    "@openzeppelin/contracts": ^4.2.0
-    "@openzeppelin/contracts-upgradeable": ^4.2.0
-  checksum: 547cbfc274fd0b1114f56f288c9f09a2458c23130a494f5e8962dcf59b38da5ffce005e7f92bb9e8decd56d16eb0348b35424fff9c902545e39f68e92a635da8
-  languageName: node
-  linkType: hard
-
-"@manifoldxyz/libraries-solidity@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "@manifoldxyz/libraries-solidity@npm:1.0.2"
-  dependencies:
-    "@openzeppelin/contracts": ^4.2.0
-    "@openzeppelin/contracts-upgradeable": ^4.2.0
-  checksum: 6dca6f3581102b8085cc67625c910e9289505b9bbccc0f6a7bdc59ccc86997a4128bbf4a542111c5bd337d37b76c0060f41585d61ab36dcf454bb1de077181ce
-  languageName: node
-  linkType: hard
-
 "@mapbox/fusspot@npm:^0.4.0":
   version: 0.4.0
   resolution: "@mapbox/fusspot@npm:0.4.0"
@@ -4710,24 +4687,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@openzeppelin/contracts-upgradeable@npm:^4.2.0":
-  version: 4.7.3
-  resolution: "@openzeppelin/contracts-upgradeable@npm:4.7.3"
-  checksum: c9ffb40cb847a975d440204fc6a811f43af960050242f707332b984d29bd16dc242ffa0935de61867aeb9e0357fadedb16b09b276deda5e9775582face831021
-  languageName: node
-  linkType: hard
-
 "@openzeppelin/contracts@npm:4.5.0":
   version: 4.5.0
   resolution: "@openzeppelin/contracts@npm:4.5.0"
   checksum: 1c9c5dff041905771d2a83ac29c64dbf0b48603de43f74a34fb1358813d7c7bf259efe2f64e2112b410c5cca7a0b41aaedd882368be5f01a6d50a3ee0740f962
-  languageName: node
-  linkType: hard
-
-"@openzeppelin/contracts@npm:^4.2.0":
-  version: 4.7.3
-  resolution: "@openzeppelin/contracts@npm:4.7.3"
-  checksum: 18382fcacf7cfd652f5dd0e70c08f08ea74eaa8ff11e9f9850639ada70198ae01a3f9493d89a52d724f2db394e9616bf6258017804612ba273167cf657fbb073
   languageName: node
   linkType: hard
 
@@ -13394,7 +13357,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"handlebars@npm:^4.0.1":
+"handlebars@npm:^4.0.1, handlebars@npm:^4.7.7":
   version: 4.7.7
   resolution: "handlebars@npm:4.7.7"
   dependencies:
@@ -20701,6 +20664,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"solidity-ast@npm:^0.4.31":
+  version: 0.4.35
+  resolution: "solidity-ast@npm:0.4.35"
+  checksum: 6cde9e656dee814fa3d7ce9ef42f1cd0344162515d0d215dbd7d18bf931ed9cd6ce4093aed0a8abbcfb5a4a6faf6638f615aaad479e4657054c6a4ae2cb5092e
+  languageName: node
+  linkType: hard
+
 "solidity-comments-extractor@npm:^0.0.7":
   version: 0.0.7
   resolution: "solidity-comments-extractor@npm:0.0.7"
@@ -20733,6 +20703,18 @@ __metadata:
   bin:
     solidity-coverage: plugins/bin.js
   checksum: a782a96bc2a1cb8120f3e401b09e7ba4b0a38e9198fc91b11c8dacac071f1142ecb2fc4c290675cf36ba80f52773065dd1a6225d0650dc8987a073072734984a
+  languageName: node
+  linkType: hard
+
+"solidity-docgen@npm:^0.6.0-beta.28":
+  version: 0.6.0-beta.28
+  resolution: "solidity-docgen@npm:0.6.0-beta.28"
+  dependencies:
+    handlebars: ^4.7.7
+    solidity-ast: ^0.4.31
+  peerDependencies:
+    hardhat: ^2.8.0
+  checksum: a7b7d79b23722ca285c0fe172073148e95139f2848e172cddc11144ecc06d79dda1eb8245c95a6c1eb2ed33306effb39101f11e9d7ee2745d9aaa8c881b5c844
   languageName: node
   linkType: hard
 
