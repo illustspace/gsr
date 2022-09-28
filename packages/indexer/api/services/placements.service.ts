@@ -1,5 +1,6 @@
 import {
   GeoJsonFeaturesCollection,
+  PlacementId,
   placementIdToData,
   PlacementQueryResponse,
   SinglePlacementResponse,
@@ -91,9 +92,20 @@ export const fetchPlacementsByQuery = async (
 export const getPlacementByPlacementId = async (
   placementId: string
 ): Promise<GsrIndexerServiceWrapper<SinglePlacementResponse>> => {
+  let decodedPlacementId: PlacementId;
+  try {
+    decodedPlacementId = placementIdToData(placementId);
+  } catch (e) {
+    return fetchFailResponse(
+      `Placement ID ${placementId} is invalid`,
+      "INVALID_PLACEMENT_ID",
+      400
+    );
+  }
+
   const placement = await prisma.placement.findUnique({
     where: {
-      blockHash_blockLogIndex: placementIdToData(placementId),
+      blockHash_blockLogIndex: decodedPlacementId,
     },
   });
 
