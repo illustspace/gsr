@@ -19,7 +19,10 @@ export interface GsrPlacement<AssetId extends DecodedAssetId = DecodedAssetId> {
     start: Date | null;
     end: Date | null;
   };
-  blockNumber: number;
+  blockHash: string;
+  /** The index of the placement event within the block. Used with blockNumber to uniquely identify a placement */
+  blockLogIndex: number;
+  /** The transaction hash */
   tx: string;
 }
 
@@ -37,6 +40,14 @@ export interface SerializedGsrPlacement
     start: string | null;
     end: string | null;
   };
+}
+
+/** A unique identifier for a Placement */
+export interface PlacementId {
+  /** The hash of the block the placement was mined in */
+  blockHash: string;
+  /** The log index of the placement in the block */
+  blockLogIndex: number;
 }
 
 export function decodeGsrPlacementEvent(
@@ -70,8 +81,9 @@ export function decodeGsrPlacementEvent(
       end: end ? new Date(event.args.timeRange.end.toNumber() * 1000) : null,
     },
 
-    blockNumber: event.blockNumber,
+    blockHash: event.blockHash,
     tx: event.transactionHash,
+    blockLogIndex: event.logIndex,
   };
 }
 
@@ -106,3 +118,19 @@ export function deserializeGsrPlacement(
     },
   };
 }
+
+/** Extract a unique ID from a placement. */
+export const placementToId = (placement: PlacementId) => {
+  return `${placement.blockHash}_${placement.blockLogIndex}`;
+};
+
+/** Extract the pieces the unique placement ID. */
+export const placementIdToData = (placementId: string): PlacementId => {
+  const [blockHash, blockLogIndex] = placementId.split("_");
+
+  if (!blockHash || !blockLogIndex) {
+    throw new Error("Invalid placement ID");
+  }
+
+  return { blockHash, blockLogIndex: Number(blockLogIndex) };
+};

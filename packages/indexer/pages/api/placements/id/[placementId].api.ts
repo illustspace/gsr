@@ -10,9 +10,7 @@ export default wrapServiceEndpoint<SinglePlacementResponse>(
   async (req, res) => {
     const placementId = req.query.placementId as string;
 
-    const { statusCode, body } = await getPlacementByPlacementId(
-      Number(placementId)
-    );
+    const { statusCode, body } = await getPlacementByPlacementId(placementId);
 
     res.status(statusCode).send(body);
   }

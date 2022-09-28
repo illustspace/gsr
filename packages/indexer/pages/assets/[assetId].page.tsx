@@ -164,7 +164,7 @@ const AssetIdPage: NextPage<AssetIdPageProps> = ({ serializedPlacement }) => {
               );
 
               return (
-                <Tr key={placement.blockNumber}>
+                <Tr key={`${placement.blockHash}-${placement.blockLogIndex}`}>
                   <Td>{placement.publisher}</Td>
                   <Td>
                     {placement.placedAt.toLocaleDateString()}{" "}

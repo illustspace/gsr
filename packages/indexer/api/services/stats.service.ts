@@ -18,7 +18,7 @@ export const fetchStats = async (): Promise<
           // Good placements
           placedByOwner: true,
         },
-        select: { id: true },
+        select: { assetId: true },
       }),
 
       // All asset IDs with at least one good bad placement.
@@ -27,7 +27,7 @@ export const fetchStats = async (): Promise<
         where: {
           placedByOwner: false,
         },
-        select: { id: true },
+        select: { assetId: true },
       }),
 
       prisma.placement.findMany({
@@ -35,7 +35,7 @@ export const fetchStats = async (): Promise<
         where: {
           placedByOwner: false,
         },
-        select: { id: true },
+        select: { assetId: true },
       }),
     ]);
 

@@ -13,7 +13,12 @@ datasource db {
 }
 
 model Placement {
-  id            Int     @id @default(autoincrement())
+  // Unique ID is blockHash + blockLogIndex
+  // block hash for the placement
+  blockHash     String @default("") @db.VarChar(255)
+  // Index of the placement log within the block
+  blockLogIndex Int    @default(0)
+
   assetId       String  @db.VarChar(255)
   parentAssetId String? @db.VarChar(255)
 
@@ -33,8 +38,6 @@ model Placement {
   timeRangeStart DateTime?
   timeRangeEnd   DateTime?
 
-  // block number for the placement
-  blockNumber   Int
   // TX hash of the placement
   tx            String  @default("") @db.VarChar(255)
   // If true, validated as placed by owner.
@@ -42,6 +45,8 @@ model Placement {
 
   // Record when the record was created in the DB
   createdAt DateTime @default(now())
+
+  @@id([blockHash, blockLogIndex])
 }
 
 // Holds a single row with service-side state information like the last block processed.

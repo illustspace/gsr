@@ -1,5 +1,7 @@
 import {
   GeoJsonFeaturesCollection,
+  PlacementId,
+  placementIdToData,
   PlacementQueryResponse,
   SinglePlacementResponse,
 } from "@geospatialregistry/sdk";
@@ -88,11 +90,22 @@ export const fetchPlacementsByQuery = async (
 
 /** Fetch a single placement with a placement DB id */
 export const getPlacementByPlacementId = async (
-  placementId: number
+  placementId: string
 ): Promise<GsrIndexerServiceWrapper<SinglePlacementResponse>> => {
+  let decodedPlacementId: PlacementId;
+  try {
+    decodedPlacementId = placementIdToData(placementId);
+  } catch (e) {
+    return fetchFailResponse(
+      `Placement ID ${placementId} is invalid`,
+      "INVALID_PLACEMENT_ID",
+      400
+    );
+  }
+
   const placement = await prisma.placement.findUnique({
     where: {
-      id: placementId,
+      blockHash_blockLogIndex: decodedPlacementId,
     },
   });
 
@@ -135,7 +148,8 @@ export const getPlacementHistoryGeoJsonByAssetId = async (
 ): Promise<GsrIndexerServiceWrapper<GeoJsonFeaturesCollection>> => {
   const placements = await prisma.placement.findMany({
     select: {
-      id: true,
+      blockHash: true,
+      blockLogIndex: true,
       assetId: true,
       geohashBits: true,
       geohashBitPrecision: true,
@@ -188,7 +202,8 @@ export const fetchPlacementsAsGeoJson = async (
 
   const placements = await prisma.placement.findMany({
     select: {
-      id: true,
+      blockHash: true,
+      blockLogIndex: true,
       assetId: true,
       geohashBits: true,
       geohashBitPrecision: true,

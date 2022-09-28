@@ -5,7 +5,7 @@ export interface GeoJsonFeaturesCollection {
   data: FeatureCollection<
     Point,
     {
-      id: number;
+      id: string;
       assetId: string;
     }
   >;

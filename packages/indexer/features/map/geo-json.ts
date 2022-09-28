@@ -12,11 +12,16 @@ export const emptyGeoJson: GeoJsonFeaturesCollection = {
   },
 };
 
+/** Convert a list of placements to a GeoJSON FeaturesCollections */
 export const placementsToGeoJson = (
   placements:
     | Pick<
         Placement,
-        "id" | "assetId" | "geohashBits" | "geohashBitPrecision"
+        | "blockHash"
+        | "blockLogIndex"
+        | "assetId"
+        | "geohashBits"
+        | "geohashBitPrecision"
       >[]
     | null
 ): GeoJsonFeaturesCollection => {
@@ -41,11 +46,19 @@ export const placementsToGeoJson = (
             coordinates,
           },
           properties: {
-            id: placement.id,
+            id: placementToId(placement),
             assetId: placement.assetId,
           },
         };
       }),
     },
   };
+};
+
+/** Extract a unique ID from a placement. */
+const placementToId = (placement: {
+  blockHash: string;
+  blockLogIndex: number;
+}) => {
+  return `${placement.blockHash}_${placement.blockLogIndex}`;
 };
