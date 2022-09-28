@@ -144,9 +144,17 @@ export class GsrContract {
       lastBlockNumber ? lastBlockNumber + 1 : currentBlockNumber
     );
 
-    const events = encodedEvents.map((event) => {
-      return this.decodePlacementEvent(event);
-    });
+    const events = encodedEvents.reduce((decodedEvents, event) => {
+      try {
+        const decodedEvent = this.decodePlacementEvent(event);
+        decodedEvents.push(decodedEvent);
+        return decodedEvents;
+      } catch (error) {
+        // Don't emit events that can't be decoded.
+        console.error("Error decoding event", error);
+        return decodedEvents;
+      }
+    }, [] as GsrPlacement<DecodedAssetId>[]);
 
     return { blockNumber: currentBlockNumber, events };
   }
