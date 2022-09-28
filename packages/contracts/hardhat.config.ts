@@ -10,6 +10,7 @@ import "hardhat-gas-reporter";
 import "hardhat-deploy";
 import "hardhat-deploy-ethers";
 import "solidity-coverage";
+import "solidity-docgen";
 
 import "./tasks/testToken";
 
@@ -99,6 +100,9 @@ const config: HardhatUserConfig = {
   typechain: {
     outDir: "../sdk/src/typechain",
     target: "ethers-v5",
+  },
+  docgen: {
+    exclude: ["test/**"],
   },
 };
 
