@@ -65,8 +65,8 @@ export class GsrIndexer {
   private explorerUrl?: string;
 
   constructor(public chainId: number, opts: GsrIndexerOpts = {}) {
-    this.indexerUrl = opts.customIndexerUrl || indexersByChainId[chainId];
-    this.explorerUrl = opts.customExplorerUrl || explorerByChainId[chainId];
+    this.indexerUrl = opts.customIndexerUrl ?? indexersByChainId[chainId];
+    this.explorerUrl = opts.customExplorerUrl ?? explorerByChainId[chainId];
     this.address =
       opts.customIndexerAddress || indexerAddressByChainId[chainId];
 

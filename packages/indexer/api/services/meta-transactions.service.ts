@@ -28,6 +28,12 @@ export const executeMetaTransaction = async (
 
   const address = signer.address.toLowerCase();
 
+  // eslint-disable-next-line no-console
+  console.log("Relaying metaTransaction", {
+    user: metaTransaction.address,
+    relayer: address,
+  });
+
   const { nonce } = await prisma.walletNonces.upsert({
     select: { nonce: true },
     create: { address, nonce: 0 },

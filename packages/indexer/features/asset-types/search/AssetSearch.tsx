@@ -116,7 +116,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
     } catch (e) {
       const error = e as Error;
 
-      console.error(error);
+      console.error("metatx error", error);
     }
   };
 
