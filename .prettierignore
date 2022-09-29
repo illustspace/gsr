@@ -16,4 +16,9 @@ packages/contracts/bin
 packages/contracts/cache
 packages/contracts/contracts/openzepplin
 packages/sdk/src/typechain
-packages/sdk/dist
+packages/sdk/lib
+packages/e2e/src/artifacts
+
+.vercel
+.next
+dist

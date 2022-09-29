@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: Unlicense
-pragma solidity ^0.8.4;
+pragma solidity 0.8.4;
 
 /**
  * https://github.com/maticnetwork/pos-portal/blob/master/contracts/common/Initializable.sol

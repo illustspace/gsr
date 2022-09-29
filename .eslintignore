@@ -1,2 +1,4 @@
-packages/sdk/dist
+packages/db/lib
+packages/sdk/lib
 packages/sdk/typechain
+dist

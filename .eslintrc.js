@@ -60,7 +60,22 @@ module.exports = {
           "**/*.stories.{ts,tsx}",
           "**/migrate-db/**/*.{ts,tsx}",
           "**/setupTests.ts",
+          "**/hardhat.config.ts",
+          "**/rollup.config.js",
         ],
+      },
+    ],
+    // Prisma uses underscored names for aggregation
+    "no-underscore-dangle": "off",
+    // Don't require object destructuring
+    "prefer-destructuring": [
+      "error",
+      {
+        array: true,
+        object: false,
+      },
+      {
+        enforceForRenamedProperties: false,
       },
     ],
     // Make this an error instead of a warning.
@@ -77,6 +92,8 @@ module.exports = {
 
     // Override for UniversalLink
     "jsx-a11y/anchor-is-valid": "off",
+
+    "react/function-component-definition": "off",
 
     // TODO: Remove these
     "spaced-comment": "off",
@@ -98,5 +115,6 @@ module.exports = {
     "no-undef": "off",
     "no-redeclare": "off",
     "no-shadow": "off",
+    "no-dupe-class-members": "off",
   },
 };

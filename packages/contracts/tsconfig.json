@@ -8,6 +8,7 @@
     "target": "es2018",
     "module": "commonjs",
     "isolatedModules": false,
+    "emitDeclarationOnly": true,
     "outDir": "dist",
     "baseUrl": ".",
     "paths": {

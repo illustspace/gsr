@@ -1,0 +1,81 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  // Native for development, and openssl for Vercel
+  binaryTargets = ["native", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Placement {
+  // Unique ID is blockHash + blockLogIndex
+  // block hash for the placement
+  blockHash     String @default("") @db.VarChar(255)
+  // Index of the placement log within the block
+  blockLogIndex Int    @default(0)
+
+  assetId       String  @db.VarChar(255)
+  parentAssetId String? @db.VarChar(255)
+
+  decodedAssetId Json
+
+  publisher String  @db.VarChar(255)
+  published Boolean @default(false)
+
+  // geohash
+  geohashBits         BigInt @default(0)
+  geohashBitPrecision Int    @default(0)
+
+  sceneUri String?
+  placedAt DateTime
+
+  // timeRange
+  timeRangeStart DateTime?
+  timeRangeEnd   DateTime?
+
+  // TX hash of the placement
+  tx            String  @default("") @db.VarChar(255)
+  // If true, validated as placed by owner.
+  placedByOwner Boolean @default(false)
+
+  // Record when the record was created in the DB
+  createdAt DateTime @default(now())
+
+  @@id([blockHash, blockLogIndex])
+}
+
+// Holds a single row with service-side state information like the last block processed.
+model ServiceState {
+  id              Int @id
+  lastBlockNumber Int @default(0)
+}
+
+model SelfServeAsset {
+  assetId     String  @id @db.VarChar(255)
+  name        String  @default("")
+  publisher   String  @db.VarChar(255)
+  description String?
+  imageUrl    String?
+  message     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// Holds nonces for hot wallets
+model WalletNonces {
+  address String @id @db.VarChar(255)
+  nonce   Int    @default(0)
+}
+
+model Webhook {
+  id        Int      @id @default(autoincrement())
+  endpoint  String   @default("")
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}

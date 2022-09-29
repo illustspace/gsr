@@ -7,20 +7,20 @@ import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber } from "@ethersproject/bignumber";
 import { encode_int } from "ngeohash";
 import { keccak256 } from "ethers/lib/utils";
+import { Provider } from "@ethersproject/providers";
 
 import {
-  DecodedAssetId,
-  decodeAssetId,
-  EncodedAssetId,
-  encodeAssetId,
-  hashAssetId,
-  verifyAssetOwnership,
+  AssetId,
   GeoSpatialRegistry,
   GeoSpatialRegistry__factory,
   GsrPlacementEvent,
-} from "@gsr/sdk";
-import { Provider } from "@ethersproject/providers";
-import { getTransactionData } from "./helpers/metaTransactions";
+  GsrPlacement,
+  Erc721AssetId,
+  decodeGsrPlacementEvent,
+  EncodedAssetId,
+  Erc721Verifier,
+  getTransactionData,
+} from "@geospatialregistry/sdk";
 
 const tokenId = BigNumber.from(1);
 
@@ -55,7 +55,7 @@ const sceneUri = "http://example.com/scene1";
 describe("GeoSpatialRegistry", () => {
   let tokenContract: Contract;
   let gsr: GeoSpatialRegistry;
-  let fullAssetId: DecodedAssetId;
+  let fullAssetId: AssetId;
   /** Hardhat chainId */
   let chainId: number;
 
@@ -65,9 +65,17 @@ describe("GeoSpatialRegistry", () => {
   let encodedAssetId: EncodedAssetId;
   let assetId: string;
   let timeRange: GeoSpatialRegistry.TimeRangeStruct;
+  let verifier: Erc721Verifier;
 
   beforeEach(async () => {
     chainId = Number(await getChainId());
+
+    verifier = new Erc721Verifier(
+      {},
+      {
+        [chainId]: ethers.provider,
+      }
+    );
 
     [admin, nftOwner, user] = await ethers.getSigners();
 
@@ -93,12 +101,12 @@ describe("GeoSpatialRegistry", () => {
       assetType: "ERC721",
       chainId,
       contractAddress: tokenContract.address,
-      tokenId,
+      tokenId: tokenId.toString(),
     };
 
-    encodedAssetId = encodeAssetId(fullAssetId);
+    encodedAssetId = verifier.encodeAssetId(fullAssetId);
 
-    assetId = hashAssetId(fullAssetId);
+    assetId = verifier.hashAssetId(fullAssetId);
 
     timeRange = { start: 0, end: 0 };
   });
@@ -196,16 +204,13 @@ describe("GeoSpatialRegistry", () => {
             return gsr.interface.parseLog(log);
           });
           const event = logs[0] as any as GsrPlacementEvent;
-          const gsrPlacement = event.args;
-
-          const decodedAssetId = decodeAssetId(gsrPlacement.fullAssetId);
+          const placement = decodeGsrPlacementEvent(
+            event,
+            verifier
+          ) as GsrPlacement<Erc721AssetId>;
 
           expect(
-            await verifyAssetOwnership(
-              ethers.provider,
-              decodedAssetId,
-              gsrPlacement.publisher
-            )
+            await verifier.verifyAssetOwnership(placement).catch(() => false)
           ).to.eq(false);
         });
       });
@@ -232,17 +237,12 @@ describe("GeoSpatialRegistry", () => {
             return gsr.interface.parseLog(log);
           });
           const event = logs[0] as any as GsrPlacementEvent;
-          const gsrPlacement = event.args;
+          const placement = decodeGsrPlacementEvent(
+            event,
+            verifier
+          ) as GsrPlacement<Erc721AssetId>;
 
-          const decodedAssetId = decodeAssetId(gsrPlacement.fullAssetId);
-
-          expect(
-            await verifyAssetOwnership(
-              ethers.provider,
-              decodedAssetId,
-              gsrPlacement.publisher
-            )
-          ).to.eq(true);
+          expect(await verifier.verifyAssetOwnership(placement)).to.eq(true);
         });
       });
 
@@ -263,16 +263,13 @@ describe("GeoSpatialRegistry", () => {
             return gsr.interface.parseLog(log);
           });
           const event = logs[0] as any as GsrPlacementEvent;
-          const gsrPlacement = event.args;
-
-          const decodedAssetId = decodeAssetId(gsrPlacement.fullAssetId);
+          const placement = decodeGsrPlacementEvent(
+            event,
+            verifier
+          ) as GsrPlacement<Erc721AssetId>;
 
           expect(
-            await verifyAssetOwnership(
-              ethers.provider,
-              decodedAssetId,
-              gsrPlacement.publisher
-            )
+            await verifier.verifyAssetOwnership(placement).catch(() => false)
           ).to.eq(false);
         });
       });
@@ -611,7 +608,7 @@ describe("GeoSpatialRegistry", () => {
     describe("placeInside", () => {
       /** AssetId for another asset placed inside assetId */
       const secondaryTokenId = tokenId.add(1);
-      let decodedSecondaryAssetId: DecodedAssetId;
+      let decodedSecondaryAssetId: AssetId;
       let encodedSecondaryAssetId: EncodedAssetId;
       let secondaryAssetId: string;
 
@@ -620,12 +617,14 @@ describe("GeoSpatialRegistry", () => {
           assetType: "ERC721",
           chainId,
           contractAddress: tokenContract.address,
-          tokenId: secondaryTokenId,
+          tokenId: secondaryTokenId.toString(),
         };
 
-        encodedSecondaryAssetId = encodeAssetId(decodedSecondaryAssetId);
+        encodedSecondaryAssetId = verifier.encodeAssetId(
+          decodedSecondaryAssetId
+        );
 
-        secondaryAssetId = hashAssetId(decodedSecondaryAssetId);
+        secondaryAssetId = verifier.hashAssetId(decodedSecondaryAssetId);
       });
 
       it("places an asset inside another one", async () => {
@@ -689,37 +688,6 @@ describe("GeoSpatialRegistry", () => {
       const placement = await gsr.placeOf(assetId, nftOwner.address);
 
       expect(placement.geohash).to.eq(location);
-    });
-  });
-
-  describe("ownable", () => {
-    it("is owned by the deployer", async () => {
-      expect(await gsr.owner()).to.eq(admin.address);
-    });
-
-    it("can transfer ownership", async () => {
-      await gsr.connect(admin).transferOwnership(user.address);
-
-      expect(await gsr.owner()).to.eq(user.address);
-    });
-  });
-
-  describe("pausing", () => {
-    it("cannot place when paused", async () => {
-      await gsr.connect(admin).pause();
-
-      await expect(
-        gsr.connect(nftOwner).place(encodedAssetId, geohash, timeRange)
-      ).to.be.revertedWith("Pausable: paused");
-    });
-
-    it("can place after un-pausing", async () => {
-      await gsr.connect(admin).pause();
-      await gsr.connect(admin).unpause();
-
-      await expect(
-        gsr.connect(nftOwner).place(encodedAssetId, geohash, timeRange)
-      ).not.to.be.reverted;
     });
   });
 });

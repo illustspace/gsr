@@ -3,14 +3,10 @@
   "include": ["./src"],
   "compilerOptions": {
     "types": ["node", "jest"],
-    "noUnusedLocals": false,
-    "noUnusedParameters": false,
-    "target": "es2018",
-    "module": "commonjs",
-    "isolatedModules": false,
-    "declaration": true,
-    "outDir": "dist",
-    "noEmit": false,
+    "target": "es5",
+    "module": "ESNext",
+    "outDir": "lib/esm",
+    "rootDir": "src",
     "baseUrl": "src",
     "paths": {
       "~/*": ["./*"]

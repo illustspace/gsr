@@ -1,6 +1,14 @@
 import type { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import type { Contract } from "ethers";
 
+/** MetaTransaction data for a function call */
+export interface MetaTransaction {
+  r: string;
+  s: string;
+  v: number;
+  functionSignature: string;
+}
+
 const metaTransactionType = [
   {
     name: "nonce",
@@ -22,7 +30,7 @@ export const getTransactionData = async <T extends Contract, F extends keyof T>(
   user: SignerWithAddress,
   functionName: F,
   params: T[F] extends (...args: any[]) => any ? Parameters<T[F]> : never
-) => {
+): Promise<MetaTransaction> => {
   const name = await contract.name();
   const nonce = await contract.getNonce(user.address);
   const version = "1";

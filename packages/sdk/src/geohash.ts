@@ -1,5 +1,10 @@
 import chunk from "lodash/chunk";
 
+export interface GeohashBits {
+  geohash: number;
+  bitPrecision: number;
+}
+
 const geohashLetters = "0123456789bcdefghjkmnpqrstuvwxyz";
 
 export const geohashToBits = (geohash: string): number => {
