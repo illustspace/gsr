@@ -18,7 +18,8 @@
     "build": "npm-run-all -p 'build:*'",
     "build:cjs": "tsc -b tsconfig.cjs.json && tsc-alias -p tsconfig.cjs.json",
     "build:esm": "tsc -b tsconfig.esm.json && tsc-alias -p tsconfig.esm.json",
-    "test": "jest"
+    "test": "jest",
+    "deploy": "yarn npm publish"
   },
   "dependencies": {
     "@types/geojson": "^7946.0.10",
