@@ -9,6 +9,7 @@ import {
   SelfPublishedVerifier,
   MessageAssetId,
   MessageVerifier,
+  ValidatedGsrPlacement,
 } from "@geospatialregistry/sdk";
 
 import {
@@ -65,10 +66,10 @@ describe("e2e", () => {
         startTime: timestamp,
       });
 
-      // Test placement made it to the indexer
-      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual({
+      const expectedPlacement: ValidatedGsrPlacement = {
         assetId: new Erc721Verifier({}).hashAssetId(decodedAssetId),
-        blockNumber: receipt.blockNumber,
+        blockHash: receipt.blockHash,
+        blockLogIndex: 0,
         decodedAssetId: {
           ...decodedAssetId,
           contractAddress: decodedAssetId.contractAddress.toLowerCase(),
@@ -88,7 +89,12 @@ describe("e2e", () => {
         },
         parentAssetId: null,
         tx: tx.hash,
-      });
+      };
+
+      // Test placement made it to the indexer
+      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual(
+        expectedPlacement
+      );
 
       expect(await gsrIndexer.sync()).toEqual({
         blockNumber: receipt.blockNumber,
@@ -145,10 +151,10 @@ describe("e2e", () => {
         startTime: timestamp,
       });
 
-      // Test placement made it to the indexer, and that it reads as placed by signer1
-      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual({
+      const expectedPlacement: ValidatedGsrPlacement = {
         assetId: new Erc721Verifier({}).hashAssetId(decodedAssetId),
-        blockNumber: receipt.blockNumber,
+        blockHash: receipt.blockHash,
+        blockLogIndex: 1,
         decodedAssetId: {
           ...decodedAssetId,
           contractAddress: decodedAssetId.contractAddress.toLowerCase(),
@@ -169,7 +175,12 @@ describe("e2e", () => {
         },
         parentAssetId: null,
         tx: tx.hash,
-      });
+      };
+
+      // Test placement made it to the indexer, and that it reads as placed by signer1
+      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual(
+        expectedPlacement
+      );
 
       // Nothing more to sync
       expect(await gsrIndexer.sync()).toEqual({
@@ -205,10 +216,10 @@ describe("e2e", () => {
         startTime: timestamp,
       });
 
-      // Test placement made it to the indexer
-      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual({
+      const expectedPlacement: ValidatedGsrPlacement = {
         assetId: new MessageVerifier({}).hashAssetId(decodedAssetId),
-        blockNumber: receipt.blockNumber,
+        blockHash: receipt.blockHash,
+        blockLogIndex: 0,
         decodedAssetId,
         location: {
           geohash: 0b11111,
@@ -225,7 +236,12 @@ describe("e2e", () => {
         },
         parentAssetId: null,
         tx: tx.hash,
-      });
+      };
+
+      // Test placement made it to the indexer
+      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual(
+        expectedPlacement
+      );
 
       // Nothing more to sync
       expect(await gsrIndexer.sync()).toEqual({
@@ -273,10 +289,10 @@ describe("e2e", () => {
         startTime: timestamp,
       });
 
-      // Test placement made it to the indexer
-      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual({
+      const expectedPlacement: ValidatedGsrPlacement = {
         assetId: new SelfPublishedVerifier({}).hashAssetId(decodedAssetId),
-        blockNumber: receipt.blockNumber,
+        blockHash: receipt.blockHash,
+        blockLogIndex: 0,
         decodedAssetId,
         location: {
           geohash: 0b11111,
@@ -293,7 +309,12 @@ describe("e2e", () => {
         },
         parentAssetId: null,
         tx: tx.hash,
-      });
+      };
+
+      // Test placement made it to the indexer
+      expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual(
+        expectedPlacement
+      );
 
       // Nothing more to sync
       expect(await gsrIndexer.sync()).toEqual({

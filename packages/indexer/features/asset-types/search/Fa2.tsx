@@ -5,6 +5,7 @@ import {
   FormHelperText,
   FormLabel,
   Input,
+  Text,
   InputGroup,
 } from "@chakra-ui/react";
 import React, { FunctionComponent } from "react";
@@ -77,6 +78,16 @@ export const Fa2Asset: FunctionComponent<Fa2AssetProps> = ({ onChange }) => {
         <FormLabel>Tezos Publisher</FormLabel>
 
         <FormHelperText>
+          Use{" "}
+          <Text
+            as="a"
+            href="https://better-call.dev/jakartanet/KT1Fk4pZAXDgLwzahLnrZwTRgKWd5Nc4RoTX/interact/mint"
+            target="_blank"
+            color="blue.500"
+            textDecoration="underline"
+          >
+            Mint a Tezos EVM Alias Account Registry Contract
+          </Text>{" "}
           The address of the Tezos wallet which holds the NFT Token you wish to
           place. This address must be registered as an alias account with the
           current EVM wallet to be a verified publisher.

@@ -61,7 +61,11 @@ yarn ws sdk start
 # Start up the test DB, and serve a text indexer on localhost:3001
 yarn ws indexer e2e
 # Run e2e tests
-yarn ws e2e e2e:test
+## Testnet
+yarn ws e2e e2e:test:testnet
+## Devnet
+yarn ws e2e e2e:test:devnet
+
 ```
 
 ### Dev Server
