@@ -6,7 +6,6 @@ In order to make the GSR useful, we need to be able to decode the hashes into un
 
 ## Updating the GSR SDK to handle a new asset type schema
 
-
 1. Create a new file in `packages/sdk/src/assetTypes` that exports a function that can decode the new asset type schema
 
 1. Update the `encodeAssetId` function in `packages/sdk/src/encodeAssetId.ts` to encode the new asset type schema

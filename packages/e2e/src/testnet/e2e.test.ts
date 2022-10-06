@@ -86,6 +86,11 @@ describe("e2e", () => {
         expectedPlacement
       );
 
+      // Test placement by publisher
+      expect(await gsrIndexer.placeOf(decodedAssetId, signer.address)).toEqual(
+        expectedPlacement
+      );
+
       expect(await gsrIndexer.sync()).toEqual({
         blockNumber: receipt.blockNumber,
         events: 0,

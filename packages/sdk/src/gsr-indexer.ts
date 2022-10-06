@@ -76,13 +76,15 @@ export class GsrIndexer {
   }
 
   async placeOf(
-    decodedAssetId: DecodedAssetId
+    decodedAssetId: DecodedAssetId,
+    publisher?: string
   ): Promise<ValidatedGsrPlacement> {
     try {
-      const response = await this.axios.get<
+      const response = await this.axios.post<
         ApiResponseSuccess<SinglePlacementResponse>
       >("/placements/single", {
-        params: { ...decodedAssetId },
+        decodedAssetId,
+        publisher,
       });
 
       const placement = this.getResponse(response);

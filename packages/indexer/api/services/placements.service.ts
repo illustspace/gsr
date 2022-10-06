@@ -25,7 +25,8 @@ export const fetchPlacementByQuery = async (
   const placement = await prisma.placement.findFirst({
     where: {
       // Filter by valid placements, unless a publisher is specified.
-      placedByOwner: !publisher,
+
+      // placedByOwner: !publisher,
       decodedAssetId: { equals: query },
       publisher: publisher?.toLowerCase() || undefined,
       OR: [
@@ -43,7 +44,6 @@ export const fetchPlacementByQuery = async (
       placedAt: "desc",
     },
   });
-
   // 404 if the placement doesn't exist or was un-published.
   if (!placement?.published) {
     return fetchFailResponse("Asset not published", "NO_PLACEMENT", 404);
