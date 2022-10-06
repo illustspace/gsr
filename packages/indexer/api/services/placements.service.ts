@@ -24,9 +24,10 @@ export const fetchPlacementByQuery = async (
   const query = gsr.parseAssetId(decodedAssetIdQuery);
   const placement = await prisma.placement.findFirst({
     where: {
-      // Filter by valid placements, unless a publisher is specified.
-
-      // placedByOwner: !publisher,
+      // Filter by valid placement, unless a publisher is specified.
+      // If the publisher is specified, then we want to return the latest placement for the publisher.
+      // if the publisher is not specified, then we want to return the latest valid placement.
+      placedByOwner: publisher ? undefined : true,
       decodedAssetId: { equals: query },
       publisher: publisher?.toLowerCase() || undefined,
       OR: [
