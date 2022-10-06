@@ -4,15 +4,15 @@ import { GsrPlacement } from "~/placement-event";
 
 import { Fa2AssetId, Fa2Verifier } from "./FA2";
 
-const publisher = "0x8626f6940E2eb28930eFb4CeF49B2d1F2C9C1199";
+const publisher = "0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266";
 const notPublisher = "0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb";
 
 const decodedAssetId: Fa2AssetId = {
   assetType: "FA2",
-  chainId: "jakartanet",
-  contractAddress: "KT1Gqg1UpLQ8fadjCoQqEKNX5brbM5MVfvFL",
-  tokenId: "6",
-  publisherAddress: "tz1bzvzun4fbFfVMpc845gakHj3nyK66oXxZ",
+  chainId: "ghostnet",
+  contractAddress: "KT1ACTjebZPDFCvEbDHfiim4go22Dc6M5ARh",
+  tokenId: "2",
+  publisherAddress: "tz1dXG9VJxQAphGEZLKiqUbLQwt2HxTARfaM",
   itemNumber: "1",
 };
 

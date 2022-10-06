@@ -82,7 +82,7 @@ export class GsrIndexer {
       const response = await this.axios.get<
         ApiResponseSuccess<SinglePlacementResponse>
       >("/placements/single", {
-        params: decodedAssetId,
+        params: { ...decodedAssetId },
       });
 
       const placement = this.getResponse(response);

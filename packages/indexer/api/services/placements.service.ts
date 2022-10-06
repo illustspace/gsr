@@ -22,7 +22,6 @@ export const fetchPlacementByQuery = async (
   publisher?: string
 ): Promise<GsrIndexerServiceWrapper<SinglePlacementResponse>> => {
   const query = gsr.parseAssetId(decodedAssetIdQuery);
-
   const placement = await prisma.placement.findFirst({
     where: {
       // Filter by valid placements, unless a publisher is specified.

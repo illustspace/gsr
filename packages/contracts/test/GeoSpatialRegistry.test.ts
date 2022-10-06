@@ -698,13 +698,12 @@ describe("GeoSpatialRegistry", () => {
 
       const decodedAssetId: Fa2AssetId = {
         assetType: "FA2",
-        chainId: "jakartanet",
-        contractAddress: "KT1Fk4pZAXDgLwzahLnrZwTRgKWd5Nc4RoTX",
-        tokenId: "2",
-        publisherAddress: "tz1dXG9VJxQAphGEZLKiqUbLQwt2HxTARfaM",
+        chainId: "ghostnet",
+        contractAddress: "KT1ACTjebZPDFCvEbDHfiim4go22Dc6M5ARh",
+        tokenId: "3",
+        publisherAddress: "tz1bzvzun4fbFfVMpc845gakHj3nyK66oXxZ",
         itemNumber: "1",
       };
-
       const fa2EncodedAssetId = fa2Verifier.encodeAssetId(decodedAssetId);
 
       const tx = await gsr

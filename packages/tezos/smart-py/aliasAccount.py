@@ -1,16 +1,6 @@
 """
 Minting this NFT creates a proof link between the Minter (Tezos) and the declared EVM_address (EVM).
 This allows EVM wallets on the Polygon blockchain to place owned Tezos assets into the 
-TEZOS NFT
-------------
-  EVM AUTH
-------------
-10B3FB696
-462268450
-F94Cb1232
-D8385B187
-7C38
-------------
 """
 
 import smartpy as sp
@@ -46,7 +36,7 @@ class FA2EVMAuth(
         )
         FA2.Admin.__init__(self, admin)
         self.update_initial_storage(aliasAccount = value)
-        self.update_initial_storage(Last_token_id = 1)
+        self.update_initial_storage(Last_token_id = 0)
 
     """ //////////////////////////  MINT ////////////////////////// """ 
 
@@ -69,9 +59,15 @@ class FA2EVMAuth(
 
             token_id = self.data.Last_token_id
 
+            metadata = sp.map(l={
+                "decimals": sp.utils.bytes_of_string("%d" % 0),
+                "name": sp.utils.bytes_of_string('EVM Tezos Alias Account'),
+                "displayUri": sp.utils.bytes_of_string('https://ar.illust.space'),
+            })
+              
             # Mint the token to the sender address
             self.data.token_metadata[token_id] = sp.record(
-                token_id=token_id, token_info=action.metadata
+                token_id=token_id, token_info=metadata
             )
             self.data.ledger[token_id] = sp.sender
 

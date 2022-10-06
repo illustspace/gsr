@@ -1,6 +1,7 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { object, string, Asserts } from "yup";
 import { TezosToolkit } from "@taquito/taquito";
+import { getAddress } from "ethers/lib/utils";
 
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
@@ -84,11 +85,11 @@ export class Fa2Verifier extends BaseAssetTypeVerifier<Fa2AssetId> {
         amount: Number(decodedAssetId.itemNumber),
       });
 
-      //  verify that the tezos address is alias with the publisher
+      //  Verify that the Tezos Publisher Wallet address is alias with the EVM Wallet address
       await verifyAliasAddress({
         chainId: decodedAssetId.chainId,
         publisher: decodedAssetId.publisherAddress,
-        evmAlias: publisher,
+        evmAlias: getAddress(publisher), // getAddress() returns a checksummed address for Alias Address validation
       });
       return true;
     } catch (e) {
@@ -121,6 +122,7 @@ export async function verifyBalance({
   const balance = await tezContract.views
     .balance_of([{ owner, token_id: tokenId }])
     .read();
+
   // throw error if balance is less than amount
   if (balance[0].balance < amount) {
     throw new Error("Balance too low");
@@ -140,12 +142,13 @@ export async function verifyAliasAddress({
   publisher,
 }: verifyAliasAddressProps): Promise<void> {
   const Tezos = new TezosToolkit(chainIdToRpc(chainId));
-  // Tezos EVM Alias Wallet contract
+
+  //? Tezos EVM Alias Wallet contract
   const Contract = await Tezos.wallet.at(
     chainIdToAliasAccountContract(chainId)
   );
 
-  // Check if EVM Alias address is linked to publisher
+  //? Check if EVM Alias address is linked to publisher
   await Contract.contractViews
     .check_alias_address([publisher, evmAlias])
     .executeView({ viewCaller: publisher });
@@ -169,7 +172,7 @@ function chainIdToAliasAccountContract(network: string): string {
     case "mainnet":
       return "KT1000";
     case "ghostnet":
-      return "KT1001";
+      return "KT1ACTjebZPDFCvEbDHfiim4go22Dc6M5ARh";
     case "jakartanet":
       return "KT1Gqg1UpLQ8fadjCoQqEKNX5brbM5MVfvFL";
     default:

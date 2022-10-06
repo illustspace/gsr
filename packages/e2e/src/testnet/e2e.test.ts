@@ -1,9 +1,9 @@
 import { BigNumber } from "@ethersproject/bignumber";
 
 import {
-  ValidatedGsrPlacement,
   Fa2AssetId,
   Fa2Verifier,
+  ValidatedGsrPlacement,
 } from "@geospatialregistry/sdk";
 
 import {
@@ -19,10 +19,10 @@ describe("e2e", () => {
     it("places and indexes", async () => {
       const decodedAssetId: Fa2AssetId = {
         assetType: "FA2",
-        chainId: "jakartanet",
-        contractAddress: "KT1Gqg1UpLQ8fadjCoQqEKNX5brbM5MVfvFL",
-        tokenId: "6",
-        publisherAddress: "tz1bzvzun4fbFfVMpc845gakHj3nyK66oXxZ",
+        chainId: "ghostnet",
+        contractAddress: "KT1ACTjebZPDFCvEbDHfiim4go22Dc6M5ARh",
+        tokenId: "7",
+        publisherAddress: "tz1dXG9VJxQAphGEZLKiqUbLQwt2HxTARfaM",
         itemNumber: "1",
       };
 
@@ -81,7 +81,7 @@ describe("e2e", () => {
         tx: tx.hash,
       };
 
-      //  Test placement made it to the indexer
+      // Test placement made it to the indexer
       expect(await gsrIndexer.placeOf(decodedAssetId)).toEqual(
         expectedPlacement
       );
