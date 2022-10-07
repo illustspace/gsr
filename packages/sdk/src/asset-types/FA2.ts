@@ -12,7 +12,7 @@ import { transformBigNumberToDecimalString } from "./schema";
 const schema = object({
   assetType: string().oneOf(["FA2"]).required(),
   chainId: string().oneOf(["mainnet", "ghostnet", "jakartanet"]).required(),
-  contractAddress: string(),
+  contractAddress: string().required(),
   tokenId: string()
     .transform(transformBigNumberToDecimalString)
     .lowercase()

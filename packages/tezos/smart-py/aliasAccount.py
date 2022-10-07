@@ -50,12 +50,8 @@ class FA2EVMAuth(
             # Update count
             self.data.Last_token_id = self.data.Last_token_id + 1
 
-            # Prevent duplicates
-            sp.verify(~self.data.ledger.contains(self.data.Last_token_id))
-
             # Update EVM address
             self.data.aliasAccount[sp.sender] = action.EVM_address
-            self.data.aliasAccount1({sp.sender: action.EVM_address})
 
             token_id = self.data.Last_token_id
 

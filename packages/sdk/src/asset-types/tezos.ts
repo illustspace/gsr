@@ -29,12 +29,6 @@ describe("FA2", () => {
   });
 
   it("returns true if the owner is the publisher", async () => {
-    jest
-      .spyOn(verifier, "verifyAssetOwnership")
-      .mockImplementation(async () => {
-        return true;
-      });
-
     expect(
       await verifier.verifyAssetOwnership({
         decodedAssetId,
@@ -44,12 +38,6 @@ describe("FA2", () => {
   });
 
   it("returns false if the owner is not publisher", async () => {
-    jest
-      .spyOn(verifier, "verifyAssetOwnership")
-      .mockImplementation(async () => {
-        return false;
-      });
-
     expect(
       await verifier.verifyAssetOwnership({
         decodedAssetId,

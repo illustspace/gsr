@@ -7,6 +7,7 @@ import {
   Input,
   Text,
   InputGroup,
+  Link,
 } from "@chakra-ui/react";
 import React, { FunctionComponent } from "react";
 import { useForm } from "react-hook-form";
@@ -79,15 +80,14 @@ export const Fa2Asset: FunctionComponent<Fa2AssetProps> = ({ onChange }) => {
 
         <FormHelperText>
           Use{" "}
-          <Text
-            as="a"
+          <Link
             href="https://better-call.dev/jakartanet/KT1Fk4pZAXDgLwzahLnrZwTRgKWd5Nc4RoTX/interact/mint"
             target="_blank"
             color="blue.500"
             textDecoration="underline"
           >
             Mint a Tezos EVM Alias Account Registry Contract
-          </Text>{" "}
+          </Link>{" "}
           The address of the Tezos wallet which holds the NFT Token you wish to
           place. This address must be registered as an alias account with the
           current EVM wallet to be a verified publisher.
