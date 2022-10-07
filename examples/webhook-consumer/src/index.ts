@@ -18,7 +18,7 @@ app.use(morgan("tiny"));
  * Parser for the raw application/json webhook.
  * Use the raw data so we can verify the signature.
  */
-const rawJsonParser = bodyParser.raw({ type: "application/json" });
+const rawJsonParser = bodyParser.raw({ type: "application/octet-stream" });
 
 const placements: {
   [assetId: string]: ValidatedGsrPlacement;

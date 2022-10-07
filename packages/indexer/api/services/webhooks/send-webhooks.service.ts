@@ -58,7 +58,7 @@ const sendWebhook = async (endpoint: string, placements: unknown) => {
     headers: {
       // Pass the signature as a header.
       "gsr-signature": signature,
-      "content-type": "application/json",
+      "content-type": "application/octet-stream",
     },
   });
 };
