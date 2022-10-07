@@ -20,8 +20,6 @@ import {
   EncodedAssetId,
   Erc721Verifier,
   getTransactionData,
-  Fa2Verifier,
-  Fa2AssetId,
 } from "@geospatialregistry/sdk";
 
 const tokenId = BigNumber.from(1);
