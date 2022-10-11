@@ -1,14 +1,16 @@
 import { TezosToolkit } from "@taquito/taquito";
 
+// Verify Tezos balance for a given token and owner
+// Throws an error if the balance is not enough
+// Resolves if the balance is enough
 interface verifyBalanceProps {
   chainId: string;
   contract: string;
   owner: string;
-  tokenId: number;
-  amount: number;
+  tokenId: string;
+  amount: string;
 }
 
-// Throws an error if the balance is not enough
 export async function verifyBalance({
   chainId,
   contract,
@@ -30,13 +32,15 @@ export async function verifyBalance({
   }
 }
 
+// Verify's if the publisher address is a valid Tezos alias account
+// Throws an error if the address is not a valid alias account
+// Resolves if the address is a valid alias account
 interface verifyAliasAddressProps {
   chainId: string;
   evmAlias: string;
   publisher: string;
 }
 
-// returns number of tokens owned by publisher
 export async function verifyAliasAddress({
   chainId,
   evmAlias,
@@ -44,12 +48,12 @@ export async function verifyAliasAddress({
 }: verifyAliasAddressProps): Promise<void> {
   const Tezos = new TezosToolkit(chainIdToRpc(chainId));
 
-  //? Tezos EVM Alias Wallet contract
+  // Tezos FA2EVMAuth Wallet contract
   const Contract = await Tezos.wallet.at(
     chainIdToAliasAccountContract(chainId)
   );
 
-  //? Check if EVM Alias address is linked to publisher
+  // Call contract view to check if EVM Alias address is linked to publisher
   await Contract.contractViews
     .check_alias_address([publisher, evmAlias])
     .executeView({ viewCaller: publisher });

@@ -176,7 +176,7 @@ export const getPlacementByAssetId = async (
   const placement = await prisma.placement.findFirst({
     where: {
       // Filter by valid placements, unless a publisher is specified.
-      placedByOwner: !publisher,
+      placedByOwner: publisher ? undefined : true,
       assetId,
       publisher: publisher?.toLowerCase() || undefined,
     },

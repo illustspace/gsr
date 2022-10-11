@@ -79,10 +79,10 @@ export class Fa2Verifier extends BaseAssetTypeVerifier<Fa2AssetId> {
     try {
       await verifyBalance({
         chainId: decodedAssetId.chainId,
-        contract: decodedAssetId.contractAddress as string,
+        contract: decodedAssetId.contractAddress,
         owner: decodedAssetId.publisherAddress,
-        tokenId: Number(decodedAssetId.tokenId),
-        amount: Number(decodedAssetId.itemNumber),
+        tokenId: decodedAssetId.tokenId,
+        amount: decodedAssetId.itemNumber,
       });
 
       //  Verify that the Tezos Publisher Wallet address is alias with the EVM Wallet address
