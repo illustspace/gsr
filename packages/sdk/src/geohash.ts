@@ -1,4 +1,7 @@
 import chunk from "lodash/chunk";
+import { decode_int, encode_int, GeographicPoint } from "ngeohash";
+
+export type Coordinates = GeographicPoint;
 
 export interface GeohashBits {
   geohash: number;
@@ -32,4 +35,21 @@ export const bitsToGeohash = (bits: number, precision: number): string => {
   });
 
   return letters.join("");
+};
+
+/** Convert GeoHash to lat/lng */
+export const geohashBitsToCoordinates = (
+  bits: number | bigint,
+  bitPrecision: number
+): Coordinates => {
+  return decode_int(Number(bits), bitPrecision);
+};
+
+/** Convert GeoHash to lat/lng */
+export const coordinatesToGeohashBits = (
+  latitude: number,
+  longitude: number,
+  bitPrecision: number
+): number => {
+  return encode_int(latitude, longitude, bitPrecision);
 };

@@ -78,7 +78,7 @@ export class GsrContract {
   public contract: GeoSpatialRegistry;
   public gsrProvider: Provider;
 
-  private verifier: AssetTypeVerifier;
+  public verifier: AssetTypeVerifier;
   private indexer: GsrIndexer;
 
   constructor(
