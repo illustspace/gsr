@@ -25,8 +25,8 @@ const indexersByChainId: Record<number, string> = {
 };
 
 const indexerAddressByChainId: Record<number, string> = {
-  137: "0x5d53B7C228160116d1A8121CDf92233DEb7C273f",
-  80001: "0x5d53B7C228160116d1A8121CDf92233DEb7C273f",
+  137: "0x71918e7ce6005135d20a50f81c2885822a15abb3",
+  80001: "0x71918e7ce6005135d20a50f81c2885822a15abb3",
   1337: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
 };
 
