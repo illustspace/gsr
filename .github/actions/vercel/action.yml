@@ -15,7 +15,13 @@ runs:
       shell: bash
 
     - name: Build Project Artifacts
+      if: ${{ inputs.environment == 'preview' }}
       run: vercel build --token=${{ inputs.token }}
+      shell: bash
+
+    - name: Build Project Artifacts
+      if: ${{ inputs.environment == 'production' }}
+      run: vercel build --token=${{ inputs.token }} --prod
       shell: bash
 
     - name: Deploy to Vercel Preview
