@@ -43,13 +43,13 @@ jobs:
       - name: E2E Tests
         uses: ./.github/actions/e2e
 
-      # - name: Apply DB Migrations
-      #   run: yarn ws indexer prisma migrate deploy
-      #   env:
-      #     DATABASE_URL: ${{ secrets.PROD_MIGRATE_URL }}
+      - name: Apply DB Migrations
+        run: yarn ws indexer prisma migrate deploy
+        env:
+          DATABASE_URL: ${{ secrets.PROD_MIGRATE_URL }}
 
-      # - name: Deploy Indexer
-      #   uses: ./.github/actions/vercel
-      #   with:
-      #     environment: production
-      #     token: ${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Indexer
+        uses: ./.github/actions/vercel
+        with:
+          environment: production
+          token: ${{ secrets.VERCEL_TOKEN }}

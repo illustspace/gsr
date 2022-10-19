@@ -19,20 +19,20 @@ import {
 import { MetaTransaction } from "./metaTransactions";
 
 const indexersByChainId: Record<number, string> = {
-  137: "https://gsr.network/api",
-  80001: "https://testnet.gsr.network/api",
+  137: "https://indexer.gsr.network/api",
+  80001: "https://indexer.testnet.gsr.network/api",
   1337: "http://localhost:3000/api",
 };
 
 const indexerAddressByChainId: Record<number, string> = {
-  137: "",
-  80001: "",
+  137: "0x5d53B7C228160116d1A8121CDf92233DEb7C273f",
+  80001: "0x5d53B7C228160116d1A8121CDf92233DEb7C273f",
   1337: "0x70997970C51812dc3A010C7d01b50e0d17dc79C8",
 };
 
 const explorerByChainId: Record<number, string> = {
-  137: "https://gsr.network",
-  80001: "https://testnet.gsr.network",
+  137: "https://indexer.gsr.network",
+  80001: "https://indexer.testnet.gsr.network",
   1337: "http://localhost:3000",
 };
 
