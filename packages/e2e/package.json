@@ -12,7 +12,7 @@
     "@ethersproject/providers": "5.4.5",
     "@ethersproject/strings": "5.4.0",
     "@ethersproject/wallet": "^5.4.0",
-    "@geospatialregistry/sdk": "^0.0.2",
+    "@geospatialregistry/sdk": "^0.0.3",
     "axios": "^0.27.2"
   },
   "devDependencies": {
