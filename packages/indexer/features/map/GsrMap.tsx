@@ -30,7 +30,6 @@ export const GsrMap: FunctionComponent<GsrMapProps> = ({ features }) => {
           return <PlacementPopup placementId={placementId} />;
         }}
       />
-      ;
     </Box>
   );
 };

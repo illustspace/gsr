@@ -1,7 +1,11 @@
 import {
   Box,
   BoxProps,
+  FormControl,
+  FormHelperText,
+  FormLabel,
   Slider,
+  Text,
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
@@ -102,53 +106,72 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
   const newPointSource = getPinData(newBbox);
 
   return (
-    <Box position="relative" {...props}>
-      <Map
-        reuseMaps
-        mapStyle={mapStyle}
-        mapboxAccessToken={mapApi}
-        onClick={handleMapClick}
-        initialViewState={initialViewState}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
-      >
-        <AutoGeolocationButton />
+    <Box
+      position="relative"
+      display="flex"
+      flexDirection="column"
+      alignItems="stretch"
+      {...props}
+    >
+      <FormLabel>Click to select map location</FormLabel>
+      <Box flex={1}>
+        <Map
+          reuseMaps
+          mapStyle={mapStyle}
+          mapboxAccessToken={mapApi}
+          onClick={handleMapClick}
+          initialViewState={initialViewState}
+          style={{
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <AutoGeolocationButton />
 
-        {source && (
-          <Source id="bbox" type="geojson" data={source}>
-            <Layer {...fillStyle} />
-            <Layer {...outlineStyle} />
-          </Source>
-        )}
+          {source && (
+            <Source id="bbox" type="geojson" data={source}>
+              <Layer {...fillStyle} />
+              <Layer {...outlineStyle} />
+            </Source>
+          )}
 
-        {pointSource && (
-          <Source id="pin" type="geojson" data={pointSource}>
-            <Layer {...pinStyle} />
-          </Source>
-        )}
+          {pointSource && (
+            <Source id="pin" type="geojson" data={pointSource}>
+              <Layer {...pinStyle} />
+            </Source>
+          )}
 
-        {newGeohashSource && (
-          <Source id="newBbox" type="geojson" data={newGeohashSource}>
-            <Layer {...fillStyle} id="new-fill-style" />
-            <Layer {...outlineStyle} id="new-outline-style" />
-          </Source>
-        )}
+          {newGeohashSource && (
+            <Source id="newBbox" type="geojson" data={newGeohashSource}>
+              <Layer {...fillStyle} id="new-fill-style" />
+              <Layer {...outlineStyle} id="new-outline-style" />
+            </Source>
+          )}
 
-        {newPointSource && (
-          <Source id="newPin" type="geojson" data={newPointSource}>
-            <Layer {...pinStyle} id="new-pin-style" />
-          </Source>
-        )}
-      </Map>
+          {newPointSource && (
+            <Source id="newPin" type="geojson" data={newPointSource}>
+              <Layer {...pinStyle} id="new-pin-style" />
+            </Source>
+          )}
+        </Map>
+      </Box>
 
-      <Box position="absolute" top={0} bottom={0} right={0}>
+      {point && (
+        <Text>
+          {point.latitude}, {point.longitude}
+        </Text>
+      )}
+
+      <FormControl mt={2}>
+        <FormLabel>Precision</FormLabel>
+
         <Slider
-          height="100%"
+          width="100%"
           aria-label="Precision"
           defaultValue={50}
-          orientation="vertical"
+          min={10}
+          max={60}
+          orientation="horizontal"
           step={1}
           onChange={setBitPrecision}
         >
@@ -157,7 +180,11 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
           </SliderTrack>
           <SliderThumb />
         </Slider>
-      </Box>
+
+        <FormHelperText>
+          Increase precision for a smaller geofence.
+        </FormHelperText>
+      </FormControl>
     </Box>
   );
 };

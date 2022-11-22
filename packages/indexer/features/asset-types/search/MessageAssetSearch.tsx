@@ -1,11 +1,12 @@
 import {
-  Box,
   Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
   InputGroup,
+  Textarea,
+  VStack,
 } from "@chakra-ui/react";
 import React, { FunctionComponent } from "react";
 import { useForm } from "react-hook-form";
@@ -42,7 +43,8 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
   };
 
   return (
-    <Box
+    <VStack
+      width="100%"
       as="form"
       onChange={() => {
         onChange(getValues());
@@ -50,7 +52,7 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
     >
       <FormControl isInvalid={!!errors.message} isRequired>
         <FormLabel>Message</FormLabel>
-        <Input {...register("message", { required: true })} />
+        <Textarea {...register("message", { required: true })} />
 
         <FormErrorMessage>{errors.message?.message as string}</FormErrorMessage>
       </FormControl>
@@ -75,6 +77,6 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
           {errors.placementNumber?.message as string}
         </FormErrorMessage>
       </FormControl>
-    </Box>
+    </VStack>
   );
 };
