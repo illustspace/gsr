@@ -1,11 +1,11 @@
 import {
-  Box,
   Button,
   FormControl,
   FormErrorMessage,
   FormLabel,
   Input,
   InputGroup,
+  VStack,
 } from "@chakra-ui/react";
 import React, { FunctionComponent } from "react";
 import { useForm } from "react-hook-form";
@@ -42,7 +42,8 @@ export const SelfPublishedAsset: FunctionComponent<SelfPublishedAssetProps> = ({
   };
 
   return (
-    <Box
+    <VStack
+      width="100%"
       as="form"
       onChange={() => {
         onChange(getValues());
@@ -64,6 +65,6 @@ export const SelfPublishedAsset: FunctionComponent<SelfPublishedAssetProps> = ({
 
         <FormErrorMessage>{errors.publisherAddress?.message}</FormErrorMessage>
       </FormControl>
-    </Box>
+    </VStack>
   );
 };

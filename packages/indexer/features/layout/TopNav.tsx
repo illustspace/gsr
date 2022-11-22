@@ -1,4 +1,4 @@
-import { ButtonGroup, Flex, IconButton, Link } from "@chakra-ui/react";
+import { Button, ButtonGroup, Flex, IconButton, Link } from "@chakra-ui/react";
 import React, { FunctionComponent } from "react";
 import NextLink from "next/link";
 
@@ -24,9 +24,17 @@ export const TopNav: FunctionComponent = () => {
         {getTagFromChain()}
       </Flex>
 
-      <ButtonGroup className="top-nav__actions">
-        <Link href="#">Litepaper</Link>
-        <Link href="#">Login</Link>
+      <ButtonGroup className="top-nav__actions" alignItems="center">
+        <Link
+          href="https://docs.illust.ar/illust-ar/papers-research-and-thought-leadership/geospatial-registry-litepaper"
+          isExternal
+        >
+          Litepaper
+        </Link>
+
+        <NextLink href="/place" passHref>
+          <Button as="a">Create</Button>
+        </NextLink>
       </ButtonGroup>
     </Flex>
   );

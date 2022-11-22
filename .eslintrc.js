@@ -95,6 +95,10 @@ module.exports = {
 
     "react/function-component-definition": "off",
 
+    "@typescript-eslint/no-empty-interface": [
+      "error",
+      { allowSingleExtends: true },
+    ],
     // TODO: Remove these
     "spaced-comment": "off",
     "no-alert": "off",

@@ -234,3 +234,14 @@ export const fetchPlacementsAsGeoJson = async (
 
   return fetchSuccessResponse(geojson);
 };
+
+export const getRecentPlacements = async () => {
+  const placements = await prisma.placement.findMany({
+    where: {
+      placedByOwner: true,
+    },
+    take: 10,
+  });
+
+  return fetchSuccessResponse(placements.map(dbToPlacement));
+};
