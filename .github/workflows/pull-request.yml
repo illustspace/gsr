@@ -8,23 +8,14 @@ jobs:
   build-and-test:
     runs-on: ubuntu-20.04
     services:
-      # Set up postgres
-      postgres:
-        # Docker Hub image
-        image: postgres
-        ports:
-          # E2E port
-          - 5433:5432
+      # Set up db
+      cockroach:
+        image: timveil/cockroachdb-single-node:latest
         env:
-          # Provide the password for postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: gsr
-        # Set health checks to wait until postgres has started
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
+          DATABASE_NAME: gsr
+          MEMORY_SIZE: 640MiB
+        ports:
+          - 26258:26257
     steps:
       - name: "Check out code"
         if: ${{ !env.ACT }}

@@ -3,7 +3,7 @@
   "version": "0.1.1",
   "private": true,
   "scripts": {
-    "start": "yarn db:start && next dev",
+    "start": "yarn db:start --background && next dev",
     "build": "yarn db:generate && next build",
     "build:vercel": "yarn db:generate --data-proxy && next build",
     "serve": "next start",
@@ -13,12 +13,11 @@
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
-    "e2e": "yarn e2e:db:start && yarn e2e:start",
+    "e2e": "yarn e2e:db:start --background && yarn e2e:db:deploy && yarn e2e:start",
     "e2e:start": "NODE_ENV=test PORT=3001 yarn start",
     "e2e:build": "NODE_ENV=test PORT=3001 yarn build",
     "e2e:serve": "NODE_ENV=test PORT=3001 yarn serve",
-    "e2e:db:start": "docker-compose up -d e2e-db && yarn e2e:db:deploy",
-    "e2e:db:stop": "docker-compose stop e2e-db && docker-compose rm -vf e2e-db",
+    "e2e:db:start": "cockroach start-single-node --insecure --store=type=mem,size=640MiB --listen-addr=localhost:26258 --http-addr=localhost:8081",
     "e2e:db:deploy": "dotenv -e .env.test -- yarn prisma migrate deploy",
     "e2e:db:studio": "dotenv -e .env.test -- prisma studio"
   },

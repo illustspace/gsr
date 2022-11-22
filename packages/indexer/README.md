@@ -4,11 +4,13 @@ A Next.js app that verifies ownership for GSR placements, serves placement queri
 
 ## Development
 
-First, run the development server and dockerized Postgres database
+Run the development server and local CockroachDB server:
 
 ```bash
 yarn start
 ```
+
+_Note that killing this process will also shut down CockroachDB_
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
@@ -35,4 +37,32 @@ yarn vercel build
 yarn vercel deploy --prebuilt
 # OR Deploy to prod
 yarn vercel deploy --prebuilt --prod
+```
+
+## Database
+
+The GSR Indexer uses CockroachDB as its data store. The database connection is controlled by the `DATABASE_URL` variable in `packages/indexer/.env`
+
+If you want to start the local database in a separate process:
+
+```bash
+yarn ws indexer db:start
+```
+
+Then you can explore the data with the prisma studio
+
+```bash
+yarn ws indexer db:studio
+```
+
+To change the database structure, first update the [schema.prisma](./prisma/schema.prisma) file. Then generate a new migration:
+
+```bash
+yarn ws indexer db:migrate my-migration-name
+```
+
+If you need to apply existing migrations to the database specified in the `DATABASE_URL` (like if a merged branch added a new migration), run:
+
+```bash
+yarn ws indexer db:deploy
 ```

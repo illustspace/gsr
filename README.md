@@ -24,7 +24,20 @@ The indexer service can be found in [packages/indexer](./packages/indexer)
 
 ## Dev environment setup
 
-First, install and start postgres.
+### CockroachDB
+
+First, install CockroachDb.
+
+```bash
+# linux/wsl
+curl https://binaries.cockroachdb.com/cockroach-v22.1.11.linux-amd64.tgz | tar -xz && sudo cp -i cockroach-v22.1.11.linux-amd64/cockroach /usr/local/bin/
+# macos
+brew install cockroachdb/tap/cockroach
+```
+
+Or follow [the docs](https://www.cockroachlabs.com/docs/v22.1/install-cockroachdb-linux) for more details.
+
+### Dependencies
 
 Then install dependencies:
 
@@ -65,6 +78,13 @@ yarn ws e2e e2e:test
 ```
 
 ### Dev Server
+
+If you haven't run the server before, first deploy migrations
+
+```bash
+yarn ws indexer db:start # start the local db, if it is not already running.
+yarn ws indexer db:deploy # deploy migrations to local db
+```
 
 For development, you can either start a local blockchain and all services in one command:
 

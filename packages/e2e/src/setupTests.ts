@@ -2,7 +2,8 @@ import axios from "axios";
 import { prisma } from "../../indexer/api/db";
 
 // Set the local database URL for prisma
-process.env.DATABASE_URL = "postgresql://postgres:postgres@localhost:5433/gsr";
+process.env.DATABASE_URL =
+  "postgresql://root@localhost:26258/defaultdb?sslmode=disable";
 
 beforeAll(async () => {
   await resetDb();
