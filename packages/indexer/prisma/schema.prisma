@@ -8,23 +8,23 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "cockroachdb"
   url      = env("DATABASE_URL")
 }
 
 model Placement {
   // Unique ID is blockHash + blockLogIndex
   // block hash for the placement
-  blockHash     String @default("") @db.VarChar(255)
+  blockHash     String @default("") @db.String(255)
   // Index of the placement log within the block
   blockLogIndex Int    @default(0)
 
-  assetId       String  @db.VarChar(255)
-  parentAssetId String? @db.VarChar(255)
+  assetId       String  @db.String(255)
+  parentAssetId String? @db.String(255)
 
   decodedAssetId Json
 
-  publisher String  @db.VarChar(255)
+  publisher String  @db.String(255)
   published Boolean @default(false)
 
   // geohash
@@ -39,7 +39,7 @@ model Placement {
   timeRangeEnd   DateTime?
 
   // TX hash of the placement
-  tx            String  @default("") @db.VarChar(255)
+  tx            String  @default("") @db.String(255)
   // If true, validated as placed by owner.
   placedByOwner Boolean @default(false)
 
@@ -56,9 +56,9 @@ model ServiceState {
 }
 
 model SelfServeAsset {
-  assetId     String  @id @db.VarChar(255)
+  assetId     String  @id @db.String(255)
   name        String  @default("")
-  publisher   String  @db.VarChar(255)
+  publisher   String  @db.String(255)
   description String?
   imageUrl    String?
   message     String?
@@ -69,12 +69,12 @@ model SelfServeAsset {
 
 // Holds nonces for hot wallets
 model WalletNonces {
-  address String @id @db.VarChar(255)
+  address String @id @db.String(255)
   nonce   Int    @default(0)
 }
 
 model Webhook {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   endpoint  String   @default("")
   active    Boolean  @default(true)
   createdAt DateTime @default(now())

@@ -20,3 +20,6 @@ yarn-error.log*
 
 # temp build dir
 dist
+
+cockroach-data
+heap_profiler
