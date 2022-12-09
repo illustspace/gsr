@@ -22,11 +22,12 @@ export const fetchPlacementByQuery = async (
   publisher?: string
 ): Promise<GsrIndexerServiceWrapper<SinglePlacementResponse>> => {
   const query = gsr.parseAssetId(decodedAssetIdQuery);
-
   const placement = await prisma.placement.findFirst({
     where: {
-      // Filter by valid placements, unless a publisher is specified.
-      placedByOwner: !publisher,
+      // Filter by valid placement, unless a publisher is specified.
+      // If the publisher is specified, then we want to return the latest placement for the publisher.
+      // if the publisher is not specified, then we want to return the latest valid placement.
+      placedByOwner: publisher ? undefined : true,
       decodedAssetId: { equals: query },
       publisher: publisher?.toLowerCase() || undefined,
       OR: [
@@ -44,7 +45,6 @@ export const fetchPlacementByQuery = async (
       placedAt: "desc",
     },
   });
-
   // 404 if the placement doesn't exist or was un-published.
   if (!placement?.published) {
     return fetchFailResponse("Asset not published", "NO_PLACEMENT", 404);
@@ -176,7 +176,7 @@ export const getPlacementByAssetId = async (
   const placement = await prisma.placement.findFirst({
     where: {
       // Filter by valid placements, unless a publisher is specified.
-      placedByOwner: !publisher,
+      placedByOwner: publisher ? undefined : true,
       assetId,
       publisher: publisher?.toLowerCase() || undefined,
     },

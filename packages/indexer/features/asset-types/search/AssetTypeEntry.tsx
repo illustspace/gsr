@@ -5,6 +5,7 @@ import { Erc1155Asset } from "./Erc1155Asset";
 import { Erc721Asset } from "./Erc721Asset";
 import { MessageAssetSearch } from "./MessageAssetSearch";
 import { SelfPublishedAsset } from "./SelfPublishedAsset";
+import { Fa2Asset } from "./Fa2";
 
 export interface AssetTypeEntryProps {
   assetType: AssetType;
@@ -24,6 +25,8 @@ export const AssetTypeEntry: FunctionComponent<AssetTypeEntryProps> = ({
     return <SelfPublishedAsset onChange={onChange} />;
   } else if (assetType === "MESSAGE") {
     return <MessageAssetSearch onChange={onChange} />;
+  } else if (assetType === "FA2") {
+    return <Fa2Asset onChange={onChange} />;
   } else {
     return null;
   }

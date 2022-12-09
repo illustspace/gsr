@@ -19,7 +19,7 @@ import {
   getTimestampDateOfReceipt,
   erc721,
   signer,
-} from "./lib/shared";
+} from "../lib/shared";
 
 describe("e2e", () => {
   describe("ERC721 Assets", () => {

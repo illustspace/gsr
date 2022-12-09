@@ -208,7 +208,6 @@ describe("GeoSpatialRegistry", () => {
             event,
             verifier
           ) as GsrPlacement<Erc721AssetId>;
-
           expect(
             await verifier.verifyAssetOwnership(placement).catch(() => false)
           ).to.eq(false);

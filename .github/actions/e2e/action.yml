@@ -31,5 +31,5 @@ runs:
 
     # Run e2e test once services are started
     - name: E2E Tests
-      run: yarn ws e2e e2e:test
+      run: yarn ws e2e e2e:test:devnet
       shell: bash

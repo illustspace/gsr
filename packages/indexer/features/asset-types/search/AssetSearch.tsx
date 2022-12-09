@@ -133,6 +133,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
           <option value="MESSAGE">Message</option>
           <option value="ERC721">ERC721</option>
           <option value="ERC1155">ERC1155</option>
+          <option value="FA2">Tezos FA2</option>
           <option value="SELF_PUBLISHED">Self Published</option>
         </Select>
       </FormControl>

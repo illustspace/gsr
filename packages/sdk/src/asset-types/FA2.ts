@@ -1,82 +1,100 @@
-// import { keccak256 } from "@ethersproject/keccak256";
-// import { toUtf8Bytes } from "@ethersproject/strings";
-// import { defaultAbiCoder } from "@ethersproject/abi";
-import { Asserts, number, object, string } from "yup";
-
-import { ProviderKeys } from "~/provider";
+import { defaultAbiCoder } from "@ethersproject/abi";
+import { object, string, Asserts } from "yup";
+import { getAddress } from "ethers/lib/utils";
 
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
 import { GsrPlacement } from "~/placement-event";
-import {
-  transformBigNumberToDecimalString,
-  transformBigNumberToInteger,
-} from "./schema";
+import { transformBigNumberToDecimalString } from "./schema";
+import { verifyAliasAddress, verifyBalance } from "./helpers/Tezos";
 
+/** Validation schema for ERC721 */
 const schema = object({
   assetType: string().oneOf(["FA2"]).required(),
-  chainId: number()
-    .transform(transformBigNumberToInteger)
-    .integer()
-    .positive()
-    .required(),
-  contractAddress: string().defined(),
+  chainId: string().oneOf(["mainnet", "ghostnet", "jakartanet"]).required(),
+  contractAddress: string().required(),
   tokenId: string()
     .transform(transformBigNumberToDecimalString)
     .lowercase()
     .required(),
+  publisherAddress: string().required(),
+  itemNumber: string().transform(transformBigNumberToDecimalString).required(),
 });
 
-/** Decoded AssetId for an EVM ERC 1155 1:1 NFT */
+/** Decoded AssetId for an TEZOS FA2 1:1 NFT */
 export type Fa2AssetId = Asserts<typeof schema>;
 
-// const tezosService = keccak256(toUtf8Bytes("TEZOS"));
+const assetTypeAbis = {
+  collectionId: ["string", "string", "uint256"],
+  itemId: ["string", "string"],
+};
 
 export class Fa2Verifier extends BaseAssetTypeVerifier<Fa2AssetId> {
   single = false;
   assetType = "FA2" as const;
   schema = schema;
 
-  constructor(_providerKeys: ProviderKeys) {
-    super();
-  }
+  decodeAssetId(assetId: EncodedAssetId): Fa2AssetId {
+    const [chainId, contractAddress, tokenId] = defaultAbiCoder.decode(
+      assetTypeAbis.collectionId,
+      assetId.collectionId
+    );
 
-  decodeAssetId(_assetId: EncodedAssetId): Fa2AssetId {
-    return {
+    const [publisherAddress, itemNumber] = defaultAbiCoder.decode(
+      assetTypeAbis.itemId,
+      assetId.itemId
+    );
+
+    return schema.validateSync({
       assetType: this.assetType,
-      chainId: 1,
-      contractAddress: "TODO",
-      tokenId: "TODO",
-    };
+      chainId,
+      contractAddress,
+      tokenId,
+      publisherAddress,
+      itemNumber,
+    });
   }
 
-  encodeAssetId(_assetId: Fa2AssetId) {
+  encodeAssetId(assetId: Fa2AssetId) {
+    const encodedCollectionId = defaultAbiCoder.encode(
+      assetTypeAbis.collectionId,
+      [assetId.chainId, assetId.contractAddress, assetId.tokenId]
+    );
+    const encodedItemId = defaultAbiCoder.encode(assetTypeAbis.itemId, [
+      assetId.publisherAddress,
+      assetId.itemNumber,
+    ]);
+
     return {
       assetType: this.encodedAssetType,
-      collectionId: "TODO",
-      itemId: "TODO",
+      collectionId: encodedCollectionId,
+      itemId: encodedItemId,
     };
   }
 
-  async verifyAssetOwnership(
-    _placement: GsrPlacement<Fa2AssetId>
-  ): Promise<boolean> {
-    // if (!placement.linkedAccount) return false;
+  async verifyAssetOwnership({
+    decodedAssetId,
+    publisher,
+  }: GsrPlacement<Fa2AssetId>): Promise<boolean> {
+    try {
+      await verifyBalance({
+        chainId: decodedAssetId.chainId,
+        contract: decodedAssetId.contractAddress,
+        owner: decodedAssetId.publisherAddress,
+        tokenId: decodedAssetId.tokenId,
+        amount: decodedAssetId.itemNumber,
+      });
 
-    // const [linkedService, linkedAccount] = defaultAbiCoder.decode(
-    //   ["bytes32", "bytes"],
-    //   placement.linkedAccount
-    // );
+      //  Verify that the Tezos Publisher Wallet address is alias with the EVM Wallet address
+      await verifyAliasAddress({
+        chainId: decodedAssetId.chainId,
+        publisher: decodedAssetId.publisherAddress,
+        evmAlias: getAddress(publisher), // getAddress() returns a checksummed address for Alias Address validation
+      });
 
-    // if (linkedService !== tezosService) return false;
-
-    // const tezosAddress = toUtf8String(linkedAccount);
-    // // eslint-disable-next-line no-console
-    // console.log(tezosAddress);
-
-    // TODO: get the proof from the ALR and verify the signature against the tezosAddress
-
-    // TODO: verify the actual ownership of the asset on Tezos
-    throw new Error("not implemented");
+      return true;
+    } catch (e) {
+      return false;
+    }
   }
 }
