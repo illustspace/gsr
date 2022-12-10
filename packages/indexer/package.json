@@ -7,7 +7,7 @@
     "build": "yarn db:generate && next build",
     "serve": "next start",
     "lint": "next lint",
-    "db:start": "cockroach start-single-node --insecure",
+    "db:start": "cockroach start-single-node --insecure --listen-addr=localhost",
     "db:migrate": "prisma migrate dev --name",
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
