@@ -42,6 +42,12 @@ export interface IndexerSyncResponse {
 /** /api/placements */
 export type PlacementQueryResponse = SerializedGsrPlacement[];
 
+/** /api/placements/recent */
+export interface PaginatedPlacementQueryResponse {
+  placements: SerializedGsrPlacement[];
+  total: number;
+}
+
 /** /api/placements/single */
 export type SinglePlacementResponse = SerializedGsrPlacement;
 

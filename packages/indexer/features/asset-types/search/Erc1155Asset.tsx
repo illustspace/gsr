@@ -8,7 +8,7 @@ import {
   InputGroup,
   VStack,
 } from "@chakra-ui/react";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Erc1155AssetId } from "@geospatialregistry/sdk";
 
@@ -33,6 +33,10 @@ export const Erc1155Asset: FunctionComponent<Erc1155AssetProps> = ({
       publisherAddress: "",
     },
   });
+
+  useEffect(() => {
+    onChange(getValues());
+  }, [getValues, onChange]);
 
   return (
     <VStack

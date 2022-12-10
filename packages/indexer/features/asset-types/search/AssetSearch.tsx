@@ -9,11 +9,12 @@ import {
   VStack,
   Text,
   ButtonGroup,
+  Input,
+  FormHelperText,
 } from "@chakra-ui/react";
 import NextLink from "next/link";
 import {
   AssetId,
-  bitsToGeohash,
   ValidatedGsrPlacement,
   GsrIndexerError,
   GeohashBits,
@@ -48,6 +49,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
     publisherAddress: "",
     placementNumber: 1,
   });
+  const [sceneUri, setSceneUri] = useState("");
 
   const handleSearch = async () => {
     if (!gsr) return;
@@ -59,6 +61,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
       const decodedAssetId = gsr.parseAssetId(assetId);
       const placement = await gsrIndexer.placeOf(decodedAssetId);
       setPlacement(placement);
+      setSceneUri(placement.sceneUri || "");
     } catch (e) {
       if (e instanceof GsrIndexerError) {
         setTxError(e.message);
@@ -68,6 +71,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
         setTxError(getErrorMessage(e));
       }
       setPlacement(null);
+      setSceneUri("");
     }
   };
 
@@ -92,6 +96,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
         newLocation,
         {
           timeRange: { start: 0, end: 0 },
+          sceneUri,
         }
       );
 
@@ -120,6 +125,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
         assetId,
         newLocation,
         {
+          sceneUri,
           timeRange: { start: 0, end: 0 },
         }
       );
@@ -166,6 +172,16 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
           onLocationChange={setNewLocation}
         />
 
+        <FormControl>
+          <FormLabel>Scene URI</FormLabel>
+          <Input
+            value={sceneUri}
+            onChange={(e) => setSceneUri(e.target.value)}
+          />
+
+          <FormHelperText>Optional Scene URI</FormHelperText>
+        </FormControl>
+
         <ButtonGroup width="100%" mt={3}>
           <Button width="50%" onClick={handleSearch}>
             Search
@@ -191,19 +207,14 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
         )}
 
         {placement && (
-          <Text>
-            Placement:{" "}
-            {bitsToGeohash(
-              placement.location.geohash,
-              placement.location.bitPrecision / 5
-            )}
-            <NextLink
-              href={gsrIndexer.explorer.asset(placement.assetId)}
-              passHref
-            >
-              <Button as="a">View</Button>
-            </NextLink>
-          </Text>
+          <NextLink
+            href={gsrIndexer.explorer.asset(placement.assetId)}
+            passHref
+          >
+            <Button as="a" mt={3} width="100%">
+              View Placement
+            </Button>
+          </NextLink>
         )}
       </Box>
     </Stack>

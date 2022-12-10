@@ -8,7 +8,7 @@ import {
   Textarea,
   VStack,
 } from "@chakra-ui/react";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { MessageAssetId } from "@geospatialregistry/sdk";
 
@@ -33,6 +33,10 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
       publisherAddress: "",
     },
   });
+
+  useEffect(() => {
+    onChange(getValues());
+  }, [getValues, onChange]);
 
   const handleMyAddress = async () => {
     const provider = await getProvider();
