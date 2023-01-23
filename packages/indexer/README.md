@@ -4,6 +4,22 @@ A Next.js app that verifies ownership for GSR placements, serves placement queri
 
 ## Development
 
+### Environment setup
+
+Add some environment variables to the `packages/indexer/.env.local` file, which is gitignored.
+
+You can [sign up for Alchemy](https://docs.alchemy.com/docs/alchemy-quickstart-guide#1key-create-an-alchemy-key) if you want to access Polygon Testnet or Mainnet from your local enviornonment. Otherwise, leave it out of the `.env.local` file.
+
+```bash
+NEXT_PUBLIC_ALCHEMY_API_KEY="<yourAlchemyApiKey>"
+NEXT_PUBLIC_INFURA_ID="<yourInfuraApiKey>"
+NEXT_PUBLIC_GSR_CHAIN_ID="1337"
+NEXT_PUBLIC_MAPBOX_API_KEY="<yourMapboxApiKey>"
+NEXT_PUBLIC_MAPBOX_STYLE_URL="<yourMapboxStyleUrl>"
+```
+
+### Run dev server
+
 Run the development server and local CockroachDB server:
 
 ```bash
@@ -13,6 +29,14 @@ yarn start
 _Note that killing this process will also shut down CockroachDB_
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+### Connect to a remote database
+
+If you want to connect your local indexer to a remote database, simply specify its `DATABASE_URL` in `.env.local`
+
+```bash
+DATABASE_URL="postgresql://<username>:<password>@<database-url>:26257/gsr?sslmode=verify-full"
+```
 
 ## Webhooks
 

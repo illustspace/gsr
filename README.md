@@ -42,7 +42,9 @@ Or follow [the docs](https://www.cockroachlabs.com/docs/v22.1/install-cockroachd
 Then install dependencies:
 
 ```bash
+# Set up corepack for yarn2
 npm i -g corepack
+# Install dependencies
 yarn install
 ```
 
@@ -77,7 +79,7 @@ yarn ws indexer e2e
 yarn ws e2e e2e:test
 ```
 
-### Dev Server
+### DB Setup
 
 If you haven't run the server before, first deploy migrations
 
@@ -85,6 +87,12 @@ If you haven't run the server before, first deploy migrations
 yarn ws indexer db:start # start the local db, if it is not already running.
 yarn ws indexer db:deploy # deploy migrations to local db
 ```
+
+Then, end the `db:start` process. If you don't, `yarn start` will try to restart the DB and will fail.
+
+### Dev Server
+
+Make sure to run the DB setup before continuing.
 
 For development, you can either start a local blockchain and all services in one command:
 
