@@ -140,7 +140,7 @@ export class Erc1155Verifier extends BaseAssetTypeVerifier<Erc1155AssetId> {
     );
 
     // Get the owner, returning '' if the asset does not exist.
-    const balance = contract
+    const balance = await contract
       .balanceOf(publisher, decodedAssetId.tokenId)
       .catch((error: any) => {
         console.error(error);
