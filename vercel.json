@@ -3,5 +3,11 @@
   "public": false,
   "github": {
     "enabled": false
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/sync",
+      "schedule": "2 */1 * * *"
+    }
+  ]
 }
