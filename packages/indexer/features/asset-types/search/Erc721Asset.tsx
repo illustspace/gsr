@@ -1,6 +1,7 @@
 import {
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Input,
   VStack,
@@ -44,6 +45,10 @@ export const Erc721Asset: FunctionComponent<Erc721AssetProps> = ({
       <FormControl isInvalid={!!errors.chainId} isRequired>
         <FormLabel>Chain ID</FormLabel>
         <Input {...register("chainId", { required: true })} />
+        <FormHelperText>
+          The ID of the chain where the asset is located. For example, Ethereum
+          is 1.
+        </FormHelperText>
 
         <FormErrorMessage>{errors.chainId?.message}</FormErrorMessage>
       </FormControl>
@@ -52,6 +57,10 @@ export const Erc721Asset: FunctionComponent<Erc721AssetProps> = ({
         <FormLabel>Contract Address</FormLabel>
         <Input {...register("contractAddress", { required: true })} />
 
+        <FormHelperText>
+          The contract address where the asset is located.
+        </FormHelperText>
+
         <FormErrorMessage>{errors.contractAddress?.message}</FormErrorMessage>
       </FormControl>
 
@@ -59,7 +68,7 @@ export const Erc721Asset: FunctionComponent<Erc721AssetProps> = ({
         <FormLabel>Token Id</FormLabel>
         <Input {...register("tokenId", { required: true })} isRequired />
 
-        {errors.tokenId?.message}
+        <FormHelperText>The Token ID of the asset.</FormHelperText>
 
         <FormErrorMessage>{errors.tokenId?.message}</FormErrorMessage>
       </FormControl>

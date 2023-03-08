@@ -5,7 +5,11 @@ import {
   FormLabel,
   Select,
   VStack,
-  Text,
+  FormHelperText,
+  useToast,
+  Heading,
+  Flex,
+  Divider,
 } from "@chakra-ui/react";
 import {
   ValidatedGsrPlacement,
@@ -41,15 +45,27 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
     placementNumber: 1,
   });
 
+  const [isSearching, setIsSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-  const [searchError, setSearchError] = useState("");
+
+  const toast = useToast({
+    isClosable: true,
+  });
+
+  const setSearchError = (description: string) => {
+    toast({
+      title: "Search Error",
+      description,
+      status: "error",
+    });
+  };
 
   const handleSearch = async () => {
     if (!gsr) return;
 
-    setSearchError("");
     setPlacement(null);
     setHasSearched(false);
+    setIsSearching(true);
 
     try {
       const decodedAssetId = gsr.parseAssetId(assetId);
@@ -59,8 +75,12 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
       setHasSearched(true);
     } catch (e) {
       if (e instanceof GsrIndexerError) {
-        setSearchError(e.message);
-        setHasSearched(e.code === "NO_PLACEMENT");
+        if (e.code === "NO_PLACEMENT") {
+          setHasSearched(true);
+        } else {
+          setSearchError(e.message);
+          setHasSearched(false);
+        }
       } else if (e instanceof ValidationError) {
         setSearchError(e.message);
       } else {
@@ -69,6 +89,8 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
       setPlacement(null);
       setSceneUri("");
     }
+
+    setIsSearching(false);
   };
 
   return (
@@ -86,30 +108,44 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
           <option value="ERC1155">ERC1155</option>
           <option value="SELF_PUBLISHED">Self Published</option>
         </Select>
+
+        <FormHelperText>
+          Choose the type of asset you want to search for or place.
+        </FormHelperText>
       </FormControl>
 
       <AssetTypeEntry assetType={assetType} onChange={setAssetId} />
 
-      <Button width="50%" onClick={handleSearch} flexShrink={0}>
-        Search
+      <Button
+        width="100%"
+        onClick={handleSearch}
+        flexShrink={0}
+        isLoading={isSearching}
+      >
+        Search for Existing Placement
       </Button>
-
-      {searchError && (
-        <Text color="red" textAlign="center">
-          {searchError}
-        </Text>
-      )}
-
-      {placement && (
-        <NextLink href={gsrIndexer.explorer.asset(placement.assetId)} passHref>
-          <Button as="a" mt={3} width="100%" flexShrink={0}>
-            View Placement
-          </Button>
-        </NextLink>
-      )}
 
       {hasSearched && (
         <>
+          <Divider />
+
+          <Flex justifyContent="space-between" width="100%">
+            <Heading as="h3" size="lg">
+              {placement ? "Edit Placement" : "New Placement"}
+            </Heading>
+
+            {placement && (
+              <NextLink
+                href={gsrIndexer.explorer.asset(placement.assetId)}
+                passHref
+              >
+                <Button as="a" mt={3} mr={3}>
+                  View Placement
+                </Button>
+              </NextLink>
+            )}
+          </Flex>
+
           <PlacementMap
             placement={placement}
             width="100%"

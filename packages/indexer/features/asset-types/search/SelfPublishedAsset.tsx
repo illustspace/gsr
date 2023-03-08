@@ -2,6 +2,7 @@ import {
   Button,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Input,
   InputGroup,
@@ -54,8 +55,13 @@ export const SelfPublishedAsset: FunctionComponent<SelfPublishedAssetProps> = ({
       }}
     >
       <FormControl isInvalid={!!errors.assetHash} isRequired>
-        <FormLabel>Asset Hash</FormLabel>
+        <FormLabel>Unique ID</FormLabel>
         <Input {...register("assetHash", { required: true })} />
+
+        <FormHelperText>
+          A unique ID for this placement. It can be any number. It is used to
+          uniquely identify this placement.
+        </FormHelperText>
 
         <FormErrorMessage>{errors.assetHash?.message}</FormErrorMessage>
       </FormControl>
@@ -66,6 +72,14 @@ export const SelfPublishedAsset: FunctionComponent<SelfPublishedAssetProps> = ({
           <Input {...register("publisherAddress", { required: true })} />
           <Button onClick={handleMyAddress}>My Address</Button>
         </InputGroup>
+
+        <FormHelperText>
+          The address of the publisher of this asset. This should probably be
+          your address.
+          <br />
+          This allows multiple publishers to uniquely place the same asset in
+          the world.
+        </FormHelperText>
 
         <FormErrorMessage>{errors.publisherAddress?.message}</FormErrorMessage>
       </FormControl>

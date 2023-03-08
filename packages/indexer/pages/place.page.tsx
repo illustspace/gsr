@@ -12,7 +12,7 @@ const PlacePage: NextPage = () => {
         Place
       </Heading>
 
-      <Text>Place a digital asset in space</Text>
+      <Text>Find and place digital assets in the world</Text>
 
       <AssetSearch />
     </Layout>

@@ -50,6 +50,11 @@ export const Erc1155Asset: FunctionComponent<Erc1155AssetProps> = ({
         <FormLabel>Chain ID</FormLabel>
         <Input {...register("chainId", { required: true })} />
 
+        <FormHelperText>
+          The ID of the chain where the asset is located. For example, Ethereum
+          is 1.
+        </FormHelperText>
+
         <FormErrorMessage>{errors.chainId?.message}</FormErrorMessage>
       </FormControl>
 
@@ -57,12 +62,18 @@ export const Erc1155Asset: FunctionComponent<Erc1155AssetProps> = ({
         <FormLabel>Contract Address</FormLabel>
         <Input {...register("contractAddress", { required: true })} />
 
+        <FormHelperText>
+          The contract address where the asset is located.
+        </FormHelperText>
+
         <FormErrorMessage>{errors.contractAddress?.message}</FormErrorMessage>
       </FormControl>
 
       <FormControl isInvalid={!!errors.tokenId} isRequired>
         <FormLabel>Token Id</FormLabel>
         <Input {...register("tokenId", { required: true })} isRequired />
+
+        <FormHelperText>The Token ID of the asset.</FormHelperText>
 
         <FormErrorMessage>{errors.tokenId?.message}</FormErrorMessage>
       </FormControl>
@@ -93,10 +104,10 @@ export const Erc1155Asset: FunctionComponent<Erc1155AssetProps> = ({
           <Button>My Address</Button>
         </InputGroup>
 
-        <FormErrorMessage>
-          The address of the current owner of the asset. 1155 placements are
+        <FormHelperText>
+          The address of a current owner of the asset. 1155 placements are
           unique per owner.
-        </FormErrorMessage>
+        </FormHelperText>
 
         <FormErrorMessage>{errors.publisherAddress?.message}</FormErrorMessage>
       </FormControl>

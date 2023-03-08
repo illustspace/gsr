@@ -2,6 +2,7 @@ import {
   Button,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Input,
   InputGroup,
@@ -58,6 +59,13 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
         <FormLabel>Message</FormLabel>
         <Textarea {...register("message", { required: true })} />
 
+        <FormHelperText>
+          The message you want to place in the world.
+          <br />
+          This will be written on-chain, and is included in the unique ID of the
+          placement.
+        </FormHelperText>
+
         <FormErrorMessage>{errors.message?.message as string}</FormErrorMessage>
       </FormControl>
 
@@ -68,6 +76,14 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
           <Button onClick={handleMyAddress}>My Address</Button>
         </InputGroup>
 
+        <FormHelperText>
+          The address of the publisher of this message. This should probably be
+          your address.
+          <br />
+          This allows multiple publishers to uniquely place the same message in
+          the world.
+        </FormHelperText>
+
         <FormErrorMessage>
           {errors.publisherAddress?.message as string}
         </FormErrorMessage>
@@ -76,6 +92,13 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
       <FormControl isInvalid={!!errors.placementNumber} isRequired>
         <FormLabel>Placement Number</FormLabel>
         <Input {...register("placementNumber", { required: true })} />
+
+        <FormHelperText>
+          A number that uniquely identifies this placement of this message.
+          <br />
+          Increase this number to create a new placement of the same message
+          text.
+        </FormHelperText>
 
         <FormErrorMessage>
           {errors.placementNumber?.message as string}

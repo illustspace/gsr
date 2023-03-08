@@ -140,7 +140,7 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
       alignItems="stretch"
       {...props}
     >
-      <FormLabel>Click to select map location</FormLabel>
+      <FormLabel textAlign="center">Click to select map location</FormLabel>
       <AspectRatio
         ratio={4 / 3}
         width="100%"
