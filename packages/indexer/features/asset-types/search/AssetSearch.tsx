@@ -90,7 +90,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
 
       <AssetTypeEntry assetType={assetType} onChange={setAssetId} />
 
-      <Button width="50%" onClick={handleSearch}>
+      <Button width="50%" onClick={handleSearch} flexShrink={0}>
         Search
       </Button>
 
@@ -102,7 +102,7 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
 
       {placement && (
         <NextLink href={gsrIndexer.explorer.asset(placement.assetId)} passHref>
-          <Button as="a" mt={3} width="100%">
+          <Button as="a" mt={3} width="100%" flexShrink={0}>
             View Placement
           </Button>
         </NextLink>

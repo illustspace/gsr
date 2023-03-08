@@ -11,12 +11,20 @@ import {
   SliderTrack,
   AspectRatio,
 } from "@chakra-ui/react";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import React, {
+  FunctionComponent,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Map, {
   FitBoundsOptions,
   Layer,
   LngLatBoundsLike,
   MapLayerMouseEvent,
+  MapRef,
   Source,
 } from "react-map-gl";
 import { encode_int, decode_bbox_int } from "ngeohash";
@@ -26,8 +34,6 @@ import { ValidatedGsrPlacement } from "@geospatialregistry/sdk";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
-// import "@shared/styles/variables.scss";
-// import "@shared/styles/mapbox-overrides.scss";
 import { getEnv } from "~/features/config/env";
 import { Optional } from "~/features/utils/optional";
 import { AutoGeolocationButton } from "~/features/map/AutoGeolocateButton";
@@ -77,6 +83,7 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
   onLocationChange,
   ...props
 }) => {
+  const mapRef = useRef<MapRef>(null);
   const initialBoundingBox = useInitialBbox(placement);
   const initialBoundingBoxCenter = findBboxCenter(initialBoundingBox);
 
@@ -87,6 +94,10 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
 
   const newGeohash = coordinatesToGeohash(point, bitPrecision);
   const newBbox = newGeohash ? decode_bbox_int(newGeohash, bitPrecision) : null;
+
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  useCenterMapOnPoint(mapLoaded, initialBoundingBox, newBbox, mapRef);
 
   const handleMapClick = (event: MapLayerMouseEvent) => {
     const { lat, lng } = event.lngLat;
@@ -123,6 +134,7 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
       >
         <Box>
           <Map
+            ref={mapRef}
             reuseMaps
             mapStyle={mapStyle}
             mapboxAccessToken={mapApi}
@@ -132,6 +144,7 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
               width: "100%",
               height: "100%",
             }}
+            onLoad={() => setMapLoaded(true)}
           >
             <AutoGeolocationButton />
 
@@ -180,7 +193,7 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
           min={10}
           max={60}
           orientation="horizontal"
-          step={1}
+          step={10}
           onChange={setBitPrecision}
         >
           <SliderTrack>
@@ -290,7 +303,28 @@ const findBboxCenter = (bbox: Optional<ngeohash.GeographicBoundingBox>) => {
   const [minLat, minLon, maxLat, maxLon] = bbox;
 
   return {
-    latitude: minLon + (maxLon - minLon) / 2,
-    longitude: minLat + (maxLat - minLat) / 2,
+    longitude: minLon + (maxLon - minLon) / 2,
+    latitude: minLat + (maxLat - minLat) / 2,
   };
+};
+
+/** Center the map every time the new bounding box changes. */
+const useCenterMapOnPoint = (
+  mapLoaded: boolean,
+  initialBoundingBox: Optional<ngeohash.GeographicBoundingBox>,
+  newBbox: Optional<ngeohash.GeographicBoundingBox>,
+  mapRef: RefObject<MapRef>
+) => {
+  useEffect(() => {
+    if (!mapLoaded) return;
+    const bbox = newBbox || initialBoundingBox;
+
+    if (!bbox) return;
+
+    const [minLat, minLon, maxLat, maxLon] = bbox;
+
+    mapRef.current?.fitBounds([minLon, minLat, maxLon, maxLat], {
+      padding: 50,
+    });
+  }, [mapLoaded, initialBoundingBox, newBbox, mapRef]);
 };
