@@ -668,7 +668,7 @@ describe("GeoSpatialRegistry", () => {
     it("accepts metaTransactions", async () => {
       // user1.address creates a gasless transaction to send to user2
       const { r, s, v, functionSignature } = await getTransactionData(
-        gsr,
+        gsr as any,
         nftOwner,
         "place",
         [

@@ -1,5 +1,7 @@
 # GSR SDK
 
+[![Npm package version](https://badgen.net/npm/v/@geospatialregistry/sdk)](https://npmjs.com/package/@geospatialregistry/sdk)
+
 TypeScript SDK for interacting with the GeoSpatialRegistry
 
 ## Install
