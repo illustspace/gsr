@@ -72,6 +72,9 @@ export interface GsrContractOpts {
    * Otherwise a new instance will be created.
    */
   indexer?: GsrIndexer;
+
+  /** If true, log the GSR's chainID when set up. */
+  logging?: boolean;
 }
 
 /** Make requests to the GSR smart contract using decoded asset IDs. */
@@ -94,6 +97,7 @@ export class GsrContract {
       customGsrProvider,
       customGsrAddress,
       indexer = new GsrIndexer(chainId),
+      logging,
     }: GsrContractOpts = {}
   ) {
     this.chainId = chainId;
@@ -116,11 +120,13 @@ export class GsrContract {
       this.gsrProvider
     );
 
-    // eslint-disable-next-line no-console
-    console.info("Initialized GSR Contract", {
-      chainId,
-      address,
-    });
+    if (logging) {
+      // eslint-disable-next-line no-console
+      console.info("Initialized GSR Contract", {
+        chainId,
+        address,
+      });
+    }
   }
 
   /** Parse and validate a DecodedAssetID */
