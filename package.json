@@ -1,6 +1,6 @@
 {
   "name": "gsr-contracts",
-  "packageManager": "yarn@3.2.3",
+  "packageManager": "yarn@3.4.1",
   "version": "0.0.0",
   "description": "Illust space monorepo",
   "license": "UNLICENSED",

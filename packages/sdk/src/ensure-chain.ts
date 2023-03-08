@@ -1,6 +1,6 @@
+import type { Signer } from "@ethersproject/abstract-signer";
+import { hexValue } from "@ethersproject/bytes";
 import { type ExternalProvider, Web3Provider } from "@ethersproject/providers";
-import type { Signer } from "ethers";
-import { hexValue } from "ethers/lib/utils";
 
 /** Ensure the user's wallet is on the correct chain. */
 export async function ensureActiveChain(signer: Signer, gsrChainId: number) {
