@@ -3790,6 +3790,7 @@ __metadata:
     react-hook-form: ^7.34.2
     react-map-gl: ^7.0.19
     typescript: 4.8.2
+    yup: ^v1.0.2
   languageName: unknown
   linkType: soft
 
@@ -3845,7 +3846,7 @@ __metadata:
     tsc-alias: ^1.7.0
     tslib: ^2.4.0
     typescript: ^4.7.4
-    yup: ^v1.0.0-beta.7
+    yup: ^v1.0.2
   peerDependencies:
     "@ethersproject/abi": ">=5"
     "@ethersproject/bignumber": ">=5"
@@ -8775,17 +8776,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"caniuse-lite@npm:^1.0.30000844, caniuse-lite@npm:^1.0.30001370":
-  version: 1.0.30001383
-  resolution: "caniuse-lite@npm:1.0.30001383"
-  checksum: 1830129858510163f6acfbeaf258e0a84061091901ea349ee12541cc04997a25dc17d0ba731e8518711d87f0e08fee2a762aa89264d86be5f329300d0ff9d421
-  languageName: node
-  linkType: hard
-
-"caniuse-lite@npm:^1.0.30001332":
-  version: 1.0.30001390
-  resolution: "caniuse-lite@npm:1.0.30001390"
-  checksum: 5ba4ae64e27c61e1c7d7125223159d6cf7fa3cdbf8f00b9ec83a06f274ff45ddcbfebe509716fa31ae2664b70ef9e1d1c4a5b9430e717852992358121d9ee9be
+"caniuse-lite@npm:^1.0.30000844, caniuse-lite@npm:^1.0.30001332, caniuse-lite@npm:^1.0.30001370":
+  version: 1.0.30001462
+  resolution: "caniuse-lite@npm:1.0.30001462"
+  checksum: e4a57d7851eec65e7c9b6c11c4bbcecdc49d87b1b01bff3c15ea27efb05f959891b4c70ac169842067c134d6fa126d9ad5a91d0f85c7387c5bd912eaf41ea647
   languageName: node
   linkType: hard
 
@@ -22133,6 +22127,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"type-fest@npm:^2.19.0":
+  version: 2.19.0
+  resolution: "type-fest@npm:2.19.0"
+  checksum: a4ef07ece297c9fba78fc1bd6d85dff4472fe043ede98bd4710d2615d15776902b595abf62bd78339ed6278f021235fb28a96361f8be86ed754f778973a0d278
+  languageName: node
+  linkType: hard
+
 "type-is@npm:^1.6.18, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
@@ -24075,14 +24076,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yup@npm:^v1.0.0-beta.7":
-  version: 1.0.0-beta.7
-  resolution: "yup@npm:1.0.0-beta.7"
+"yup@npm:^v1.0.2":
+  version: 1.0.2
+  resolution: "yup@npm:1.0.2"
   dependencies:
     property-expr: ^2.0.5
     tiny-case: ^1.0.3
     toposort: ^2.0.2
-  checksum: 27ea3f12ce84f55da2d4a490cac3a5ad9b34c0da3d3a5fca013b9417861e61ef0ed5f2b98170d84cc23bbf0783cf2f65d12a19c575d5d080c05a404367adcc06
+    type-fest: ^2.19.0
+  checksum: 1cb9c490853739aa0c576c87a81008dd3612985dd2da5ff6127b77640465fa906bb47ed30a7c97824b4a3f525010b2d7f614ebbd442b02e16433675c4d66f0b8
   languageName: node
   linkType: hard
 
