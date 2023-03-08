@@ -52,6 +52,8 @@ export class GsrIndexerError extends Error {
   constructor(message: string, public code: string) {
     super(message);
     this.name = "GsrIndexerError";
+
+    Object.setPrototypeOf(this, GsrIndexerError.prototype);
   }
 }
 

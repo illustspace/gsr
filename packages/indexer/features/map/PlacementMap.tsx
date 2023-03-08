@@ -9,6 +9,7 @@ import {
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  AspectRatio,
 } from "@chakra-ui/react";
 import React, { FunctionComponent, useMemo, useState } from "react";
 import Map, {
@@ -114,50 +115,57 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
       {...props}
     >
       <FormLabel>Click to select map location</FormLabel>
-      <Box flex={1}>
-        <Map
-          reuseMaps
-          mapStyle={mapStyle}
-          mapboxAccessToken={mapApi}
-          onClick={handleMapClick}
-          initialViewState={initialViewState}
-          style={{
-            width: "100%",
-            height: "100%",
-          }}
-        >
-          <AutoGeolocationButton />
+      <AspectRatio
+        ratio={4 / 3}
+        width="100%"
+        maxWidth="600px"
+        alignSelf="center"
+      >
+        <Box>
+          <Map
+            reuseMaps
+            mapStyle={mapStyle}
+            mapboxAccessToken={mapApi}
+            onClick={handleMapClick}
+            initialViewState={initialViewState}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            <AutoGeolocationButton />
 
-          {source && (
-            <Source id="bbox" type="geojson" data={source}>
-              <Layer {...fillStyle} />
-              <Layer {...outlineStyle} />
-            </Source>
-          )}
+            {source && (
+              <Source id="bbox" type="geojson" data={source}>
+                <Layer {...fillStyle} />
+                <Layer {...outlineStyle} />
+              </Source>
+            )}
 
-          {pointSource && (
-            <Source id="pin" type="geojson" data={pointSource}>
-              <Layer {...pinStyle} />
-            </Source>
-          )}
+            {pointSource && (
+              <Source id="pin" type="geojson" data={pointSource}>
+                <Layer {...pinStyle} />
+              </Source>
+            )}
 
-          {newGeohashSource && (
-            <Source id="newBbox" type="geojson" data={newGeohashSource}>
-              <Layer {...fillStyle} id="new-fill-style" />
-              <Layer {...outlineStyle} id="new-outline-style" />
-            </Source>
-          )}
+            {newGeohashSource && (
+              <Source id="newBbox" type="geojson" data={newGeohashSource}>
+                <Layer {...fillStyle} id="new-fill-style" />
+                <Layer {...outlineStyle} id="new-outline-style" />
+              </Source>
+            )}
 
-          {newPointSource && (
-            <Source id="newPin" type="geojson" data={newPointSource}>
-              <Layer {...pinStyle} id="new-pin-style" />
-            </Source>
-          )}
-        </Map>
-      </Box>
+            {newPointSource && (
+              <Source id="newPin" type="geojson" data={newPointSource}>
+                <Layer {...pinStyle} id="new-pin-style" />
+              </Source>
+            )}
+          </Map>
+        </Box>
+      </AspectRatio>
 
       {point && (
-        <Text>
+        <Text textAlign="center">
           {point.latitude}, {point.longitude}
         </Text>
       )}
@@ -182,7 +190,7 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
         </Slider>
 
         <FormHelperText>
-          Increase precision for a smaller geofence.
+          Decrease precision for a larger geofence.
         </FormHelperText>
       </FormControl>
     </Box>
