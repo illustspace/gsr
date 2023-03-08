@@ -1,7 +1,6 @@
 // eslint-disable-next-line max-classes-per-file
 import axios, { AxiosError, AxiosResponse } from "axios";
 
-import { GeoJsonFeaturesCollection } from "./geo-json";
 import {
   ApiResponseSuccess,
   GsrStatsResponse,
@@ -12,11 +11,12 @@ import {
   SinglePlacementResponse,
 } from "./api-responses";
 import { DecodedAssetId } from "./asset-types";
+import { GeoJsonFeaturesCollection } from "./geo-json";
+import { MetaTransaction } from "./metaTransactions";
 import {
   deserializeGsrPlacement,
   ValidatedGsrPlacement,
 } from "./placement-event";
-import { MetaTransaction } from "./metaTransactions";
 
 const indexersByChainId: Record<number, string> = {
   137: "https://indexer.gsr.network/api",

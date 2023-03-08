@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import "@nomiclabs/hardhat-waffle";
+// eslint-disable-next-line import/order
 import { HardhatUserConfig } from "hardhat/config";
 import "tsconfig-paths/register"; // Allow aliases in tests.
 import "@typechain/hardhat";
@@ -14,6 +15,7 @@ import "solidity-docgen";
 
 import "./tasks/testToken";
 
+// eslint-disable-next-line import/order
 import * as dotenv from "dotenv";
 
 dotenv.config();

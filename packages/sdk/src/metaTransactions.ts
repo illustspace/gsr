@@ -1,5 +1,5 @@
-import type { Contract } from "@ethersproject/contracts";
 import type { Signer, TypedDataSigner } from "@ethersproject/abstract-signer";
+import type { Contract } from "@ethersproject/contracts";
 import { object, string, Asserts, number } from "yup";
 
 /** Validator schema for a metaTransaction */

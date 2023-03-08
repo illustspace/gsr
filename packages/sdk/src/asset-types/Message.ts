@@ -1,11 +1,11 @@
 import { defaultAbiCoder } from "@ethersproject/abi";
 import { object, string, Asserts, number } from "yup";
 
+import { GsrPlacement } from "~/placement-event";
 import { ProviderKeys } from "~/provider";
 
-import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
-import { GsrPlacement } from "~/placement-event";
+import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { transformBigNumberToInteger } from "./schema";
 
 const schema = object({

@@ -12,8 +12,8 @@ import { Layout } from "~/features/layout/Layout";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { emptyGeoJson } from "~/features/map/geo-json";
 
-import { fetchCatchResponse } from "../api/services/responses/service-response";
 import { RecentPlacements } from "~/features/history/RecentPlacements";
+import { fetchCatchResponse } from "../api/services/responses/service-response";
 
 interface HomeProps {
   stats: GsrStatsResponse | null;

@@ -1,4 +1,5 @@
 import { GsrPlacement } from "~/placement-event";
+
 import type { DecodedAssetId } from "./AssetTypeVerifier";
 
 /**

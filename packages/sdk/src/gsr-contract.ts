@@ -1,36 +1,36 @@
 import type { Signer } from "@ethersproject/abstract-signer";
-import type { Provider } from "@ethersproject/providers";
-import { verifyMessage } from "@ethersproject/wallet";
+import type { BigNumber } from "@ethersproject/bignumber";
 import type {
   ContractTransaction,
   PayableOverrides,
 } from "@ethersproject/contracts";
-import type { BigNumber } from "@ethersproject/bignumber";
+import type { Provider } from "@ethersproject/providers";
+import { verifyMessage } from "@ethersproject/wallet";
 
 import { GsrAddress } from "./addresses";
-import {
-  GeoSpatialRegistry,
-  GsrPlacementEvent,
-} from "./typechain/GeoSpatialRegistry";
-import { GeoSpatialRegistry__factory } from "./typechain/factories/GeoSpatialRegistry__factory";
-import { getChainProvider, ProviderKeys } from "./provider";
-import { GeohashBits } from "./geohash";
 import {
   AssetTypeVerifier,
   DecodedAssetId,
 } from "./asset-types/AssetTypeVerifier";
-import {
-  decodeGsrPlacementEvent,
-  deserializeGsrPlacement,
-  GsrPlacement,
-  ValidatedGsrPlacement,
-} from "./placement-event";
+import { GeohashBits } from "./geohash";
 import { GsrIndexer } from "./gsr-indexer";
 import {
   getTransactionData,
   MetaTransaction,
   TypedSigner,
 } from "./metaTransactions";
+import {
+  decodeGsrPlacementEvent,
+  deserializeGsrPlacement,
+  GsrPlacement,
+  ValidatedGsrPlacement,
+} from "./placement-event";
+import { getChainProvider, ProviderKeys } from "./provider";
+import {
+  GeoSpatialRegistry,
+  GsrPlacementEvent,
+} from "./typechain/GeoSpatialRegistry";
+import { GeoSpatialRegistry__factory } from "./typechain/factories/GeoSpatialRegistry__factory";
 
 /** Return value from placeOf */
 export interface PlaceOf {

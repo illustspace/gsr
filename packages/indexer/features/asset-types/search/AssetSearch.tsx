@@ -19,10 +19,10 @@ import NextLink from "next/link";
 
 import { gsr } from "~/features/gsr/gsr-contract";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
-import { AssetTypeEntry } from "./AssetTypeEntry";
 import { getErrorMessage } from "~/features/layout/getErrorMessage";
-import { PlaceForm } from "./PlaceForm";
 import { PlacementMap } from "~/features/map/PlacementMap";
+import { AssetTypeEntry } from "./AssetTypeEntry";
+import { PlaceForm } from "./PlaceForm";
 
 export type AssetSearchProps = Record<never, never>;
 

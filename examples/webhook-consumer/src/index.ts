@@ -1,12 +1,12 @@
 // express server
-import express from "express";
-import bodyParser from "body-parser";
-import morgan from "morgan";
 import {
   GsrContract,
   serializeGsrPlacement,
   ValidatedGsrPlacement,
 } from "@geospatialregistry/sdk";
+import bodyParser from "body-parser";
+import express from "express";
+import morgan from "morgan";
 
 const app = express();
 const port = 3002;

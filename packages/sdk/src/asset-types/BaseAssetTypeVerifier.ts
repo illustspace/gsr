@@ -2,7 +2,9 @@ import { defaultAbiCoder } from "@ethersproject/abi";
 import { keccak256 } from "@ethersproject/keccak256";
 import { toUtf8Bytes } from "@ethersproject/strings";
 import { ObjectSchema } from "yup";
+
 import { GsrPlacement } from "~/placement-event";
+
 import type { DecodedAssetId } from "./AssetTypeVerifier";
 import {
   AssetTypeVerifierMethods,
