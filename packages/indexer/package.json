@@ -49,7 +49,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.34.2",
-    "react-map-gl": "^7.0.19"
+    "react-map-gl": "^7.0.19",
+    "yup": "^v1.0.2"
   },
   "devDependencies": {
     "@types/node": "18.7.14",

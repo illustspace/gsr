@@ -28,7 +28,7 @@
     "axios": "^0.27.2",
     "lodash": "^4.17.21",
     "ngeohash": "^0.6.3",
-    "yup": "^v1.0.0-beta.7"
+    "yup": "^v1.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.18.13",
