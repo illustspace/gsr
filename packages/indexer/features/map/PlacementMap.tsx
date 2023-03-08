@@ -59,6 +59,14 @@ const fillStyle = {
   },
 };
 
+const oldFillStyle = {
+  ...fillStyle,
+  paint: {
+    "fill-color": "#E2E8F0", // blue color fill
+    "fill-opacity": 0.5,
+  },
+};
+
 const outlineStyle = {
   id: "bbox-outline",
   type: "line" as const,
@@ -75,6 +83,13 @@ const pinStyle = {
   paint: {
     "circle-radius": 10,
     "circle-color": "#007cbf",
+  },
+};
+const oldPinStyle = {
+  ...pinStyle,
+  paint: {
+    "circle-radius": 10,
+    "circle-color": "#A0AEC0",
   },
 };
 
@@ -150,14 +165,14 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
 
             {source && (
               <Source id="bbox" type="geojson" data={source}>
-                <Layer {...fillStyle} />
+                <Layer {...oldFillStyle} />
                 <Layer {...outlineStyle} />
               </Source>
             )}
 
             {pointSource && (
               <Source id="pin" type="geojson" data={pointSource}>
-                <Layer {...pinStyle} />
+                <Layer {...oldPinStyle} />
               </Source>
             )}
 
