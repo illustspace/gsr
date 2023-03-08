@@ -4146,8 +4146,8 @@ __metadata:
   linkType: soft
 
 "@geospatialregistry/sdk@npm:latest":
-  version: 0.0.5
-  resolution: "@geospatialregistry/sdk@npm:0.0.5"
+  version: 0.0.6
+  resolution: "@geospatialregistry/sdk@npm:0.0.6"
   dependencies:
     "@types/geojson": ^7946.0.10
     "@types/lodash": ^4.14.184
@@ -4155,17 +4155,17 @@ __metadata:
     axios: ^0.27.2
     lodash: ^4.17.21
     ngeohash: ^0.6.3
-    yup: ^v1.0.0-beta.7
+    yup: ^1.0.0
   peerDependencies:
     "@ethersproject/abi": ">=5"
     "@ethersproject/bignumber": ">=5"
+    "@ethersproject/bytes": ">=5"
     "@ethersproject/contracts": ">=5"
     "@ethersproject/keccak256": ">=5"
     "@ethersproject/providers": ">=5"
     "@ethersproject/strings": ">=5"
     "@ethersproject/wallet": ">=5"
-    ethers: ">=5"
-  checksum: 2cfe7ba300cc002fc50d88f3f9b0ad19254e78f87bd7413c26c70a5cb88e2c6726e89ad2cad52dd31da926a133a5a34bdb5aa4620e11b5dfcae34670f89c1aab
+  checksum: 7f5cd6cfd326d166a3315af120494ae65e817f2df4d86f0eb913f15d39bb1640cfe294b8e5defc2f0064e2b7a6a6596d3a0046cdc5b4874263a52c14e5b83af3
   languageName: node
   linkType: hard
 

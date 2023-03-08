@@ -1,8 +1,14 @@
 {
   "name": "@geospatialregistry/sdk",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Illust",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/illustspace/gsr"
+  },
+  "bugs": "https://github.com/illustspace/gsr/issues",
+  "homepage": "https://github.com/illustspace/gsr/tree/develop/packages/sdk",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
   "files": [

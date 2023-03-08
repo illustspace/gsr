@@ -16,7 +16,7 @@ runs:
         key: ${{ runner.os }}-node-16-yarn3-${{ hashFiles('yarn.lock') }}
         restore-keys: ${{ runner.os }}-node-16-yarn3-
 
-    - run: yarn install --immutable --inline-builds
+    - run: yarn install --immutable
       shell: bash
 
     - run: yarn wss contracts
