@@ -135,9 +135,9 @@ export class GsrContract {
   parseAssetId(decodedAssetId: any, partial: true): Partial<DecodedAssetId>;
   parseAssetId(decodedAssetId: any, partial?: boolean) {
     if (partial) {
-      return this.verifier.parseAssetId(decodedAssetId, false);
-    } else {
       return this.verifier.parseAssetId(decodedAssetId, true);
+    } else {
+      return this.verifier.parseAssetId(decodedAssetId, false);
     }
   }
 
