@@ -66,7 +66,7 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
           placement.
         </FormHelperText>
 
-        <FormErrorMessage>{errors.message?.message as string}</FormErrorMessage>
+        <FormErrorMessage>{errors.message?.message || ""}</FormErrorMessage>
       </FormControl>
 
       <FormControl isInvalid={!!errors.publisherAddress} isRequired>
@@ -85,7 +85,7 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
         </FormHelperText>
 
         <FormErrorMessage>
-          {errors.publisherAddress?.message as string}
+          {errors.publisherAddress?.message || ""}
         </FormErrorMessage>
       </FormControl>
 
@@ -101,7 +101,7 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
         </FormHelperText>
 
         <FormErrorMessage>
-          {errors.placementNumber?.message as string}
+          {errors.placementNumber?.message || ""}
         </FormErrorMessage>
       </FormControl>
     </VStack>

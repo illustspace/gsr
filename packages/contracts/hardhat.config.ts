@@ -30,7 +30,11 @@ const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY as string;
 const polyscanApiKey = process.env.POLYSCAN_API_KEY as string;
 
-const config: HardhatUserConfig = {
+interface HardhatConfig extends HardhatUserConfig {
+  [key: string]: any;
+}
+
+const config: HardhatConfig = {
   solidity: {
     version: "0.8.4",
     settings: {
