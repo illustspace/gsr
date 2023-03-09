@@ -1,36 +1,37 @@
 import type { Signer } from "@ethersproject/abstract-signer";
-import type { Provider } from "@ethersproject/providers";
-import { verifyMessage } from "@ethersproject/wallet";
+import type { BigNumber } from "@ethersproject/bignumber";
 import type {
   ContractTransaction,
   PayableOverrides,
 } from "@ethersproject/contracts";
-import type { BigNumber } from "@ethersproject/bignumber";
+import type { Provider } from "@ethersproject/providers";
+import { verifyMessage } from "@ethersproject/wallet";
 
 import { GsrAddress } from "./addresses";
-import {
-  GeoSpatialRegistry,
-  GsrPlacementEvent,
-} from "./typechain/GeoSpatialRegistry";
-import { GeoSpatialRegistry__factory } from "./typechain/factories/GeoSpatialRegistry__factory";
-import { getChainProvider, ProviderKeys } from "./provider";
-import { GeohashBits } from "./geohash";
 import {
   AssetTypeVerifier,
   DecodedAssetId,
 } from "./asset-types/AssetTypeVerifier";
-import {
-  decodeGsrPlacementEvent,
-  deserializeGsrPlacement,
-  GsrPlacement,
-  ValidatedGsrPlacement,
-} from "./placement-event";
+import { ensureActiveChain } from "./ensure-chain";
+import { GeohashBits } from "./geohash";
 import { GsrIndexer } from "./gsr-indexer";
 import {
   getTransactionData,
   MetaTransaction,
   TypedSigner,
 } from "./metaTransactions";
+import {
+  decodeGsrPlacementEvent,
+  deserializeGsrPlacement,
+  GsrPlacement,
+  ValidatedGsrPlacement,
+} from "./placement-event";
+import { getChainProvider, ProviderKeys } from "./provider";
+import {
+  GeoSpatialRegistry,
+  GsrPlacementEvent,
+} from "./typechain/GeoSpatialRegistry";
+import { GeoSpatialRegistry__factory } from "./typechain/factories/GeoSpatialRegistry__factory";
 
 /** Return value from placeOf */
 export interface PlaceOf {
@@ -71,14 +72,22 @@ export interface GsrContractOpts {
    * Otherwise a new instance will be created.
    */
   indexer?: GsrIndexer;
+
+  /** If true, log the GSR's chainID when set up. */
+  logging?: boolean;
 }
 
 /** Make requests to the GSR smart contract using decoded asset IDs. */
 export class GsrContract {
+  /** Reference to the contract. */
   public contract: GeoSpatialRegistry;
+  /** RPC Provider for read access to the contract.  */
   public gsrProvider: Provider;
-
+  /** Reference to the asset type verifiers. */
   public verifier: AssetTypeVerifier;
+  /** ChainId contract calls will go to. */
+  public chainId: number;
+  /** Reference to the indexer for the same Chain ID */
   private indexer: GsrIndexer;
 
   constructor(
@@ -88,12 +97,15 @@ export class GsrContract {
       customGsrProvider,
       customGsrAddress,
       indexer = new GsrIndexer(chainId),
+      logging,
     }: GsrContractOpts = {}
   ) {
-    this.gsrProvider =
-      customGsrProvider || getChainProvider(chainId, providerKeys);
+    this.chainId = chainId;
 
-    if (indexer.chainId !== chainId) {
+    this.gsrProvider =
+      customGsrProvider || getChainProvider(this.chainId, providerKeys);
+
+    if (indexer.chainId !== this.chainId) {
       // eslint-disable-next-line no-console
       console.warn("GsrIndexer and GsrContract have different chain IDs");
     }
@@ -101,18 +113,20 @@ export class GsrContract {
     this.indexer = indexer;
     this.verifier = new AssetTypeVerifier(providerKeys);
 
-    const address = customGsrAddress || GsrAddress[chainId];
+    const address = customGsrAddress || GsrAddress[this.chainId];
 
     this.contract = GeoSpatialRegistry__factory.connect(
       address,
       this.gsrProvider
     );
 
-    // eslint-disable-next-line no-console
-    console.info("Initialized GSR Contract", {
-      chainId,
-      address,
-    });
+    if (logging) {
+      // eslint-disable-next-line no-console
+      console.info("Initialized GSR Contract", {
+        chainId,
+        address,
+      });
+    }
   }
 
   /** Parse and validate a DecodedAssetID */
@@ -121,9 +135,9 @@ export class GsrContract {
   parseAssetId(decodedAssetId: any, partial: true): Partial<DecodedAssetId>;
   parseAssetId(decodedAssetId: any, partial?: boolean) {
     if (partial) {
-      return this.verifier.parseAssetId(decodedAssetId, false);
-    } else {
       return this.verifier.parseAssetId(decodedAssetId, true);
+    } else {
+      return this.verifier.parseAssetId(decodedAssetId, false);
     }
   }
 
@@ -243,12 +257,21 @@ export class GsrContract {
     {
       timeRange = { start: 0, end: 0 },
       sceneUri,
+      ensureChain = true,
     }: {
+      /** Optionally add a start and/or end date that the placement is valid within. */
       timeRange?: TimeRange;
+      /** Optionally pass a sceneUri to set with the placement. */
       sceneUri?: string;
-      /** If true don't resolve the promise until the placement is minted and synced.  */
+      /** If false, do not verify the chain ID of the wallet. */
+      ensureChain?: boolean;
     } = {}
   ): Promise<ContractCallResponse> {
+    //
+    if (ensureChain) {
+      await ensureActiveChain(signer, this.chainId);
+    }
+
     const encodedAssetId = this.verifier.encodeAssetId(decodedAssetId);
 
     const tx = sceneUri

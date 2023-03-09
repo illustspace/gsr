@@ -1,5 +1,6 @@
 import {
   GeoJsonFeaturesCollection,
+  PaginatedPlacementQueryResponse,
   PlacementId,
   placementIdToData,
   PlacementQueryResponse,
@@ -26,7 +27,7 @@ export const fetchPlacementByQuery = async (
   const placement = await prisma.placement.findFirst({
     where: {
       // Filter by valid placements, unless a publisher is specified.
-      placedByOwner: !publisher,
+      placedByOwner: publisher ? undefined : true,
       decodedAssetId: { equals: query },
       publisher: publisher?.toLowerCase() || undefined,
       OR: [
@@ -56,6 +57,7 @@ export const fetchPlacementByQuery = async (
 
 /** Fetch a placements with partial DecodedAssetId */
 export const fetchPlacementsByQuery = async (
+  /** A partial decoded asset id */
   query: any
 ): Promise<GsrIndexerServiceWrapper<PlacementQueryResponse>> => {
   const decodedAssetId = gsr.parseAssetId(query, true);
@@ -86,6 +88,39 @@ export const fetchPlacementsByQuery = async (
   const validatedPlacements = placements.map(dbToPlacement);
 
   return fetchSuccessResponse(validatedPlacements);
+};
+
+/** Fetch all assets placed by a publisher  */
+export const fetchPlacedAssetsByPublisher = async (
+  publisher: string,
+  page: number,
+  pageSize = 10
+): Promise<GsrIndexerServiceWrapper<PaginatedPlacementQueryResponse>> => {
+  const where = {
+    publisher: publisher.toLowerCase(),
+  };
+
+  const [placements, total] = await prisma.$transaction([
+    prisma.placement.findMany({
+      // Get assets that match the query.
+      where,
+      // Only return return the latest placement for the asset.
+      distinct: ["assetId"],
+      skip: page * pageSize,
+      take: pageSize,
+      orderBy: {
+        placedAt: "desc",
+      },
+    }),
+    prisma.placement.count({ where }),
+  ]);
+
+  const validatedPlacements = placements.map(dbToPlacement);
+
+  return fetchSuccessResponse({
+    placements: validatedPlacements,
+    total,
+  });
 };
 
 /** Fetch a single placement with a placement DB id */
@@ -176,7 +211,7 @@ export const getPlacementByAssetId = async (
   const placement = await prisma.placement.findFirst({
     where: {
       // Filter by valid placements, unless a publisher is specified.
-      placedByOwner: !publisher,
+      placedByOwner: publisher ? undefined : true,
       assetId,
       publisher: publisher?.toLowerCase() || undefined,
     },
@@ -233,4 +268,26 @@ export const fetchPlacementsAsGeoJson = async (
   const geojson = placementsToGeoJson(placements);
 
   return fetchSuccessResponse(geojson);
+};
+
+export const getPaginatedPlacements = async (page: number, pageSize = 10) => {
+  const where = {
+    placedByOwner: true,
+  };
+
+  const [dbPlacements, total] = await prisma.$transaction([
+    prisma.placement.findMany({
+      where,
+      skip: page * pageSize,
+      take: pageSize,
+      orderBy: {
+        placedAt: "desc",
+      },
+    }),
+    prisma.placement.count({ where }),
+  ]);
+
+  const placements = dbPlacements.map(dbToPlacement);
+
+  return fetchSuccessResponse({ placements, total });
 };

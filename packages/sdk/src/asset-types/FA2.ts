@@ -3,11 +3,11 @@
 // import { defaultAbiCoder } from "@ethersproject/abi";
 import { Asserts, number, object, string } from "yup";
 
+import { GsrPlacement } from "~/placement-event";
 import { ProviderKeys } from "~/provider";
 
-import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
-import { GsrPlacement } from "~/placement-event";
+import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import {
   transformBigNumberToDecimalString,
   transformBigNumberToInteger,

@@ -5,7 +5,6 @@ import {
 } from "@geospatialregistry/sdk";
 import { useState, useEffect } from "react";
 
-import { AssetSearch } from "~/features/asset-types/search/AssetSearch";
 import { GsrStatsBlock } from "~/features/dashboard/GsrStatsBlock";
 import { GsrMap } from "~/features/map/GsrMap";
 import { fetchStats } from "~/api/services/stats.service";
@@ -13,6 +12,7 @@ import { Layout } from "~/features/layout/Layout";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
 import { emptyGeoJson } from "~/features/map/geo-json";
 
+import { RecentPlacements } from "~/features/history/RecentPlacements";
 import { fetchCatchResponse } from "../api/services/responses/service-response";
 
 interface HomeProps {
@@ -27,7 +27,7 @@ const Home: NextPage<HomeProps> = ({ stats }) => {
 
       <GsrMap features={features} />
 
-      <AssetSearch />
+      <RecentPlacements />
     </Layout>
   );
 };

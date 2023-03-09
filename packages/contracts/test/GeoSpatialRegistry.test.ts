@@ -1,14 +1,7 @@
 /* eslint-disable no-else-return */
 /* eslint-disable no-unused-expressions */
-import { Contract } from "ethers";
-import { ethers, getChainId } from "hardhat";
-import { expect } from "chai";
-import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
 import { BigNumber } from "@ethersproject/bignumber";
-import { encode_int } from "ngeohash";
-import { keccak256 } from "ethers/lib/utils";
 import { Provider } from "@ethersproject/providers";
-
 import {
   AssetId,
   GeoSpatialRegistry,
@@ -21,6 +14,12 @@ import {
   Erc721Verifier,
   getTransactionData,
 } from "@geospatialregistry/sdk";
+import { SignerWithAddress } from "@nomiclabs/hardhat-ethers/signers";
+import { expect } from "chai";
+import { Contract } from "ethers";
+import { keccak256 } from "ethers/lib/utils";
+import { ethers, getChainId } from "hardhat";
+import { encode_int } from "ngeohash";
 
 const tokenId = BigNumber.from(1);
 
@@ -669,7 +668,7 @@ describe("GeoSpatialRegistry", () => {
     it("accepts metaTransactions", async () => {
       // user1.address creates a gasless transaction to send to user2
       const { r, s, v, functionSignature } = await getTransactionData(
-        gsr,
+        gsr as any,
         nftOwner,
         "place",
         [

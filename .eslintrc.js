@@ -25,9 +25,25 @@ module.exports = {
     react: {
       version: "17.0.2",
     },
+    "import/internal-regex": "^~/.+",
   },
   rules: {
     "import/prefer-default-export": "off",
+    "import/order": [
+      "error",
+      {
+        groups: [
+          "builtin",
+          "external",
+          "internal",
+          "parent",
+          "sibling",
+          "index",
+        ],
+        alphabetize: { order: "asc" },
+        "newlines-between": "always",
+      },
+    ],
     camelcase: "off",
     "no-use-before-define": "off",
     "no-plusplus": "off",
@@ -95,6 +111,10 @@ module.exports = {
 
     "react/function-component-definition": "off",
 
+    "@typescript-eslint/no-empty-interface": [
+      "error",
+      { allowSingleExtends: true },
+    ],
     // TODO: Remove these
     "spaced-comment": "off",
     "no-alert": "off",

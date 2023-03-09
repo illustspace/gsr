@@ -5,8 +5,13 @@ import { BigNumber } from "@ethersproject/bignumber";
  * @warning could cause an overflow if the number is too large
  */
 export const transformBigNumberToInteger = (value: any, originalValue: any) => {
+  if (originalValue === undefined || originalValue === "") return undefined;
   if (Number.isInteger(value)) return value;
-  return BigNumber.from(originalValue).toNumber();
+  try {
+    return BigNumber.from(originalValue).toNumber();
+  } catch (e) {
+    return originalValue;
+  }
 };
 
 /**

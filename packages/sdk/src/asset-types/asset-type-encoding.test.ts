@@ -4,6 +4,7 @@
 
 import { keccak256 } from "@ethersproject/keccak256";
 import { toUtf8Bytes } from "@ethersproject/strings";
+
 import { DecodedAssetId } from "./AssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
 import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";

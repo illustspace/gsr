@@ -11,7 +11,6 @@ struct Geohash {
   uint64 geohash;
   uint8 bitPrecision;
 }
-
 ```
 
 ### EncodedAssetId
@@ -22,7 +21,6 @@ struct EncodedAssetId {
   bytes collectionId;
   bytes itemId;
 }
-
 ```
 
 ### TimeRange
@@ -32,7 +30,6 @@ struct TimeRange {
   uint256 start;
   uint256 end;
 }
-
 ```
 
 ### Placement
@@ -386,7 +383,6 @@ struct EIP712Domain {
   address verifyingContract;
   bytes32 salt;
 }
-
 ```
 
 ### ERC712_VERSION
@@ -473,7 +469,6 @@ struct MetaTransaction {
   address from;
   bytes functionSignature;
 }
-
 ```
 
 ### executeMetaTransaction
@@ -540,7 +535,6 @@ struct AccountLinkProof {
   bool isEscrowAccount;
   bool linked;
 }
-
 ```
 
 ### name

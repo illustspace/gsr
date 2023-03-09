@@ -1,17 +1,30 @@
 import {
   Box,
   BoxProps,
+  FormControl,
+  FormHelperText,
+  FormLabel,
   Slider,
+  Text,
   SliderFilledTrack,
   SliderThumb,
   SliderTrack,
+  AspectRatio,
 } from "@chakra-ui/react";
-import React, { FunctionComponent, useMemo, useState } from "react";
+import React, {
+  FunctionComponent,
+  RefObject,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import Map, {
   FitBoundsOptions,
   Layer,
   LngLatBoundsLike,
   MapLayerMouseEvent,
+  MapRef,
   Source,
 } from "react-map-gl";
 import { encode_int, decode_bbox_int } from "ngeohash";
@@ -21,8 +34,6 @@ import { ValidatedGsrPlacement } from "@geospatialregistry/sdk";
 import "mapbox-gl/dist/mapbox-gl.css";
 import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
-// import "@shared/styles/variables.scss";
-// import "@shared/styles/mapbox-overrides.scss";
 import { getEnv } from "~/features/config/env";
 import { Optional } from "~/features/utils/optional";
 import { AutoGeolocationButton } from "~/features/map/AutoGeolocateButton";
@@ -48,6 +59,14 @@ const fillStyle = {
   },
 };
 
+const oldFillStyle = {
+  ...fillStyle,
+  paint: {
+    "fill-color": "#E2E8F0", // blue color fill
+    "fill-opacity": 0.5,
+  },
+};
+
 const outlineStyle = {
   id: "bbox-outline",
   type: "line" as const,
@@ -66,12 +85,20 @@ const pinStyle = {
     "circle-color": "#007cbf",
   },
 };
+const oldPinStyle = {
+  ...pinStyle,
+  paint: {
+    "circle-radius": 10,
+    "circle-color": "#A0AEC0",
+  },
+};
 
 export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
   placement,
   onLocationChange,
   ...props
 }) => {
+  const mapRef = useRef<MapRef>(null);
   const initialBoundingBox = useInitialBbox(placement);
   const initialBoundingBoxCenter = findBboxCenter(initialBoundingBox);
 
@@ -82,6 +109,10 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
 
   const newGeohash = coordinatesToGeohash(point, bitPrecision);
   const newBbox = newGeohash ? decode_bbox_int(newGeohash, bitPrecision) : null;
+
+  const [mapLoaded, setMapLoaded] = useState(false);
+
+  useCenterMapOnPoint(mapLoaded, initialBoundingBox, newBbox, mapRef);
 
   const handleMapClick = (event: MapLayerMouseEvent) => {
     const { lat, lng } = event.lngLat;
@@ -102,54 +133,82 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
   const newPointSource = getPinData(newBbox);
 
   return (
-    <Box position="relative" {...props}>
-      <Map
-        reuseMaps
-        mapStyle={mapStyle}
-        mapboxAccessToken={mapApi}
-        onClick={handleMapClick}
-        initialViewState={initialViewState}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
+    <Box
+      position="relative"
+      display="flex"
+      flexDirection="column"
+      alignItems="stretch"
+      {...props}
+    >
+      <FormLabel textAlign="center">Click to select map location</FormLabel>
+      <AspectRatio
+        ratio={4 / 3}
+        width="100%"
+        maxWidth="600px"
+        alignSelf="center"
       >
-        <AutoGeolocationButton />
+        <Box>
+          <Map
+            ref={mapRef}
+            reuseMaps
+            mapStyle={mapStyle}
+            mapboxAccessToken={mapApi}
+            onClick={handleMapClick}
+            initialViewState={initialViewState}
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+            onLoad={() => setMapLoaded(true)}
+          >
+            <AutoGeolocationButton />
 
-        {source && (
-          <Source id="bbox" type="geojson" data={source}>
-            <Layer {...fillStyle} />
-            <Layer {...outlineStyle} />
-          </Source>
-        )}
+            {source && (
+              <Source id="bbox" type="geojson" data={source}>
+                <Layer {...oldFillStyle} />
+                <Layer {...outlineStyle} />
+              </Source>
+            )}
 
-        {pointSource && (
-          <Source id="pin" type="geojson" data={pointSource}>
-            <Layer {...pinStyle} />
-          </Source>
-        )}
+            {pointSource && (
+              <Source id="pin" type="geojson" data={pointSource}>
+                <Layer {...oldPinStyle} />
+              </Source>
+            )}
 
-        {newGeohashSource && (
-          <Source id="newBbox" type="geojson" data={newGeohashSource}>
-            <Layer {...fillStyle} id="new-fill-style" />
-            <Layer {...outlineStyle} id="new-outline-style" />
-          </Source>
-        )}
+            {newGeohashSource && (
+              <Source id="newBbox" type="geojson" data={newGeohashSource}>
+                <Layer {...fillStyle} id="new-fill-style" />
+                <Layer {...outlineStyle} id="new-outline-style" />
+              </Source>
+            )}
 
-        {newPointSource && (
-          <Source id="newPin" type="geojson" data={newPointSource}>
-            <Layer {...pinStyle} id="new-pin-style" />
-          </Source>
-        )}
-      </Map>
+            {newPointSource && (
+              <Source id="newPin" type="geojson" data={newPointSource}>
+                <Layer {...pinStyle} id="new-pin-style" />
+              </Source>
+            )}
+          </Map>
+        </Box>
+      </AspectRatio>
 
-      <Box position="absolute" top={0} bottom={0} right={0}>
+      {point && (
+        <Text textAlign="center">
+          {point.latitude}, {point.longitude}
+        </Text>
+      )}
+
+      <FormControl mt={2}>
+        <FormLabel>Precision</FormLabel>
+
         <Slider
-          height="100%"
+          width="100%"
           aria-label="Precision"
           defaultValue={50}
-          orientation="vertical"
-          step={1}
+          min={10}
+          max={60}
+          orientation="horizontal"
+          step={10}
           onChange={setBitPrecision}
         >
           <SliderTrack>
@@ -157,7 +216,11 @@ export const PlacementMap: FunctionComponent<PlacementMapProps> = ({
           </SliderTrack>
           <SliderThumb />
         </Slider>
-      </Box>
+
+        <FormHelperText>
+          Decrease precision for a larger geofence.
+        </FormHelperText>
+      </FormControl>
     </Box>
   );
 };
@@ -255,7 +318,28 @@ const findBboxCenter = (bbox: Optional<ngeohash.GeographicBoundingBox>) => {
   const [minLat, minLon, maxLat, maxLon] = bbox;
 
   return {
-    latitude: minLon + (maxLon - minLon) / 2,
-    longitude: minLat + (maxLat - minLat) / 2,
+    longitude: minLon + (maxLon - minLon) / 2,
+    latitude: minLat + (maxLat - minLat) / 2,
   };
+};
+
+/** Center the map every time the new bounding box changes. */
+const useCenterMapOnPoint = (
+  mapLoaded: boolean,
+  initialBoundingBox: Optional<ngeohash.GeographicBoundingBox>,
+  newBbox: Optional<ngeohash.GeographicBoundingBox>,
+  mapRef: RefObject<MapRef>
+) => {
+  useEffect(() => {
+    if (!mapLoaded) return;
+    const bbox = newBbox || initialBoundingBox;
+
+    if (!bbox) return;
+
+    const [minLat, minLon, maxLat, maxLon] = bbox;
+
+    mapRef.current?.fitBounds([minLon, minLat, maxLon, maxLat], {
+      padding: 50,
+    });
+  }, [mapLoaded, initialBoundingBox, newBbox, mapRef]);
 };

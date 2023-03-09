@@ -1,12 +1,14 @@
-import { validateApiConfig } from "./validateApiConfig";
+import { InferType, number, object, string } from "yup";
 
-interface Env {
-  alchemyApiKey: string;
-  infuraId: string;
-  gsrChainId: number;
-  mapboxApiKey: string;
-  mapboxStyleUrl: string;
-}
+const envSchema = object({
+  alchemyApiKey: string().required(),
+  infuraId: string().ensure(),
+  gsrChainId: number().required(),
+  mapboxApiKey: string().required(),
+  mapboxStyleUrl: string().required(),
+});
+
+interface Env extends InferType<typeof envSchema> {}
 
 const env = setEnv();
 
@@ -24,7 +26,5 @@ function setEnv(): Env {
     mapboxStyleUrl: process.env.NEXT_PUBLIC_MAPBOX_STYLE_URL as string,
   };
 
-  validateApiConfig("client", env);
-
-  return env;
+  return envSchema.validateSync(env);
 }

@@ -5,123 +5,96 @@ import {
   FormLabel,
   Select,
   VStack,
-  Text,
+  FormHelperText,
+  useToast,
+  Heading,
+  Flex,
+  Divider,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
 import {
-  AssetId,
-  bitsToGeohash,
   ValidatedGsrPlacement,
   GsrIndexerError,
-  GeohashBits,
   AssetType,
+  ValidationError,
+  DecodedAssetId,
+  GeohashBits,
 } from "@geospatialregistry/sdk";
+import NextLink from "next/link";
 
-import { PlacementMap } from "~/features/map/PlacementMap";
 import { gsr } from "~/features/gsr/gsr-contract";
 import { gsrIndexer } from "~/features/gsr/gsr-indexer";
+import { getErrorMessage } from "~/features/layout/getErrorMessage";
+import { PlacementMap } from "~/features/map/PlacementMap";
 import { AssetTypeEntry } from "./AssetTypeEntry";
-import { getProvider } from "../../providers/getProvider";
+import { PlaceForm } from "./PlaceForm";
 
 export type AssetSearchProps = Record<never, never>;
 
 export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
-  const [txError, setTxError] = useState("");
   const [placement, setPlacement] = useState<ValidatedGsrPlacement | null>(
     null
   );
-  const [successMessage, setSuccessMessage] = useState("");
-
+  const [sceneUri, setSceneUri] = useState("");
   const [newLocation, setNewLocation] = useState<GeohashBits | null>(null);
 
   const [assetType, setAssetType] = useState<AssetType>("MESSAGE");
-  const [assetId, setAssetId] = useState<AssetId>({
+  const [assetId, setAssetId] = useState<DecodedAssetId>({
     assetType: "MESSAGE",
     message: "",
     publisherAddress: "",
     placementNumber: 1,
   });
 
+  const [isSearching, setIsSearching] = useState(false);
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const toast = useToast({
+    isClosable: true,
+  });
+
+  const setSearchError = (description: string) => {
+    toast({
+      title: "Search Error",
+      description,
+      status: "error",
+    });
+  };
+
   const handleSearch = async () => {
     if (!gsr) return;
 
-    setTxError("");
     setPlacement(null);
-
-    const decodedAssetId = gsr.parseAssetId(assetId);
+    setHasSearched(false);
+    setIsSearching(true);
 
     try {
+      const decodedAssetId = gsr.parseAssetId(assetId);
       const placement = await gsrIndexer.placeOf(decodedAssetId);
       setPlacement(placement);
+      setSceneUri(placement.sceneUri || "");
+      setHasSearched(true);
     } catch (e) {
       if (e instanceof GsrIndexerError) {
-        setTxError(e.message);
+        if (e.code === "NO_PLACEMENT") {
+          setHasSearched(true);
+        } else {
+          setSearchError(e.message);
+          setHasSearched(false);
+        }
+      } else if (e instanceof ValidationError) {
+        setSearchError(e.message);
       } else {
-        setTxError("Error getting asset");
+        setSearchError(getErrorMessage(e));
       }
       setPlacement(null);
+      setSceneUri("");
     }
-  };
 
-  const handlePlace = async () => {
-    const provider = await getProvider();
-
-    if (!gsr || !provider || !newLocation) return;
-
-    setSuccessMessage("");
-
-    try {
-      const { sync } = await gsr.place(
-        provider.getSigner(),
-        assetId,
-        newLocation,
-        {
-          timeRange: { start: 0, end: 0 },
-        }
-      );
-
-      await sync;
-
-      setSuccessMessage("Asset placed");
-    } catch (e) {
-      const error = e as Error;
-
-      console.error(error);
-    }
-  };
-
-  const handlePlaceWithMetaTx = async () => {
-    const provider = await getProvider();
-
-    if (!gsr || !provider || !newLocation) return;
-
-    setSuccessMessage("");
-
-    try {
-      const metaTx = await gsr.placeWithMetaTransaction(
-        provider.getSigner(),
-        assetId,
-        newLocation,
-        {
-          timeRange: { start: 0, end: 0 },
-        }
-      );
-
-      const txHash = await gsrIndexer.executeMetaTransaction(metaTx);
-
-      const { sync } = await gsr.syncAfterTransactionHash(txHash);
-      await sync;
-
-      setSuccessMessage("Asset placed");
-    } catch (e) {
-      const error = e as Error;
-
-      console.error("metatx error", error);
-    }
+    setIsSearching(false);
   };
 
   return (
-    <VStack>
+    <VStack flexBasis={["100%", "50%", "360px"]} mb={3}>
       <FormControl isRequired>
         <FormLabel>Asset Type</FormLabel>
 
@@ -135,48 +108,59 @@ export const AssetSearch: FunctionComponent<AssetSearchProps> = () => {
           <option value="ERC1155">ERC1155</option>
           <option value="SELF_PUBLISHED">Self Published</option>
         </Select>
+
+        <FormHelperText>
+          Choose the type of asset you want to search for or place.
+        </FormHelperText>
       </FormControl>
 
       <AssetTypeEntry assetType={assetType} onChange={setAssetId} />
 
-      {/* <FormControl>
-        <FormLabel>Alternative Publisher Address</FormLabel>
-        <Input {...register("publisher")} />
-
-        <FormErrorMessage>{errors.publisher?.message}</FormErrorMessage>
-      </FormControl> */}
-
-      <PlacementMap
-        placement={placement}
+      <Button
         width="100%"
-        height="200px"
-        onLocationChange={setNewLocation}
-      />
-
-      {txError && <Text color="red">{txError}</Text>}
-      {successMessage && <Text color="green">{successMessage}</Text>}
-
-      {placement && (
-        <Text>
-          Placement:{" "}
-          {bitsToGeohash(
-            placement.location.geohash,
-            placement.location.bitPrecision / 5
-          )}
-          <NextLink
-            href={gsrIndexer.explorer.asset(placement.assetId)}
-            passHref
-          >
-            <Button as="a">View</Button>
-          </NextLink>
-        </Text>
-      )}
-
-      <Button onClick={handleSearch}>Search</Button>
-      <Button onClick={handlePlace}>Place</Button>
-      <Button onClick={handlePlaceWithMetaTx}>
-        Place With MetaTransaction
+        onClick={handleSearch}
+        flexShrink={0}
+        isLoading={isSearching}
+      >
+        Search for Existing Placement
       </Button>
+
+      {hasSearched && (
+        <>
+          <Divider />
+
+          <Flex justifyContent="space-between" width="100%">
+            <Heading as="h3" size="lg">
+              {placement ? "Edit Placement" : "New Placement"}
+            </Heading>
+
+            {placement && (
+              <NextLink
+                href={gsrIndexer.explorer.asset(placement.assetId)}
+                passHref
+              >
+                <Button as="a" mt={3} mr={3}>
+                  View Placement
+                </Button>
+              </NextLink>
+            )}
+          </Flex>
+
+          <PlacementMap
+            placement={placement}
+            width="100%"
+            height="100%"
+            onLocationChange={setNewLocation}
+          />
+
+          <PlaceForm
+            decodedAssetId={assetId}
+            newLocation={newLocation}
+            sceneUri={sceneUri}
+            onSceneUriChange={setSceneUri}
+          />
+        </>
+      )}
     </VStack>
   );
 };

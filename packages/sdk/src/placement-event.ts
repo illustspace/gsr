@@ -1,4 +1,5 @@
 import { BigNumber } from "@ethersproject/bignumber";
+
 import { DecodedAssetId } from "./asset-types";
 import { AssetTypeVerifierMethods } from "./asset-types/AssetTypeVerifierMethods";
 import { GsrPlacementEvent } from "./typechain/GeoSpatialRegistry";
