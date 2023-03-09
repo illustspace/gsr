@@ -21,8 +21,7 @@ jobs:
           - 26258:26257
     steps:
       - name: "Check out code"
-        if: ${{ !env.ACT }}
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup Deps
         uses: ./.github/actions/setup

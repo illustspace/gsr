@@ -1,14 +1,14 @@
+import { defaultAbiCoder } from "@ethersproject/abi";
+import { BigNumber } from "@ethersproject/bignumber";
 import { Contract } from "@ethersproject/contracts";
 import { Provider } from "@ethersproject/providers";
-import { BigNumber } from "@ethersproject/bignumber";
-import { defaultAbiCoder } from "@ethersproject/abi";
 import { object, string, number, Asserts } from "yup";
 
+import { GsrPlacement } from "~/placement-event";
 import { getChainProvider, ProviderKeys } from "~/provider";
 
-import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import { EncodedAssetId } from "./AssetTypeVerifierMethods";
-import { GsrPlacement } from "~/placement-event";
+import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import {
   transformBigNumberToDecimalString,
   transformBigNumberToInteger,

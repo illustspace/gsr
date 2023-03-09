@@ -3,9 +3,7 @@ import { Web3Provider } from "@ethersproject/providers";
 import { getEthereum } from "~/features/eth/ethereum";
 import { LoginDetails } from "./LoginDetails";
 
-export const getInjectedCredentials = async (
-  network?: number
-): Promise<LoginDetails> => {
+export const getInjectedCredentials = async (): Promise<LoginDetails> => {
   const ethereum = getEthereum();
 
   if (!ethereum) {
@@ -17,7 +15,7 @@ export const getInjectedCredentials = async (
     method: "eth_requestAccounts",
   });
 
-  const provider = new Web3Provider(ethereum, network);
+  const provider = new Web3Provider(ethereum);
 
   return {
     provider,

@@ -1,4 +1,5 @@
 import axios from "axios";
+
 import { prisma } from "../../indexer/api/db";
 
 // Set the local database URL for prisma

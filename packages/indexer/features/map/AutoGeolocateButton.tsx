@@ -15,6 +15,7 @@ export const AutoGeolocationButton: FunctionComponent<
       showAccuracyCircle
       position="top-left"
       style={{ zIndex }}
+      fitBoundsOptions={{ duration: 500 }}
     />
   );
 };

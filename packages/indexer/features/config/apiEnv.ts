@@ -1,13 +1,15 @@
-import { validateApiConfig } from "./validateApiConfig";
+import { InferType, number, object, string } from "yup";
 
-interface ApiEnv {
+const envSchema = object({
   /** Database connection string */
-  databaseUrl: string;
+  databaseUrl: string().required(),
   /** How long to wait between sync requests. */
-  syncRateLimitMs: number;
+  syncRateLimitMs: number().required(),
   /** Private key of MetaTx relayer */
-  metaTransactionRelayPrivateKey: string;
-}
+  metaTransactionRelayPrivateKey: string().required(),
+});
+
+interface ApiEnv extends InferType<typeof envSchema> {}
 
 const apiEnv = setApiEnv();
 
@@ -24,7 +26,5 @@ function setApiEnv(): ApiEnv {
       .META_TX_RELAY_PRIVATE_KEY as string,
   };
 
-  validateApiConfig("api", env);
-
-  return env;
+  return envSchema.validateSync(env);
 }

@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
 import "@nomiclabs/hardhat-waffle";
+// eslint-disable-next-line import/order
 import { HardhatUserConfig } from "hardhat/config";
 import "tsconfig-paths/register"; // Allow aliases in tests.
 import "@typechain/hardhat";
@@ -14,6 +15,7 @@ import "solidity-docgen";
 
 import "./tasks/testToken";
 
+// eslint-disable-next-line import/order
 import * as dotenv from "dotenv";
 
 dotenv.config();
@@ -28,7 +30,11 @@ const alchemyApiKey = process.env.ALCHEMY_API_KEY as string;
 const etherscanApiKey = process.env.ETHERSCAN_API_KEY as string;
 const polyscanApiKey = process.env.POLYSCAN_API_KEY as string;
 
-const config: HardhatUserConfig = {
+interface HardhatConfig extends HardhatUserConfig {
+  [key: string]: any;
+}
+
+const config: HardhatConfig = {
   solidity: {
     version: "0.8.4",
     settings: {

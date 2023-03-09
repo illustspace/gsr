@@ -230,14 +230,13 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
     /// @return geohash - the location of the placement.
     /// @return bitPrecision - the precision of the geohash.
     /// @return startTime - the time this placement has been active since..
-    function placeOf(bytes32 assetId, address publisher)
+    function placeOf(
+        bytes32 assetId,
+        address publisher
+    )
         external
         view
-        returns (
-            uint64 geohash,
-            uint8 bitPrecision,
-            uint256 startTime
-        )
+        returns (uint64 geohash, uint8 bitPrecision, uint256 startTime)
     {
         Placement storage placement = _findValidPlacement(
             assetId,
@@ -258,11 +257,10 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
     /// @param assetId the external asset id of the piece to get the scene URI of.
     /// @param publisher the address of the publisher of the piece.
     /// @return the URI of the scene to show at the location.
-    function sceneURI(bytes32 assetId, address publisher)
-        external
-        view
-        returns (string memory)
-    {
+    function sceneURI(
+        bytes32 assetId,
+        address publisher
+    ) external view returns (string memory) {
         Placement storage placement = _findValidPlacement(
             assetId,
             publisher,
@@ -397,11 +395,9 @@ contract GeoSpatialRegistry is NativeMetaTransaction, ContextMixin {
 
     /// Calculate an asset ID from an encodedAssetId
     /// @param encodedAssetId the encoded asset id of the piece to calculate the asset id of
-    function _assetId(EncodedAssetId calldata encodedAssetId)
-        internal
-        pure
-        returns (bytes32)
-    {
+    function _assetId(
+        EncodedAssetId calldata encodedAssetId
+    ) internal pure returns (bytes32) {
         return
             keccak256(
                 abi.encode(

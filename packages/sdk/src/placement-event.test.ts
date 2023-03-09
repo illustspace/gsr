@@ -1,5 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { encode_int } from "ngeohash";
+
 import { Erc721AssetId, Erc721Verifier } from "./asset-types";
 import { decodeGsrPlacementEvent, GsrPlacement } from "./placement-event";
 import { GsrPlacementEvent } from "./typechain/GeoSpatialRegistry";

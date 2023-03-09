@@ -7,7 +7,7 @@
     "build": "yarn db:generate && next build",
     "serve": "next start",
     "lint": "next lint",
-    "db:start": "cockroach start-single-node --insecure",
+    "db:start": "cockroach start-single-node --insecure --listen-addr=localhost",
     "db:migrate": "prisma migrate dev --name",
     "db:deploy": "prisma migrate deploy",
     "db:generate": "prisma generate",
@@ -23,6 +23,7 @@
   "dependencies": {
     "@chakra-ui/icons": "^2.0.9",
     "@chakra-ui/react": "^2.3.1",
+    "@chakra-ui/system": "^2.3.1",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@ethersproject/abi": "^5.4.1",
@@ -49,7 +50,8 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.34.2",
-    "react-map-gl": "^7.0.19"
+    "react-map-gl": "^7.0.19",
+    "yup": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "18.7.14",

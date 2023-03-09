@@ -8,11 +8,11 @@ import {
 
 import { getApiEnv } from "~/features/config/apiEnv";
 import { gsr } from "~/features/gsr/gsr-contract";
+import { prisma } from "~/api/db";
 import {
   GsrIndexerServiceWrapper,
   fetchSuccessResponse,
 } from "./responses/service-response";
-import { prisma } from "~/api/db";
 
 /** Execute a metaTransaction from the stored private key. */
 export const executeMetaTransaction = async (

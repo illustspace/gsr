@@ -3,7 +3,9 @@ import {
   SerializedGsrPlacement,
 } from "@geospatialregistry/sdk";
 import axios from "axios";
+
 import { prisma } from "../../indexer/api/db";
+
 import { getTimestampDateOfReceipt, gsr, signer } from "./lib/shared";
 
 describe("webhooks", () => {

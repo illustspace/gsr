@@ -1,7 +1,6 @@
 import { BigNumber } from "@ethersproject/bignumber";
 import { keccak256 } from "@ethersproject/keccak256";
 import { toUtf8Bytes } from "@ethersproject/strings";
-
 import {
   Erc721Verifier,
   Erc721AssetId,

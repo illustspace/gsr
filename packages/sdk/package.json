@@ -1,8 +1,14 @@
 {
   "name": "@geospatialregistry/sdk",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "author": "Illust",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/illustspace/gsr"
+  },
+  "bugs": "https://github.com/illustspace/gsr/issues",
+  "homepage": "https://github.com/illustspace/gsr/tree/develop/packages/sdk",
   "main": "lib/cjs/index.js",
   "module": "lib/esm/index.js",
   "files": [
@@ -28,7 +34,7 @@
     "axios": "^0.27.2",
     "lodash": "^4.17.21",
     "ngeohash": "^0.6.3",
-    "yup": "^v1.0.0-beta.7"
+    "yup": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.18.13",
@@ -36,6 +42,7 @@
     "@babel/preset-typescript": "^7.18.6",
     "@ethersproject/abi": "5.4.1",
     "@ethersproject/bignumber": "5.4.1",
+    "@ethersproject/bytes": ">=5",
     "@ethersproject/contracts": "5.4.1",
     "@ethersproject/keccak256": "5.4.0",
     "@ethersproject/providers": "5.4.5",
@@ -53,11 +60,11 @@
   "peerDependencies": {
     "@ethersproject/abi": ">=5",
     "@ethersproject/bignumber": ">=5",
+    "@ethersproject/bytes": ">=5",
     "@ethersproject/contracts": ">=5",
     "@ethersproject/keccak256": ">=5",
     "@ethersproject/providers": ">=5",
     "@ethersproject/strings": ">=5",
-    "@ethersproject/wallet": ">=5",
-    "ethers": ">=5"
+    "@ethersproject/wallet": ">=5"
   }
 }

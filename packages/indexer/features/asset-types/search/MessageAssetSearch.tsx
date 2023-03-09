@@ -1,13 +1,15 @@
 import {
-  Box,
   Button,
   FormControl,
   FormErrorMessage,
+  FormHelperText,
   FormLabel,
   Input,
   InputGroup,
+  Textarea,
+  VStack,
 } from "@chakra-ui/react";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { MessageAssetId } from "@geospatialregistry/sdk";
 
@@ -33,6 +35,10 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
     },
   });
 
+  useEffect(() => {
+    onChange(getValues());
+  }, [getValues, onChange]);
+
   const handleMyAddress = async () => {
     const provider = await getProvider();
 
@@ -42,7 +48,8 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
   };
 
   return (
-    <Box
+    <VStack
+      width="100%"
       as="form"
       onChange={() => {
         onChange(getValues());
@@ -50,9 +57,16 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
     >
       <FormControl isInvalid={!!errors.message} isRequired>
         <FormLabel>Message</FormLabel>
-        <Input {...register("message", { required: true })} />
+        <Textarea {...register("message", { required: true })} />
 
-        <FormErrorMessage>{errors.message?.message as string}</FormErrorMessage>
+        <FormHelperText>
+          The message you want to place in the world.
+          <br />
+          This will be written on-chain, and is included in the unique ID of the
+          placement.
+        </FormHelperText>
+
+        <FormErrorMessage>{errors.message?.message || ""}</FormErrorMessage>
       </FormControl>
 
       <FormControl isInvalid={!!errors.publisherAddress} isRequired>
@@ -62,8 +76,16 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
           <Button onClick={handleMyAddress}>My Address</Button>
         </InputGroup>
 
+        <FormHelperText>
+          The address of the publisher of this message. This should probably be
+          your address.
+          <br />
+          This allows multiple publishers to uniquely place the same message in
+          the world.
+        </FormHelperText>
+
         <FormErrorMessage>
-          {errors.publisherAddress?.message as string}
+          {errors.publisherAddress?.message || ""}
         </FormErrorMessage>
       </FormControl>
 
@@ -71,10 +93,17 @@ export const MessageAssetSearch: FunctionComponent<MessageAssetProps> = ({
         <FormLabel>Placement Number</FormLabel>
         <Input {...register("placementNumber", { required: true })} />
 
+        <FormHelperText>
+          A number that uniquely identifies this placement of this message.
+          <br />
+          Increase this number to create a new placement of the same message
+          text.
+        </FormHelperText>
+
         <FormErrorMessage>
-          {errors.placementNumber?.message as string}
+          {errors.placementNumber?.message || ""}
         </FormErrorMessage>
       </FormControl>
-    </Box>
+    </VStack>
   );
 };

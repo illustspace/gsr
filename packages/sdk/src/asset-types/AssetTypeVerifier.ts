@@ -1,16 +1,16 @@
+import { GsrPlacement } from "~/placement-event";
 import { ProviderKeys } from "~/provider";
 
-import { Erc721AssetId, Erc721Verifier } from "./ERC721";
-import { Erc1155AssetId, Erc1155Verifier } from "./ERC1155";
-import { Fa2Verifier, Fa2AssetId } from "./FA2";
-import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
 import {
   AssetTypeVerifierMethods,
   EncodedAssetId,
 } from "./AssetTypeVerifierMethods";
-import { GsrPlacement } from "~/placement-event";
-import { SelfPublishedAssetId, SelfPublishedVerifier } from "./SelfPublished";
+import { BaseAssetTypeVerifier } from "./BaseAssetTypeVerifier";
+import { Erc1155AssetId, Erc1155Verifier } from "./ERC1155";
+import { Erc721AssetId, Erc721Verifier } from "./ERC721";
+import { Fa2Verifier, Fa2AssetId } from "./FA2";
 import { MessageAssetId, MessageVerifier } from "./Message";
+import { SelfPublishedAssetId, SelfPublishedVerifier } from "./SelfPublished";
 
 /** Add Verifiers here to make them available for use */
 export const verifierClasses = [
