@@ -37,7 +37,7 @@ const explorerByChainId: Record<number, string> = {
 };
 
 const blockExplorerByChainId: Record<number, string> = {
-  137: "https://polygonscan.io",
+  137: "https://polygonscan.com",
   80001: "https://mumbai.polygonscan.com",
   1337: "https://example.com",
 };

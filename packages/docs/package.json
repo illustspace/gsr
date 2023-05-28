@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "GSR docs site",
   "scripts": {
-    "start": "next dev",
+    "start": "next dev -p 3003",
     "build": "next build",
     "serve": "next start",
     "lint": "next lint"
