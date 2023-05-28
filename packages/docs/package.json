@@ -1,0 +1,31 @@
+{
+  "name": "@geospatialregistry/docs",
+  "version": "0.0.1",
+  "description": "GSR docs site",
+  "scripts": {
+    "start": "next dev",
+    "build": "next build",
+    "serve": "next start",
+    "lint": "next lint"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/illustspace/gsr/issues"
+  },
+  "homepage": "https://github.com/illustspace/gsr/tree/develop/packages/docs/README.md",
+  "dependencies": {
+    "@types/react": "^18.2.7",
+    "@types/react-dom": "^18.2.4",
+    "next": "^13.4.4",
+    "nextra": "^2.6.1",
+    "nextra-theme-docs": "^2.6.1",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "18.7.14",
+    "eslint": "8.23.0",
+    "eslint-config-next": "12.2.5",
+    "typescript": "^4.7.4"
+  }
+}

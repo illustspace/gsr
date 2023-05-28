@@ -3,7 +3,8 @@
     { "path": "packages/contracts" },
     { "path": "packages/e2e" },
     { "path": "packages/indexer" },
-    { "path": "packages/sdk" }
+    { "path": "packages/sdk" },
+    { "path": "packages/docs" }
   ],
   "compilerOptions": {
     //

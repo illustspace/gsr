@@ -174,9 +174,12 @@ yarn ws @geospatialregistry/sdk format
 
 - Add a file named `<AssetType>.ts` to `packages/sdk/src/asset-types`
 - Add a class that inherits from `BaseAssetTypeVerifier`
-- Decare an `interface <AssetType>AssetId` with a unique `assetType`, and any other data needed to uniquely identify the asset type.
-- Declare the `assetType`, and implement the abstract methods for encoding, decoding, and verifying ownership
+- Decare an `interface <AssetType>AssetId` with a unique `assetType`, and any
+  other data needed to uniquely identify the asset type.
+- Declare the `assetType`, and implement the abstract methods for encoding,
+  decoding, and verifying ownership
 - in `packages/sdk/src/asset-types/AssetTypeVerifier.ts`:
   - Add the new verifier to `verifierClasses`
   - Add the new AssetType to `type DecodedAssetId`
-- Export the verifier and AssetType from `packages/sdk/src/asset-types/index.ts` for individual use
+- Export the verifier and AssetType from `packages/sdk/src/asset-types/index.ts`
+  for individual use

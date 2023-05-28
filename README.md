@@ -2,7 +2,9 @@
 
 Monorepo for the GeoSpatialRegistry
 
-This repo contains the GeoSpatialRegistry smart contract, a TypeScript SDK for more easily working with it, and the indexer server for checking ownership of placements.
+This repo contains the GeoSpatialRegistry smart contract, a TypeScript SDK for
+more easily working with it, and the indexer server for checking ownership of
+placements.
 
 ## Packages
 
@@ -10,9 +12,12 @@ See each packages's README for details on usage and development.
 
 ### @geospatialregistry/contracts
 
-The smart contracts hardhat package can be found in [packages/contracts](./packages/contracts/), and the contracts themselves in [packages/contracts/contracts](./packages/contracts/contracts)
+The smart contracts hardhat package can be found in
+[packages/contracts](./packages/contracts/), and the contracts themselves in
+[packages/contracts/contracts](./packages/contracts/contracts)
 
-See [packages/contracts/docs](./packages/contracts/docs/README.md) for a full walk-through of the smart contract logic.
+See [packages/contracts/docs](./packages/contracts/docs/README.md) for a full
+walk-through of the smart contract logic.
 
 ### @geospatialregistry/sdk
 
@@ -35,7 +40,9 @@ curl https://binaries.cockroachdb.com/cockroach-v22.1.11.linux-amd64.tgz | tar -
 brew install cockroachdb/tap/cockroach
 ```
 
-Or follow [the docs](https://www.cockroachlabs.com/docs/v22.1/install-cockroachdb-linux) for more details.
+Or follow
+[the docs](https://www.cockroachlabs.com/docs/v22.1/install-cockroachdb-linux)
+for more details.
 
 ### Dependencies
 
@@ -88,13 +95,15 @@ yarn ws indexer db:start # start the local db, if it is not already running.
 yarn ws indexer db:deploy # deploy migrations to local db
 ```
 
-Then, end the `db:start` process. If you don't, `yarn start` will try to restart the DB and will fail.
+Then, end the `db:start` process. If you don't, `yarn start` will try to restart
+the DB and will fail.
 
 ### Dev Server
 
 Make sure to run the DB setup before continuing.
 
-For development, you can either start a local blockchain and all services in one command:
+For development, you can either start a local blockchain and all services in one
+command:
 
 ```bash
 yarn start

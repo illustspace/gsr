@@ -1,14 +1,19 @@
 # Indexer
 
-A Next.js app that verifies ownership for GSR placements, serves placement queries, emits webhooks, and has a frontend GSR Explorer.
+A Next.js app that verifies ownership for GSR placements, serves placement
+queries, emits webhooks, and has a frontend GSR Explorer.
 
 ## Development
 
 ### Environment setup
 
-Add some environment variables to the `packages/indexer/.env.local` file, which is gitignored.
+Add some environment variables to the `packages/indexer/.env.local` file, which
+is gitignored.
 
-You can [sign up for Alchemy](https://docs.alchemy.com/docs/alchemy-quickstart-guide#1key-create-an-alchemy-key) if you want to access Polygon Testnet or Mainnet from your local enviornonment. Otherwise, leave it out of the `.env.local` file.
+You can
+[sign up for Alchemy](https://docs.alchemy.com/docs/alchemy-quickstart-guide#1key-create-an-alchemy-key)
+if you want to access Polygon Testnet or Mainnet from your local enviornonment.
+Otherwise, leave it out of the `.env.local` file.
 
 ```bash
 NEXT_PUBLIC_ALCHEMY_API_KEY="<yourAlchemyApiKey>"
@@ -28,11 +33,13 @@ yarn start
 
 _Note that killing this process will also shut down CockroachDB_
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the
+result.
 
 ### Connect to a remote database
 
-If you want to connect your local indexer to a remote database, simply specify its `DATABASE_URL` in `.env.local`
+If you want to connect your local indexer to a remote database, simply specify
+its `DATABASE_URL` in `.env.local`
 
 ```bash
 DATABASE_URL="postgresql://<username>:<password>@<database-url>:26257/gsr?sslmode=verify-full"
@@ -40,11 +47,21 @@ DATABASE_URL="postgresql://<username>:<password>@<database-url>:26257/gsr?sslmod
 
 ## Webhooks
 
-To register another service that wants updates when a new verified placement is made, add a Webhook entry to the `Webhooks` table with `yarn ws indexer db:studio`
+To register another service that wants updates when a new verified placement is
+made, add a Webhook entry to the `Webhooks` table with
+`yarn ws indexer db:studio`
 
-Then every time `/sync` is called, if there are any new placements, they will be sent via `POST` to the registered endpoints. The request will include a `SerializedGsrPlacement` as `payload`, and `endpoint` it is set to as `endpoint`. The indexer will also sign the full request body, and place that signature in the `gsr-signature` header.
+Then every time `/sync` is called, if there are any new placements, they will be
+sent via `POST` to the registered endpoints. The request will include a
+`SerializedGsrPlacement` as `payload`, and `endpoint` it is set to as
+`endpoint`. The indexer will also sign the full request body, and place that
+signature in the `gsr-signature` header.
 
-To verify the webhook is coming from the expected indexer, you should use the raw body of the request to verifiy the signature, and verify that signed endpoint is your service, to prevent replay attacks. See [examples/webhook-consumer](../../examples/webhook-consumer/src/index.ts) for an example of how to implement this.
+To verify the webhook is coming from the expected indexer, you should use the
+raw body of the request to verifiy the signature, and verify that signed
+endpoint is your service, to prevent replay attacks. See
+[examples/webhook-consumer](../../examples/webhook-consumer/src/index.ts) for an
+example of how to implement this.
 
 ## Deployment
 
@@ -65,7 +82,8 @@ yarn vercel deploy --prebuilt --prod
 
 ## Database
 
-The GSR Indexer uses CockroachDB as its data store. The database connection is controlled by the `DATABASE_URL` variable in `packages/indexer/.env`
+The GSR Indexer uses CockroachDB as its data store. The database connection is
+controlled by the `DATABASE_URL` variable in `packages/indexer/.env`
 
 If you want to start the local database in a separate process:
 
@@ -79,13 +97,15 @@ Then you can explore the data with the prisma studio
 yarn ws indexer db:studio
 ```
 
-To change the database structure, first update the [schema.prisma](./prisma/schema.prisma) file. Then generate a new migration:
+To change the database structure, first update the
+[schema.prisma](./prisma/schema.prisma) file. Then generate a new migration:
 
 ```bash
 yarn ws indexer db:migrate my-migration-name
 ```
 
-If you need to apply existing migrations to the database specified in the `DATABASE_URL` (like if a merged branch added a new migration), run:
+If you need to apply existing migrations to the database specified in the
+`DATABASE_URL` (like if a merged branch added a new migration), run:
 
 ```bash
 yarn ws indexer db:deploy

@@ -2,7 +2,8 @@
 
 ## GeoSpatialRegistry
 
-A hyperstructure for registering the location and display data for a digital asset
+A hyperstructure for registering the location and display data for a digital
+asset
 
 ### Geohash
 
@@ -123,7 +124,8 @@ Place a piece according to a publisher.
 function placeWithScene(struct GeoSpatialRegistry.EncodedAssetId encodedAssetId, struct GeoSpatialRegistry.Geohash geohash, struct GeoSpatialRegistry.TimeRange timeRange, string sceneUri) external
 ```
 
-Place a piece according to a publisher, and set the scene URI, in one transaction.
+Place a piece according to a publisher, and set the scene URI, in one
+transaction.
 
 #### Parameters
 
@@ -170,7 +172,8 @@ Remove an asset from the GSR.
 function updateSceneUri(struct GeoSpatialRegistry.EncodedAssetId encodedAssetId, string sceneUri) external
 ```
 
-Just update a sceneUri without changing the placement. This will not effect the placedAt time.
+Just update a sceneUri without changing the placement. This will not effect the
+placedAt time.
 
 #### Parameters
 
@@ -433,11 +436,10 @@ function getChainId() public view returns (uint256)
 function toTypedMessageHash(bytes32 messageHash) internal view returns (bytes32)
 ```
 
-Accept message hash and returns hash message in EIP712 compatible form
-So that it can be used to recover signer from signature signed using EIP712 formatted data
-https://eips.ethereum.org/EIPS/eip-712
-"\\x19" makes the encoding deterministic
-"\\x01" is the version byte to make it compatible to EIP-191
+Accept message hash and returns hash message in EIP712 compatible form So that
+it can be used to recover signer from signature signed using EIP712 formatted
+data https://eips.ethereum.org/EIPS/eip-712 "\\x19" makes the encoding
+deterministic "\\x01" is the version byte to make it compatible to EIP-191
 
 ## NativeMetaTransaction
 
@@ -591,4 +593,5 @@ function unlink(bytes32 targetId) external
 function _msgSender() internal view returns (address sender)
 ```
 
-This is used instead of msg.sender as transactions won't be sent by the original token owner, but by OpenSea.
+This is used instead of msg.sender as transactions won't be sent by the original
+token owner, but by OpenSea.

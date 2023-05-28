@@ -2,7 +2,8 @@
 
 ## Docs
 
-See the [docs](./docs/README.md) for a full description of the smart contract flows and access control.
+See the [docs](./docs/README.md) for a full description of the smart contract
+flows and access control.
 
 ## Development
 
@@ -28,13 +29,16 @@ yarn test:gas
 
 ### Build the contract locally
 
-You will have to do this at least once to build the typechain types needed for testing. After that they will be updated automatically when running tests.
+You will have to do this at least once to build the typechain types needed for
+testing. After that they will be updated automatically when running tests.
 
 ```bash
 yarn build
 ```
 
-This will compile the smart contracts, and also generate TypeChain ethers.js classes, which are placed in the `@geospatialregistry/sdk` library for general use.
+This will compile the smart contracts, and also generate TypeChain ethers.js
+classes, which are placed in the `@geospatialregistry/sdk` library for general
+use.
 
 ### Live testing
 
@@ -46,7 +50,9 @@ yarn blockchain
 
 ## Deploy & Verify Contracts
 
-To verify a contract on etherscan/polygon scan, make sure the associated API key is in the .env file, then run `hardhat verify` on the contract, passing in the address and arguments used when deploying:
+To verify a contract on etherscan/polygon scan, make sure the associated API key
+is in the .env file, then run `hardhat verify` on the contract, passing in the
+address and arguments used when deploying:
 
 ```bash
 yarn deploy:testnet

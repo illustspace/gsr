@@ -11,7 +11,9 @@ runs:
   using: "composite"
   steps:
     - name: Pull Vercel Environment Information
-      run: yarn vercel pull --yes --environment=${{ inputs.environment }} --token=${{ inputs.token }}
+      run:
+        yarn vercel pull --yes --environment=${{ inputs.environment }}
+        --token=${{ inputs.token }}
       shell: bash
 
     - name: Build Project Artifacts
